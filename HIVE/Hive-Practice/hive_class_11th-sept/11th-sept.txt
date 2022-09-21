@@ -1,0 +1,454 @@
+
+#to check serDe Library
+
+describe formatted sales_data_pq_final1;
+
+
+SerDe Library:      	org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe	 
+InputFormat:        	org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat	 
+OutputFormat:       	org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat	
+
+#create table to use serde library for csv1_file.csv
+
+ create table csv_table_serde
+     (
+     name string,
+     location string
+     )
+     row format serde 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+     with serdeproperties (
+     "seperatorChar" = ",",
+     "quoteChar" = "\"",
+     "escapeChar" = "\\"
+     )
+     stored as textfile
+     tblproperties ("skip.header.line.count" = "1");
+
+
+
+describe formatted csv_table_serde;
+
+SerDe Library:      	org.apache.hadoop.hive.serde2.OpenCSVSerde	 
+InputFormat:        	org.apache.hadoop.mapred.TextInputFormat	 
+OutputFormat:       	org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+
+
+load data local inpath 'file:///tmp/hive_class/csv1_file.csv' into table csv_table_serde;
+
+select * from csv_table_serde;
+
+
+#For Json File
+
+vim json1_file.csv
+cp json1_file.csv /tmp/hive_class/
+
+
+
+#download jar file -> https://repo1.maven.org/maven2/org/apache/hive/hcatalog/hive-hcatalog-core/0.14.0/
+
+hive> add jar /tmp/hive_class/hive-hcatalog-core-0.14.1.jar;
+
+
+ create table json_table_practice
+    > (
+    > name string,
+    > id int,
+    > skills array<string>
+    > )
+    > row format serde 'org.apache.hive.hcatalog.data.JsonSerDe'
+    > stored as textfile;
+
+ load data local inpath "file:///tmp/hive_class/json1_file.json" into table json_table_practice;
+
+
+ set hive.cli.print.header = true;
+
+ select * from json_table_practice;
+
+select name,skills[0] as Skills from json_table_practice; 
+
+
+
+
+#Sales Order data
+
+[cloudera@quickstart ~]$ vim sales_order_data.csv
+[cloudera@quickstart ~]$ cp sales_order_data.csv /tmp/hive_class/
+
+
+
+hive>
+
+create table sales_order_data_csv_v1
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > PRICEEACH float,
+    > ORDERLINENUMBER int,
+    > SALES float,
+    > STATUS string,
+    > QTR_ID int,
+    > MONTH_ID int,
+    > YEAR_ID int,
+    > PRODUCTLINE string,
+    > MSRP int,
+    > PRODUCTCODE string,
+    > PHONE string,
+    > CITY string,
+    > STATE string,
+    > POSTALCODE string,
+    > COUNTRY string,
+    > TERRITORY string,
+    > CONTACTLASTNAME string,
+    > CONTACTFIRSTNAME string,
+    > DEALSIZE string
+    > )
+    > row format delimited
+    > fields terminated by ','
+    > tblproperties("skip.header.line.count"="1")
+    > ; 
+
+
+load data local inpath "file:///tmp/hive_class/sales_order_data.csv" into table sales_order_data_csv_v1;
+
+select * from sales_order_data_csv_v1 limit 10;
+
+
+#create table for orc
+
+create table sales_order_data_orc
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > PRICEEACH float,
+    > ORDERLINENUMBER int,
+    > SALES float,
+    > STATUS string,
+    > QTR_ID int,
+    > MONTH_ID int,
+    > YEAR_ID int,
+    > PRODUCTLINE string,
+    > MSRP int,
+    > PRODUCTCODE string,
+    > PHONE string,
+    > CITY string,
+    > STATE string,
+    > POSTALCODE string,
+    > COUNTRY string,
+    > TERRITORY string,
+    > CONTACTLASTNAME string,
+    > CONTACTFIRSTNAME string,
+    > DEALSIZE string
+    > )
+    > stored as orc;
+
+
+from sales_order_data_csv_v1 insert overwrite table sales_order_data_orc select *;
+
+select year_id,sum(sales) as total_sales from sales_order_data_orc group by year_id;
+
+# here only 1 map and 1 reduce task will get created
+
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+
+
+
+ # change number of reducers to 3
+
+  set mapreduce.job.reduces=3;
+
+  select year_id,sum(sales) as total_sales from sales_order_data_orc group by year_id;
+
+
+#create backup table
+set mapreduce.job.reduces=3;
+
+create table sales_order_grouped_orc_v1 stored as orc as select year_id,sum(sales) as total_sales from sales_order_data_orc group by year_id;
+
+
+#create backup table
+set mapreduce.job.reduces=2;
+
+create table sales_order_grouped_orc_v2 stored as orc as select year_id,sum(sales) as total_sales from sales_order_data_orc group by year_id;
+
+
+
+#cloudera
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_order_grouped*
+
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000000_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000001_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000002_0
+Found 2 items
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:53 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v2/000000_0
+-rwxrwxrwx   1 cloudera supergroup        350 2022-09-14 11:53 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v2/000001_0
+
+
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1
+
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000000_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000001_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-09-14 11:51 /user/hive/warehouse/hive_practice.db/sales_order_grouped_orc_v1/000002_0
+
+
+#order by
+select year_id from sales_order_data_orc order by year_id desc;
+
+
+
+# order by command only takes 1 reducer even after running below command
+
+set mapreduce.job.reduces=3;
+
+select year_id from sales_order_data_orc order by year_id desc limit 10;
+
+
+# order by command  takes 3 reducer 
+
+select year_id from sales_order_data_orc sort by year_id desc;
+
+
+
+
+
+
+
+#Partition 
+
+
+#set this command to prevent to giving error for TB's of data for static partition;
+
+set hive.mapred.mode = strict;
+
+# Create Partition table for static 
+
+create table sales_data_static_part
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > SALES float,
+    > YEAR_ID int
+    > )
+    > partitioned by (COUNTRY string);
+
+
+
+describe formatted sales_data_static_part;
+
+
+	 	 
+# Partition Information	 	 
+# col_name            	data_type           	comment             
+	 	 
+country             	string             
+
+
+insert overwrite table sales_data_static_part partition(country = 'USA') select ordernumber,quantityordered,sales,year_id from sales_order_data_orc where country = 'USA'; 
+
+insert overwrite table sales_data_static_part partition(country = 'India') select ordernumber,quantityordered,sales,year_id from sales_order_data_orc where country = 'India'; 
+
+
+
+
+
+[cloudera@quickstart ~]$ hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_static_part
+
+Found 2 items
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:12 /user/hive/warehouse/hive_practice.db/sales_data_static_part/country=India
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:02 /user/hive/warehouse/hive_practice.db/sales_data_static_part/country=USA
+
+
+
+
+
+
+#set this command to prevent to giving error for TB's of data for dynamic partition;
+
+set hive.exec.dynamic.partition.mode = nonstrict;
+
+# Create Partition table for dynamic partition
+
+create table sales_data_dynamic_part
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > SALES float,
+    > YEAR_ID int
+    > )
+    > partitioned by (COUNTRY string);  
+
+
+
+#load data
+
+insert overwrite table sales_data_dynamic_part partition(country) select ordernumber,quantityordered,sales,year_id,country from sales_order_data_orc;
+
+
+
+[cloudera@quickstart ~]$ hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part
+Found 19 items
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Australia
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Austria
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Belgium
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Canada
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Denmark
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Finland
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=France
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Germany
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Ireland
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Italy
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Japan
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Norway
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Philippines
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Singapore
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Spain
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Sweden
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=Switzerland
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=UK
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:26 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_part/country=USA
+[cloudera@quickstart ~]$ 
+
+
+
+#multilevel partitioning
+
+select year_id,sum(sales) as total_sales from sales_data_dynamic_part where country = 'Australia' group by year_id;
+
+
+
+
+#create table for multilevel partition
+
+create table sales_data_dynamic_multilevel_part
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > SALES float
+    > )
+    > partitioned by (COUNTRY string,YEAR_ID int);
+
+
+#load data (remember order of column)
+insert overwrite table sales_data_dynamic_multilevel_part partition(country,year_id) select ordernumber,quantityordered,sales,country,year_id from sales_order_data_orc;
+
+
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part
+
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part/country=Australia
+
+
+[cloudera@quickstart ~]$ hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part/country=Australia
+Found 3 items
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:49 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part/country=Australia/year_id=2003
+drwxrwxrwx   - cloudera supergroup          0 2022-09-15 09:49 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part/country=Australia/year_id=2004
+drwxr-xr-x   - cloudera supergroup          0 2022-09-15 09:49 /user/hive/warehouse/hive_practice.db/sales_data_dynamic_multilevel_part/country=Australia/year_id=2005
+[cloudera@quickstart ~]$ 
+
+
+
+
+
+######################################################
+
+ASSIGNMENT - 1
+
+######################################################
+
+1. Download vechile sales data -> https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
+2. Store raw data into hdfs location
+3. Create a internal hive table "sales_order_csv" which will store csv data sales_order_csv .. make sure to skip header row while creating table
+4. Load data from hdfs path into "sales_order_csv" 
+5. Create an internal hive table which will store data in ORC format "sales_order_orc"
+6. Load data from "sales_order_csv" into "sales_order_orc"
+
+Perform below menioned queries on "sales_order_orc" table :
+a. Calculatye total sales per year
+b. Find a product for which maximum orders were placed
+c. Calculate the total sales for each quarter
+d. In which quarter sales was minimum
+e. In which country sales was maximum and in which country sales was minimum
+f. Calculate quartelry sales for each city
+h. Find a month for each year in which maximum number of quantities were sold
+
+
+############
+ANSWER
+############
+
+a. select year_id,sum(sales) as total_sales from sales_order_data_orc group by year_id;
+
+b. select MAX(QUANTITYORDERED) as Max_num,PRODUCTLINE from sales_order_data_orc group by PRODUCTLINE limit 1;
+
+c. select SUM(SALES) as Total_Sales_per_QRT,QTR_ID from sales_order_data_orc group by QTR_ID;
+
+d. select SUM(SALES) as Total_Sales_per_QRT,QTR_ID from sales_order_data_orc group by QTR_ID order by total_sales_per_qrt limit 1;
+
+e. select SUM(SALES) as Total_Sales_per_Country,COUNTRY from sales_order_data_orc group by COUNTRY order by Total_Sales_per_Country desc limit 1;
+   select SUM(SALES) as Total_Sales_per_Country,COUNTRY from sales_order_data_orc group by COUNTRY order by Total_Sales_per_Country limit 1;
+
+f. select SUM(SALES) as Total_Sales,CITY from sales_order_data_orc WHERE QTR_ID = 1  group by CITY;
+   select SUM(SALES) as Total_Sales,CITY from sales_order_data_orc WHERE QTR_ID = 2  group by CITY;
+   select SUM(SALES) as Total_Sales,CITY from sales_order_data_orc WHERE QTR_ID = 3  group by CITY;
+   select SUM(SALES) as Total_Sales,CITY from sales_order_data_orc WHERE QTR_ID = 4  group by CITY;
+
+g. select SUM(QUANTITYORDERED) as Total_Quantity,MONTH_ID from sales_order_data_orc WHERE YEAR_ID = 2003  group by MONTH_ID order by Total_Quantity desc limit 1;
+   select SUM(QUANTITYORDERED) as Total_Quantity,MONTH_ID from sales_order_data_orc WHERE YEAR_ID = 2004  group by MONTH_ID order by Total_Quantity desc limit 1;
+   select SUM(QUANTITYORDERED) as Total_Quantity,MONTH_ID from sales_order_data_orc WHERE YEAR_ID = 2005  group by MONTH_ID order by Total_Quantity desc limit 1;
+
+
+
+
+
+
+
+
+
+
+
+select max_s.country, max_s.max_sales, min_s.min_sales from 
+(select country,sum(SALES) max_sales from monty.sales_order_data_orc) max_s
+inner join (select country,sum(SALES) min_sales from monty.sales_order_data_orc) min_s
+on (max_s.country=min_s.country);
+
+
+
+
+
+E . select country,max(SALES) max_sales from sales_order_data_orc
+group by country LIMIT 1;
+
+
+country	max_sales
+Australia	9774.03
+Austria	9240.0
+Belgium	6804.63
+Canada	9064.89
+Denmark	10468.9
+Finland	10606.2
+France	11739.7
+Germany	8940.96
+Ireland	8258.0
+Italy	9160.36
+Japan	10758.0
+Norway	8844.12
+Philippines	7483.98
+Singapore	10993.5
+Spain	12001.0
+Sweden	7209.11
+Switzerland	6761.6
+UK	11886.6
+USA	14082.8
+
+
+
+
+select distinct a.year_id,a.month_id,a.quantityordered from monty.sales_order_data_orc a
+inner join
+(select  year_id, month_id, max(quantityordered) as quantityordered  from monty.sales_order_data_orc group  by year_id,month_id) b  
+on (a.year_id=b.year_id and a.month_id=b.month_id and a.quantityordered=b.quantityordered);

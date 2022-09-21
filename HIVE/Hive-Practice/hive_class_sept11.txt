@@ -1,0 +1,60 @@
+#for CSV file
+
+vim csv_file.csv
+cp csv_file.csv /tmp/hive_class/
+
+
+
+
+describe formatted csv_table;
+
+
+create table csv_table
+    > (
+    > name string,
+    > location string
+    > )
+    > row format serde 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+    > with serdeproperties (
+    > "seperatorChar" = ",",
+    > "quoteChar" = "\"",
+    > "escapeChar" = "\\"
+    > )
+    > stored as textfile
+    > tblproperties ("skip.header.line.count" = "1");
+
+
+load data local inpath 'file:///tmp/hive_class/csv_file.csv' into table csv_table;
+
+set hive.cli.header.print = true;
+
+select * from csv_table;
+
+
+
+
+#for JSON file
+
+vim json_file.json
+
+cp json_file.json /tmp/hive_class/
+
+
+#download jar file -> https://repo1.maven.org/maven2/org/apache/hive/hcatalog/hive-hcatalog-core/0.14.0/
+
+hive> add jar /tmp/hive_class/hive-hcatalog-core-0.14.1.jar;
+
+create table json_table
+    > (
+    > name string,
+    > id int,
+    > skills array<string>
+    > )
+    > row format serde 'org.apache.hive.hcatalog.data.JsonSerDe' 
+    > stored as textfile;
+
+
+
+load data local inpath 'file:///tmp/hive_class/json_file.json' into table json_table;
+
+select * from json_table;

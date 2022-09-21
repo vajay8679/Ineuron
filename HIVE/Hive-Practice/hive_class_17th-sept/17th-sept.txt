@@ -1,0 +1,271 @@
+
+show databases;
+
+use hive_class;
+
+set hive.cli.print.header = true;
+
+select * from sales_order_data_orc limit 10;
+
+
+
+#UDF 
+cloudera]
+vim multiply_udf.py
+
+import sys
+
+for line in sys.stdin:
+        line = line.strip("\n\r")
+        quantity = int(line)
+        quantity = quantity * 10
+        print(str(quantity))
+
+cp multiply_udf.py /tmp/hive_class/multiply_udf.py
+
+
+
+
+
+hive >
+
+select quantityordered from sales_order_data_orc limit 10;
+
+#add udf in hive cell
+add file /tmp/hive_class/multiply_udf.py;
+
+
+select transform(quantityordered) using 'python multiply_udf.py' as quantity_multiplied from sales_order_data_orc limit 10;
+
+
+describe sales_order_data_orc;
+
+
+
+#for multiple_column 
+
+cloudera >
+
+vim many_column_udf.py;
+
+
+import sys
+
+for line in sys.stdin:
+        line = line.strip("\n\r")
+        country, order_num,quantity = line.split("\t")
+        order_num = int(order_num)
+        quantity = int(quantity)
+        quantity = quantity * 1000
+        result = '\t'.join([country,str(order_num),str(quantity)])
+        print(result)
+
+
+cp  many_column_udf.py /tmp/hive_class/
+
+
+
+
+hive >
+
+add file /tmp/hive_class/many_column_udf.py;
+
+select transform(country,ordernum,quantityordered) using 'python many_column_udf.py' as (country string, ordernumber int,multiplied_quantity int) from sales_order_data_orc limit 10;
+
+
+
+
+
+
+#BUCKETING
+
+cloudera >
+
+vim user.csv
+
+1,Amit,100,DNA
+2,Sumit,200,DNA
+3,Yadav,300,DNA
+4,Sunil,400,FCS
+5,Mahoor,200,FCS
+6,Chandra,500,DNA
+7,Kranti,100,FCS
+
+cp user.csv /tmp/hive_class/
+
+vim loactions.csv
+
+1,UP
+2,Bihar
+3,Delhi
+4,Goa
+5,Delhi
+6,MP
+7,Maharastra
+
+cp locations.csv /tmp/hive_class/
+
+
+
+
+hive >
+
+
+create table user
+    > (
+    > id int,
+    > name string,
+    > salary int,
+    > unit string
+    > )
+    > row format delimited
+    > fields terminated by ',';
+
+load data local inpath 'file:///tmp/hive_class/user.csv' into table user;
+
+
+select * from locations;
+
+
+create table locations
+    > (
+    > id int,
+    > location string
+    > )
+    > row format delimited
+    > fields terminated by ',';
+
+load data local inpath 'file:///tmp/hive_class/loactions.csv' into table locations;
+
+select * from user;
+
+
+
+
+#create bucket_tables
+
+create table bucks_users
+    > (
+    > id int,
+    > name string,
+    > salary int,
+    > unit string
+    > )
+    > clustered by (id) 
+    > sorted by (id)
+    > into 2 buckets;
+
+
+
+create table buck_locations
+    > (
+    > id int,
+    > location string
+    > )
+    > clustered by (id)
+    > sorted by (id)
+    > into 2 buckets;
+
+set hive.enforce.bucketing = true;
+
+
+
+insert overwrite table bucks_users select * from user;
+
+
+insert overwrite table buck_locations select * from locations;
+
+
+
+cloudera >
+
+hadoop fs -ls /user/hive/warehouse/bucks_users/
+
+hadoop fs -cat /user/hive/warehouse/bucks_users/000000_0
+
+[cloudera@quickstart ~]$ hadoop fs -cat /user/hive/warehouse/bucks_users/000001_0
+7Kranti100FCS
+5Mahoor200FCS
+3Yadav300DNA
+
+
+
+###########################################
+       HIVE OPTIMISED JOINS
+###########################################
+
+
+# 1.Map Side Join
+
+hive> set hive.auto.convert.join = false;
+
+hive> select * from bucks_users u inner join buck_locations l on u.id = l.id;
+
+
+Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+
+1	Amit	100	DNA	1	UP
+2	Sumit	200	DNA	2	Bihar
+3	Yadav	300	DNA	3	Delhi
+4	Sunil	400	FCS	4	Goa
+5	Mahoor	200	FCS	5	Delhi
+6	Chandra	500	DNA	6	MP
+7	Kranti	100	FCS	7	Maharastra
+
+
+
+# 2.map side join (Boradcast Join)
+
+hive> set hive.auto.convert.join = true;
+hive> select * from bucks_users u inner join buck_locations l on u.id = l.id;
+
+Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 0
+
+6	Chandra	500	DNA	6	MP
+4	Sunil	400	FCS	4	Goa
+2	Sumit	200	DNA	2	Bihar
+7	Kranti	100	FCS	7	Maharastra
+5	Mahoor	200	FCS	5	Delhi
+3	Yadav	300	DNA	3	Delhi
+1	Amit	100	DNA	1	UP
+
+
+
+# 3.Bucket Map Join (used for large data)
+
+hive> set hive.auto.convert.join = true;
+hive> set hive.optimize.bucketmapjoin = true;
+hive> select * from bucks_users u inner join buck_locations l on u.id = l.id;
+
+
+Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 0
+
+6	Chandra	500	DNA	6	MP
+4	Sunil	400	FCS	4	Goa
+2	Sumit	200	DNA	2	Bihar
+7	Kranti	100	FCS	7	Maharastra
+5	Mahoor	200	FCS	5	Delhi
+3	Yadav	300	DNA	3	Delhi
+1	Amit	100	DNA	1	UP
+
+
+
+# 4. Sorted Merge Bucket Map Join (SMBMJ)
+
+hive> set hive.enforce.sortmergebucketmapjoin = false;
+hive> set hive.auto.convert.sortmerge.join = true;
+hive> set hive.optimize.bucketmapjoin.sortedmerge = true;
+hive> set hive.optimize.bucketmapjoin = true;
+hive> select * from bucks_users u inner join buck_locations l on u.id = l.id;
+
+
+
+Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 0
+
+6	Chandra	500	DNA	6	MP
+4	Sunil	400	FCS	4	Goa
+2	Sumit	200	DNA	2	Bihar
+7	Kranti	100	FCS	7	Maharastra
+5	Mahoor	200	FCS	5	Delhi
+3	Yadav	300	DNA	3	Delhi
+1	Amit	100	DNA	1	UP

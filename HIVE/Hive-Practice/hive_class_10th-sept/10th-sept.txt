@@ -1,0 +1,82 @@
+hive
+hadoop fs -ls /
+hadoop fs -ls /user/hive/warehouse/hive_practice*
+
+vim sales1.csv
+cp sales1.csv /tmp/hive_class/
+
+
+create table sales_data_pq_practice
+    > (
+    > product_type string,
+    > total_sales int
+    > )
+    > row format delimited 
+    > fields terminated by ','
+    
+
+load data local inpath 'file:///tmp/hive_class/sales_data.csv' into table sales
+
+set hive.cli.print.header = true;
+
+select * from sales_data_pq_practice;
+
+
+#creating backup table
+create table sales1_data_pq_backup as select * from sales1_data_pq;
+
+select * from sales1_data_pq_backup;
+
+describe sales1_data_pq_backup;
+
+describe extended sales1_data_pq_backup;
+
+from sales1_data_pq insert overwrite table sales_data_pq_final1 select *;
+
+
+# create table for Parquet 
+
+ create table sales_data_pq_final1
+    > (
+    > product_type string,
+    > total_sales int
+    > )
+    > stored as parquet;
+
+
+#copy data from sales1_data_pq table into sales_data_pq_final1
+
+#load data in parquet file
+from sales1_data_pq insert overwrite table sales_data_pq_final1 select *;
+
+select * from sales_data_pq_final1;
+
+describe formatted sales_data_pq_final1;
+
+
+#create table for orc
+
+ create table sales_data_orc
+    > (
+    > product_type string,
+    > amount int
+    > )
+    > stored as orc;
+
+from sales1_data_pq insert overwrite table sales_data_orc select *;
+
+
+
+
+ #in cloudera
+
+ hadoop fs -ls /user/hive/warehouse/hive_practice*
+
+ hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales1_data_pq
+
+ hadoop fs -cat /user/hive/warehouse/hive_practice.db/sales1_data_pq/sales1.csv
+
+ hadoop fs -ls /user/hive/warehouse/hive_practice.db/sales_data_pq_final1
+
+ #to see parquet data 
+ hadoop fs -cat /user/hive/warehouse/hive_practice.db/sales_data_pq_final1/000000_0

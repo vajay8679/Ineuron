@@ -1,0 +1,114 @@
+
+create database sales_order_data_assignment;
+
+show databases;
+
+use sales_order_data_assignment;
+
+create table sales_order_csv
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > PRICEEACH float,
+    > ORDERLINENUMBER int,
+    > SALES float,
+    > STATUS string,
+    > QTR_ID int,
+    > MONTH_ID int,
+    > YEAR_ID int,
+    > PRODUCTLINE string,
+    > MSRP int,
+    > PRODUCTCODE string,
+    > PHONE string,
+    > CITY string,
+    > STATE string,
+    > POSTALCODE string,
+    > COUNTRY string,
+    > TERRITORY string,
+    > CONTACTLASTNAME string,
+    > CONTACTFIRSTNAME string,
+    > DEALSIZE string
+    > )
+    > row format delimited
+    > fields terminated by ','
+    > tblproperties("skip.header.line.count"="1")
+    > ; 
+
+
+load data local inpath 'file:///tmp/hive_class/sales_order_data_assignment.csv' into table sales_order_csv;
+
+
+
+create table sales_order_orc
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > PRICEEACH float,
+    > ORDERLINENUMBER int,
+    > SALES float,
+    > STATUS string,
+    > QTR_ID int,
+    > MONTH_ID int,
+    > YEAR_ID int,
+    > PRODUCTLINE string,
+    > MSRP int,
+    > PRODUCTCODE string,
+    > PHONE string,
+    > CITY string,
+    > STATE string,
+    > POSTALCODE string,
+    > COUNTRY string,
+    > TERRITORY string,
+    > CONTACTLASTNAME string,
+    > CONTACTFIRSTNAME string,
+    > DEALSIZE string
+    > )
+    > stored as orc;
+
+
+from sales_order_csv insert overwrite table sales_order_orc select *;
+
+set hive.cli.print.header = true;
+
+1. select YEAR_ID,SUM(SALES) as total_sales_per_year from sales_order_orc group by YEAR_ID;
+
+2003	3516979.547241211
+2004	4724162.593383789
+2005	1791486.7086791992
+
+
+2. select MAX(QUANTITYORDERED) as max_order_number,PRODUCTLINE from sales_order_orc group by PRODUCTLINE;  
+
+97	Classic Cars
+66	Motorcycles
+85	Planes
+55	Ships
+51	Trains
+70	Trucks and Buses
+76	Vintage Cars
+
+or
+
+select MAX(QUANTITYORDERED) as max_order_number from sales_order_orc;
+
+3. select sum(SALES),QTR_ID from sales_order_orc group by QTR_ID;
+
+2350817.726501465	1
+2048120.3029174805	2
+1758910.808959961	3
+3874780.010925293	4
+
+4. select sum(SALES) as total_sales_per_quarter,QTR_ID from sales_order_orc group by QTR_ID order by total_sales_per_quarter asc limit 2;
+
+1758910.808959961	3
+
+5. select sum(SALES) as Total_Sales,COUNTRY from sales_order_orc group by COUNTRY order by Total_Sales asc limit 2;
+
+57756.43029785156	Ireland
+
+
+6. select sum(SALES) as Total_Sales,COUNTRY from sales_order_orc group by COUNTRY order by Total_Sales desc limit 1;
+
+7. select sum(SALES) as Quarter_sales,QTR_ID, from sales_order_orc group by QTR_ID;
+
+8. select MAX(QUANTITYORDERED) as max,MONTH_ID,YEAR_ID from sales_order_orc group by YEAR_ID;

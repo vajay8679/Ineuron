@@ -1,0 +1,23 @@
+create table country_wise_coivd_data_1
+    (
+     country_name string,
+     confirmed int,
+     death int,
+     recovered int,
+     active int,
+     new_cases int,
+     new_death int,
+     new_recovered int,
+     death_per_100_cases float,
+     recovered_per_100_cases float,
+     death_per_100_recovered float,
+     confirmed_last_week int,
+     one_week_changes int,
+     one_weekk_percentage_increased float,
+     who_region string
+     )
+     ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde';
+
+load data local inpath 'file:///home/cloudera/data/country_wise_latest.csv' into table country_wise_coivd_data_1;
+
+   
