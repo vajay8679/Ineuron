@@ -1,0 +1,223 @@
+#commands of hive
+
+hive
+
+create database hive_db1;
+
+use hive_db1;
+
+#create internal table
+
+create table department_data
+( dept_id int,
+dept_name string,
+manager_id int,
+salary int)
+row format delimited
+fields terminated by ',';
+
+show tables;
+
+describe department_data;
+
+describe formatted department_data;
+
+#command for database file creation
+hadoop fs -ls /user/hive/warehouse
+hadoop fs -ls /user/hive/warehouse/hive_practice*
+
+#command to show data in table
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/department_data
+
+#load data in table from local
+load data local inpath 'file:///home/cloudera/data/depart_data.csv' into table department_data;
+
+#view data
+select * from department_data;
+
+#to see mapReduce tasks
+select count(*) from department_data;
+
+
+#from one path to another
+cp /home/cloudera/data/department_data.csv /tmp/student_hive_temp/
+
+
+#data is dumping into warehouse
+
+hadoop fs -ls /user/hive/warehouse/hive_practice.db
+
+hadoop fs -ls /user/hive/warehouse/hive_practice.db/department_data
+
+#to see column name of tables with data
+set hive.cli.print.header = true;
+select * from department_data;
+
+
+
+
+
+
+#load data from HDFS location to hive 
+inside cloudera ---
+hadoop fs -ls /tmp (check files)
+hadoop fs -mkdir /tmp/hive_data_class_2  (create directory inside hadfs in "tmp" folder with name "hive_data_class_2")
+hadoop fs -put /home/cloudera/data/depart_data.csv /tmp/hive_data_class_2   (copyfrom local to hdfs location)
+hadoop fs -ls /tmp/hive_data_class_2
+
+hive
+use hive_practice;
+
+create table department_data_from_hdfs
+(
+dept_id int,
+dept_name string,
+manager_id int,
+salary int
+)
+row format delimited
+fields terminated by ',';
+
+show tables;
+
+describe formatted department_data_from_hdfs;
+
+#load data command from hdfs to hive
+load data inpath '/tmp/hive_data_class_2' into table department_data_from_hdfs;
+
+set hive.cli.print.header = true;
+select * from department_data_from_hdfs;
+
+
+
+
+#load data into external table from hdfs
+
+create external table department_data_external
+(
+dept_id int,
+dept_name string,
+manager_id int,
+salary int
+)
+row format delimited
+fields terminated by ','
+location '/tmp/hive_data_class_2/';
+
+hadoop fs -put /home/cloudera/data/depart_data.csv /tmp/hive_data_class_2
+hadoop fs -ls /tmp/hive_data_class_2
+set hive.cli.print.header = true;
+select * from department_data_external;
+
+
+#to see tables in hdfs
+hadoop fs -ls /user/hive/warehouse/hive_practice.db
+
+
+#hdfs location that we are using for internal(MANAGED TABLE)
+hadoop fs -ls /user/hive/warehouse/hive_practice.db
+
+#hdfs location that we are using for external table
+hadoop fs -ls /tmp/hive_data_class_2
+
+
+#creating a file
+vim array_data
+
+#rename file
+mv array_data array_data.csv
+
+i
+esc + :wq + enter  (to save file)
+
+#move file into data folder
+ mv array_data.csv data/
+
+
+
+#copy data from one folder to othe folder
+cp data/array_data.csv /tmp/hive_class
+
+
+#creating tables for array key value pairs like table -columns
+#work with array data types
+#table for array data
+
+create table employee
+    > (
+    > id int,
+    > name string,
+    > skills array<string>
+    > )
+    > row format delimited
+    > fields terminated by ','
+    > collection items terminated by ':';
+    
+ #load data in table
+ load data local inpath 'file:///tmp/hive_class/array_data.csv' into table employee;
+ 
+ set hive.cli.print.header = true;
+ slect * from employee
+ 
+ employee.id	employee.name	employee.skills
+101	Amit	["HADOOP","HIVE","SPARK","BIG-DATA"]
+102	Ajay	["HIVE","OZZIE","HADOOP","SPARK","STORM"]
+103	Sumit	["KAFKA","KASSANDRA","HBASE"]
+
+
+select id,name from employee;
+
+#get element as per indexing
+select id,name,skills[1] as primary_skill from employee;
+select id,name,skills[0] as primary_skill from employee;
+
+
+#array functions in select query
+
+select
+    > id,
+    > name,
+    > size(skills) as size_of_each_array,
+    > array_contains(skills,"HADOOP") as knows_hadoop,
+    > sort_array(skills) as sorted_array
+    > from employee;
+
+
+#for copy file from data folder to tmp/hive_class folder
+ cp data/map_data.csv /tmp/hive_class/
+ 
+ 
+ #table for map data
+ 
+ create table employee_map_data
+    > (
+    > id int,
+    > name string,
+    > details map<string,string>
+    > )
+    > row format delimited
+    > fields terminated by ','
+    > collection items terminated by '|'
+    > map keys terminated by ':';
+
+load data local inpath 'file:///tmp/hive_class/map_data.csv' into table employee_map_data;
+set hive.cli.print.header = true;
+select * from employee_map_data;
+
+#selct queries for map
+select 
+    > id,
+    > name,
+    > details['gender'] as employee_gender
+    > from employee_map_data;
+
+#map functions
+
+select
+    > id,
+    > name,
+    > details,
+    > size(details) as size_of_each_map,
+    > map_keys(details) as distinct_map_keys,
+    > map_values(details) as distinct_map_values
+    > from employee_map_data;
