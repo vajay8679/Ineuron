@@ -1,0 +1,11 @@
+#check python version
+ python3 --version
+
+#install python3 
+sudo apt get install python3
+
+#install pycharm
+
+sudo snap install pycharm-community --classic
+
+pycharm-community
