@@ -1,0 +1,422 @@
+HBase Shell Command
+
+1. General commands
+2. Table management Command
+3. Data Manuplation Command
+4. Cluster replication Command
+
+
+
+
+get 'customer', 'ajay'
+
+#select Command
+
+scan 'customer'
+
+
+#add 
+
+put 'customer', 'amit', 'order:number','ord-02'
+
+put 'customer', 'ajay', 'address:name','ajaykumarverma'
+
+put 'customer', 'ajay', 'address:email-id','ajay@gmail.com'
+
+scan 'customer'
+
+get 'customer', 'ajay'
+
+get 'customer', 'amit'
+
+get 'customer', 'ajay', 'address:city'
+
+put 'customer', 'ajay', 'address:city','Delhi'
+
+
+#overriding  
+
+replace this 
+put 'customer', 'amit', 'order:number','ord-02'
+
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ ajay                                               column=address:city, timestamp=1666023834598, value=Delhi                                                                                              
+ ajay                                               column=address:email-id, timestamp=1666023436994, value=ajay@gmail.com                                                                                 
+ ajay                                               column=address:name, timestamp=1666023394626, value=ajaykumarverma                                                                                     
+ ajay                                               column=address:state, timestamp=1665931978663, value=MadhyaPradesh                                                                                     
+ ajay                                               column=address:street, timestamp=1665931985520, value=LIG                                                                                              
+ ajay                                               column=order:amount, timestamp=1665932000271, value=15000                                                                                              
+ ajay                                               column=order:number, timestamp=1665931995419, value=ord-01                                                                                             
+ amit                                               column=order:number, timestamp=1666023290996, value=ord-02                                                                                             
+
+
+from this
+put 'customer', 'amit', 'order:number','ord-03'
+
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ ajay                                               column=address:city, timestamp=1666023834598, value=Delhi                                                                                              
+ ajay                                               column=address:email-id, timestamp=1666023436994, value=ajay@gmail.com                                                                                 
+ ajay                                               column=address:name, timestamp=1666023394626, value=ajaykumarverma                                                                                     
+ ajay                                               column=address:state, timestamp=1665931978663, value=MadhyaPradesh                                                                                     
+ ajay                                               column=address:street, timestamp=1665931985520, value=LIG                                                                                              
+ ajay                                               column=order:amount, timestamp=1665932000271, value=15000                                                                                              
+ ajay                                               column=order:number, timestamp=1665931995419, value=ord-01                                                                                             
+ amit                                               column=order:number, timestamp=1666023934477, value=ord-03                                                                                             
+2 row(s) in 0.0330 seconds
+
+
+
+
+#disabling table
+
+disable 'customer'
+
+scan 'customer'
+
+
+#enabling table
+
+enable 'customer'
+
+scan 'customer'
+
+#describe Command
+
+describe 'customer'
+
+able customer is ENABLED                                                                                                                                                                                  
+customer                                                                                                                                                                                                   
+COLUMN FAMILIES DESCRIPTION                                                                                                                                                                                
+{NAME => 'address', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '1', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FA
+LSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                    
+{NAME => 'order', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '1', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FALS
+E', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                      
+2 row(s) in 0.1430 seconds
+
+
+#delete  
+delete 'customer', 'ajay', 'address:email-id'
+
+#count 
+count 'customer'
+
+
+
+
+hbase(main):023:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ ajay                                               column=address:city, timestamp=1666023834598, value=Delhi                                                                                              
+ ajay                                               column=address:email-id, timestamp=1666023436994, value=ajay@gmail.com                                                                                 
+ ajay                                               column=address:name, timestamp=1666023394626, value=ajaykumarverma                                                                                     
+ ajay                                               column=address:state, timestamp=1665931978663, value=MadhyaPradesh                                                                                     
+ ajay                                               column=address:street, timestamp=1665931985520, value=LIG                                                                                              
+ ajay                                               column=order:amount, timestamp=1665932000271, value=15000                                                                                              
+ ajay                                               column=order:number, timestamp=1665931995419, value=ord-01                                                                                             
+ amit                                               column=order:number, timestamp=1666023934477, value=ord-03                                                                                             
+2 row(s) in 0.0420 seconds
+
+hbase(main):024:0> delete 'customer', 'ajay', 'address:email-id'
+0 row(s) in 0.0080 seconds
+
+hbase(main):025:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ ajay                                               column=address:city, timestamp=1666023834598, value=Delhi                                                                                              
+ ajay                                               column=address:name, timestamp=1666023394626, value=ajaykumarverma                                                                                     
+ ajay                                               column=address:state, timestamp=1665931978663, value=MadhyaPradesh                                                                                     
+ ajay                                               column=address:street, timestamp=1665931985520, value=LIG                                                                                              
+ ajay                                               column=order:amount, timestamp=1665932000271, value=15000                                                                                              
+ ajay                                               column=order:number, timestamp=1665931995419, value=ord-01                                                                                             
+ amit                                               column=order:number, timestamp=1666023934477, value=ord-03                                                                                             
+2 row(s) in 0.0380 seconds
+
+hbase(main):026:0> count 'customer'
+2 row(s) in 0.1630 seconds
+
+=> 2
+hbase(main):027:0> disable 'customer'
+0 row(s) in 2.4420 seconds
+
+hbase(main):028:0> drop 'customer'
+0 row(s) in 2.5580 seconds
+
+hbase(main):029:0> list
+TABLE                                                                                                                                                                                                      
+0 row(s) in 0.0170 seconds
+
+=> []
+hbase(main):030:0> status
+1 active master, 0 backup masters, 1 servers, 0 dead, 2.0000 average load
+
+hbase(main):031:0> version
+1.2.0-cdh5.13.0, rUnknown, Wed Oct  4 11:16:18 PDT 2017
+
+hbase(main):032:0> whoami
+cloudera (auth:SIMPLE)
+    groups: cloudera, default
+
+hbase(main):033:0> 
+
+
+
+#exist table
+
+exists 'customer'
+
+
+
+hbase(main):003:0> put 'customer', 'sunny', 'address:city', 'Bhopal'
+0 row(s) in 0.1640 seconds
+
+hbase(main):004:0> put 'customer', 'sunny', 'address:state', 'MP'
+0 row(s) in 0.0090 seconds
+
+hbase(main):005:0> put 'customer', 'sunny', 'address:street', 'whitefield'
+0 row(s) in 0.0170 seconds
+
+hbase(main):006:0> put 'customer', 'sunny', 'order:number', 'ord-01'
+0 row(s) in 0.0080 seconds
+
+hbase(main):007:0> put 'customer', 'sunny', 'order:amount', '10000'
+0 row(s) in 0.0090 seconds
+
+hbase(main):008:0> count 'customer'
+1 row(s) in 0.0520 seconds
+
+=> 1
+hbase(main):009:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ sunny                                              column=address:city, timestamp=1666028214792, value=Bhopal                                                                                             
+ sunny                                              column=address:state, timestamp=1666028233664, value=MP                                                                                                
+ sunny                                              column=address:street, timestamp=1666028256522, value=whitefield                                                                                       
+ sunny                                              column=order:amount, timestamp=1666028317015, value=10000                                                                                              
+ sunny                                              column=order:number, timestamp=1666028290611, value=ord-01                                                                                             
+1 row(s) in 0.0410 seconds
+
+hbase(main):010:0> put 'customer', 'Imran', 'address:city', 'Delhi'
+0 row(s) in 0.0110 seconds
+
+hbase(main):011:0> put 'customer', 'sunny', 'address:state', 'Delhi CG'
+0 row(s) in 0.0090 seconds
+
+hbase(main):012:0> put 'customer', 'sunny', 'address:street', 'LIG'
+0 row(s) in 0.0120 seconds
+
+hbase(main):013:0> put 'customer', 'Imran', 'order:number', 'ord-02'
+0 row(s) in 0.0170 seconds
+
+hbase(main):014:0> put 'customer', 'Imran', 'address:state', 'Punjab'
+0 row(s) in 0.0120 seconds
+
+hbase(main):015:0> put 'customer', 'Imran', 'address:street', 'Amrit Uthsav'
+0 row(s) in 0.0110 seconds
+
+hbase(main):016:0> put 'customer', 'Imran', 'order:amount', '15000'
+0 row(s) in 0.0100 seconds
+
+hbase(main):017:0> count 'customer'
+2 row(s) in 0.0210 seconds
+
+=> 2
+hbase(main):018:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ Imran                                              column=address:city, timestamp=1666028439398, value=Delhi                                                                                              
+ Imran                                              column=address:state, timestamp=1666028555430, value=Punjab                                                                                            
+ Imran                                              column=address:street, timestamp=1666028579583, value=Amrit Uthsav                                                                                     
+ Imran                                              column=order:amount, timestamp=1666028603563, value=15000                                                                                              
+ Imran                                              column=order:number, timestamp=1666028524182, value=ord-02                                                                                             
+ sunny                                              column=address:city, timestamp=1666028214792, value=Bhopal                                                                                             
+ sunny                                              column=address:state, timestamp=1666028464753, value=Delhi CG                                                                                          
+ sunny                                              column=address:street, timestamp=1666028479422, value=LIG                                                                                              
+ sunny                                              column=order:amount, timestamp=1666028317015, value=10000                                                                                              
+ sunny                                              column=order:number, timestamp=1666028290611, value=ord-01                                                                                             
+2 row(s) in 0.0600 seconds
+
+hbase(main):019:0> put 'customer', 'Ajay', 'address:city', 'Chhindwara'
+0 row(s) in 0.0090 seconds
+
+hbase(main):020:0> put 'customer', 'Ajay', 'order:amount', '25000'
+0 row(s) in 0.0100 seconds
+
+hbase(main):021:0> count 'customer'
+3 row(s) in 0.0220 seconds
+
+
+
+#get data
+get 'customer', 'sunny', 'address:city'
+
+
+#delete 
+delete 'customer', 'sumit','order:Product_name'
+
+
+#delete entire address column
+
+hbase(main):030:0> alter 'customer', 'Sumit','delete'=>'address'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+Updating all regions with the new schema...
+1/1 regions updated.
+Done.
+0 row(s) in 6.0850 seconds
+
+
+#after running this Command for enite address column
+alter 'customer', 'Sumit','delete'=>'address'
+
+hbase(main):039:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ Ajay                                               column=order:amount, timestamp=1666028746595, value=25000                                                                                              
+ Imran                                              column=order:amount, timestamp=1666028603563, value=15000                                                                                              
+ Imran                                              column=order:number, timestamp=1666028524182, value=ord-02                                                                                             
+ sunny                                              column=order:amount, timestamp=1666028317015, value=10000                                                                                              
+ sunny                                              column=order:number, timestamp=1666028290611, value=ord-01                                                                                             
+3 row(s) in 0.0430 seconds
+
+
+
+
+
+#delete row 
+hbase(main):035:0> delete 'customer', 'Sumit','order:Product_name'
+0 row(s) in 0.0070 seconds
+
+hbase(main):036:0> scan 'customer'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ Ajay                                               column=order:amount, timestamp=1666028746595, value=25000                                                                                              
+ Imran                                              column=order:amount, timestamp=1666028603563, value=15000                                                                                              
+ Imran                                              column=order:number, timestamp=1666028524182, value=ord-02                                                                                             
+ sunny                                              column=order:amount, timestamp=1666028317015, value=10000                                                                                              
+ sunny                                              column=order:number, timestamp=1666028290611, value=ord-01                                                                                             
+3 row(s) in 0.0320 seconds
+
+
+
+#create table 
+
+create 'employee', 'personal', {NAME=>'address'}
+
+
+#create table with versions 
+
+create 'employee2', 'personal', {NAME=>'address', VERSIONS=>3}
+
+
+
+hbase(main):047:0> create 'employee2', 'personal', {NAME=>'address', VERSIONS=>3}
+row(s) in 1.2720 seconds
+
+=> Hbase::Table - employee2
+hbase(main):048:0> describe 'employee2'
+Table employee2 is ENABLED                                                                                                                                                                                 
+employee2                                                                                                                                                                                                  
+COLUMN FAMILIES DESCRIPTION                                                                                                                                                                                
+{NAME => 'address', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '3', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FA
+LSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                    
+{NAME => 'personal', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '1', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'F
+ALSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                   
+2 row(s) in 0.0450 seconds
+
+hbase(main):049:0> count 'employee2'
+0 row(s) in 0.0350 seconds
+
+=> 0
+
+
+#alter versions 
+
+hbase(main):050:0> alter 'employee2', NAME=>'address',VERSIONS=>5
+Updating all regions with the new schema...
+1/1 regions updated.
+Done.
+0 row(s) in 2.3240 seconds
+
+hbase(main):051:0> describe 'employee2'
+Table employee2 is ENABLED                                                                                                                                                                                 
+employee2                                                                                                                                                                                                  
+COLUMN FAMILIES DESCRIPTION                                                                                                                                                                                
+{NAME => 'address', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '5', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FA
+LSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                    
+{NAME => 'personal', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '1', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'F
+ALSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                   
+2 row(s) in 0.0580 seconds
+
+hbase(main):052:0> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#inside cloudera
+
+ssh cloudera@192.168.56.101
+cloudera@192.168.56.101's password: 
+Permission denied, please try again.
+cloudera@192.168.56.101's password: 
+Last login: Mon Oct 17 08:54:18 2022 from 192.168.56.1
+[cloudera@quickstart ~]$ hdfs dfs -ls /
+Found 10 items
+-rw-r--r--   1 cloudera supergroup         12 2022-08-27 22:35 /Desktop
+-rw-r--r--   1 cloudera supergroup         12 2022-08-27 22:36 /Downloads
+drwxr-xr-x   - cloudera supergroup          0 2022-08-30 08:54 /ajaykumarverma
+drwxrwxrwx   - hdfs     supergroup          0 2017-10-23 09:15 /benchmarks
+drwxr-xr-x   - hbase    supergroup          0 2022-10-17 08:47 /hbase
+drwxr-xr-x   - solr     solr                0 2017-10-23 09:18 /solr
+-rwxrwxrwx   1 cloudera supergroup         12 2022-08-27 22:37 /test1.txt
+drwxrwxrwt   - hdfs     supergroup          0 2022-09-21 09:54 /tmp
+drwxr-xr-x   - hdfs     supergroup          0 2017-10-23 09:17 /user
+drwxr-xr-x   - hdfs     supergroup          0 2017-10-23 09:17 /var
+[cloudera@quickstart ~]$ hdfs dfs -ls /hbase/data/default/
+Found 4 items
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 10:33 /hbase/data/default/customer
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:06 /hbase/data/default/employee
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:09 /hbase/data/default/employee1
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:09 /hbase/data/default/employee2
+[cloudera@quickstart ~]$ hdfs dfs -ls /hbase/data/default/customer
+Found 3 items
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/.tabledesc
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/.tmp
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90
+[cloudera@quickstart ~]$ hdfs dfs -ls /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90
+Found 6 items
+-rw-r--r--   1 hbase supergroup         43 2022-10-17 10:33 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/.regioninfo
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:03 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/Sumit
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/recovered.edits
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 10:55 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/sumit
+drwxr-xr-x   - hbase supergroup          0 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/sunny
+[cloudera@quickstart ~]$ hdfs dfs -ls /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order
+Found 1 items
+-rw-r--r--   1 hbase supergroup       1220 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order/a717b872c3f347f6ab6bdfc674e01fd2
+[cloudera@quickstart ~]$ hdfs dfs -cat /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90
+cat: `/hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90': Is a directory
+[cloudera@quickstart ~]$ hdfs dfs -ls /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order/a717b872c3f347f6ab6bdfc674e01fd2
+-rw-r--r--   1 hbase supergroup       1220 2022-10-17 11:17 /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order/a717b872c3f347f6ab6bdfc674e01fd2
+[cloudera@quickstart ~]$ hdfs dfs -cat /hbase/data/default/customer/d5b882dcd22e60bb45d9bfc70578db90/order/a717b872c3f347f6ab6bdfc674e01fd2
+7c25000Imranorderamount��deramount��
+                        �15000Imranordernumber��	Җord-02
+                                                               sunnyorderamount��(��50000(sunnyordernumber��B3ord-01
+                                                                                                                    #��BLMFBLK2
+7c4�                                                                                                                          ��������@)0�%1�]�IDXROOT2,(��������@I�jayorderamount��
+    �IDXROOT2%@!��FILEINF2����������@�PBUF�

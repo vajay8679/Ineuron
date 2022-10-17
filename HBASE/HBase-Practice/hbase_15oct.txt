@@ -1,0 +1,148 @@
+HBase 
+
+1. hdfs dfs -ls /
+
+2. hbase shell 
+
+#for list of Table
+3. list
+
+4. status 
+
+5. version
+1.2.0-cdh5.13.0, rUnknown, Wed Oct  4 11:16:18 PDT 2017
+
+6. table_help
+
+7. whoami
+cloudera (auth:SIMPLE)
+    groups: cloudera, default
+
+
+
+#create Table
+1. create 'customer','address','order'
+
+#check list of table
+2. list
+
+#put data in table
+3. put 'customer','ajay','address:city','Indore'
+
+put 'customer','ajay','address:state','MadhyaPradesh'
+
+put 'customer','ajay','address:street','LIG'
+
+put 'customer','ajay','order:number','ord-01'
+
+put 'customer','ajay','order:amount','15000'
+
+
+
+#get Data
+
+4. get 'customer','ajay'
+
+
+
+###############################################################################
+              for error
+###############################################################################
+
+inside cloudera 
+
+1. cd /usr/bin/
+
+2. sudo service hbase-master restart
+
+3. sudo service hbase-regionserver restart
+
+
+[cloudera@quickstart bin]$ sudo service hbase-master restart
+
+
+
+cloudera] su
+
+
+
+ajay@ajay-X542UQR:~$ ssh cloudera@192.168.56.101
+cloudera@192.168.56.101's password: 
+Last login: Sun Oct 16 07:46:26 2022 from 192.168.56.1
+[cloudera@quickstart ~]$ cd /usr/bin/
+[cloudera@quickstart bin]$ sudo service hbase-master restart
+stopping master..
+Stopped HBase master daemon:                               [  OK  ]
+starting master, logging to /var/log/hbase/hbase-hbase-master-quickstart.cloudera.out
+Started HBase master daemon (hbase-master):                [  OK  ]
+[cloudera@quickstart bin]$ sudo service hbase-regionserver restart
+Restarting Hadoop HBase regionserver daemon: Stopping Hadoop HBase regionserver daemon: no regionserver to stop because no pid file /var/run/hbase/hbase-hbase-regionserver.pid
+hbase-regionserver.
+Starting Hadoop HBase regionserver daemon: starting regionserver, logging to /var/log/hbase/hbase-hbase-regionserver-quickstart.cloudera.out
+hbase-regionserver.
+[cloudera@quickstart bin]$ 
+
+
+
+
+
+
+
+
+###########################################################
+    code for create table and put data and get data
+###########################################################
+
+ajay@ajay-X542UQR:~$ ssh cloudera@192.168.56.101
+cloudera@192.168.56.101's password: 
+Last login: Sun Oct 16 07:49:34 2022 from 192.168.56.1
+[cloudera@quickstart ~]$ hbase shell
+2022-10-16 07:51:20,584 INFO  [main] Configuration.deprecation: hadoop.native.lib is deprecated. Instead, use io.native.lib.available
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.2.0-cdh5.13.0, rUnknown, Wed Oct  4 11:16:18 PDT 2017
+
+hbase(main):001:0> status
+1 active master, 0 backup masters, 1 servers, 0 dead, 2.0000 average load
+
+hbase(main):002:0> status
+1 active master, 0 backup masters, 1 servers, 0 dead, 2.0000 average load
+
+hbase(main):003:0> create 'customer','address','order'
+0 row(s) in 2.7050 seconds
+
+=> Hbase::Table - customer
+hbase(main):004:0> list
+TABLE                                                                                                                                                                                                      
+customer                                                                                                                                                                                                   
+1 row(s) in 0.0810 seconds
+
+=> ["customer"]
+hbase(main):005:0> put 'customer','ajay','address:city','Indore'
+0 row(s) in 0.3740 seconds
+
+hbase(main):006:0> put 'customer','ajay','address:state','MadhyaPradesh'
+0 row(s) in 0.0200 seconds
+
+hbase(main):007:0> put 'customer','ajay','address:street','LIG'
+0 row(s) in 0.0220 seconds
+
+hbase(main):008:0> put 'customer','ajay','order:number','ord-01'
+0 row(s) in 0.0610 seconds
+
+hbase(main):009:0> put 'customer','ajay','order:amount','15000'
+0 row(s) in 0.0480 seconds
+
+hbase(main):010:0> get 'customer','ajay'
+COLUMN                                              CELL                                                                                                                                                   
+ address:city                                       timestamp=1665931971977, value=Indore                                                                                                                  
+ address:state                                      timestamp=1665931978663, value=MadhyaPradesh                                                                                                           
+ address:street                                     timestamp=1665931985520, value=LIG                                                                                                                     
+ order:amount                                       timestamp=1665932000271, value=15000                                                                                                                   
+ order:number                                       timestamp=1665931995419, value=ord-01                                                                                                                  
+5 row(s) in 0.0630 seconds
+
+hbase(main):011:0> 
+
+
+
