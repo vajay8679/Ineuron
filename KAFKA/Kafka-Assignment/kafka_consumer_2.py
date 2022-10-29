@@ -2,6 +2,7 @@ import argparse
 
 from confluent_kafka import Consumer
 from confluent_kafka.serialization import SerializationContext, MessageField
+from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.json_schema import JSONDeserializer
 
 
@@ -36,7 +37,7 @@ def schema_config():
     }
 
 
-class Car:   
+class Order:   
     def __init__(self,record:dict):
         for k,v in record.items():
             setattr(self,k,v)
@@ -44,8 +45,8 @@ class Car:
         self.record=record
    
     @staticmethod
-    def dict_to_car(data:dict,ctx):
-        return Car(record=data)
+    def dict_to_order(data:dict,ctx):
+        return Order(record=data)
 
     def __str__(self):
         return f"{self.record}"
@@ -53,44 +54,11 @@ class Car:
 
 def main(topic):
 
-    schema_str = """
-    {
-  "$id": "http://example.com/myURI.schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
-  "description": "Sample schema to help you get started.",
-  "properties": {
-    "Order Number": {
-      "description": "The type(v) type is used.",
-      "type": "string"
-    },
-    "Order Date": {
-      "description": "The type(v) type is used.",
-      "type": "string"
-    },
-    "Item Name": {
-      "description": "The type(v) type is used.",
-      "type": "string"
-    },
-    "Quantity": {
-      "description": "The type(v) type is used.",
-      "type": "number"
-    },
-    "Product Price": {
-      "description": "The type(v) type is used.",
-      "type": "number"
-    },
-    "Total products": {
-      "description": "The type(v) type is used.",
-      "type": "number"
-    }
-  },
-  "title": "SampleRecord",
-  "type": "object"
-}
-    """
+    schema_registry_conf = schema_config()
+    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+    schema_str = schema_registry_client.get_latest_version('restaurent-take-away-data-value').schema.schema_str
     json_deserializer = JSONDeserializer(schema_str,
-                                         from_dict=Car.dict_to_car)
+                                         from_dict=Order.dict_to_order)
 
     consumer_conf = sasl_conf()
     consumer_conf.update({
@@ -100,19 +68,22 @@ def main(topic):
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
 
-
+    count = 0
     while True:
         try:
             # SIGINT can't be handled when polling, limit timeout to 1 second.
             msg = consumer.poll(1.0)
             if msg is None:
+                print('Number of records consumed by consumer 2: ' + str(count))
                 continue
 
-            car = json_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
-
-            if car is not None:
+            order = json_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
+            
+            if order is not None:
                 print("User record {}: Restaurant's Order: {}\n"
-                      .format(msg.key(), car))
+                      .format(msg.key(), order))
+                count += 1
+
         except KeyboardInterrupt:
             break
 
