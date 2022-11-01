@@ -1,0 +1,284 @@
+1. list
+2. scan 'customer'
+
+#for checking number versions
+3. describe 'customer'
+
+#for creating Versions to the specific columns 
+4. create 'student',{NAME=>'personal',VERSIONS=>5},'school'
+5. describe 'student'
+
+{NAME => 'personal', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '5', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'F
+ALSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                   
+{NAME => 'school', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '1', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FAL
+SE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                     
+2 row(s) in 0.0480 seconds
+
+
+6. alter 'student',NAME=>'school',VERSIONS=>5
+7. describe 'student'
+
+{NAME => 'personal', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '5', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'F
+ALSE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                   
+{NAME => 'school', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'ROW', REPLICATION_SCOPE => '0', VERSIONS => '5', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL => 'FOREVER', KEEP_DELETED_CELLS => 'FAL
+SE', BLOCKSIZE => '65536', IN_MEMORY => 'false', BLOCKCACHE => 'true'}                                                                                                                                     
+2 row(s) in 0.0470 seconds
+
+
+
+hbase(main):008:0> put 'student','1','personal:name','ajay'
+0 row(s) in 0.2020 seconds
+
+hbase(main):009:0> put 'student','1','personal:name','ajay kumar'
+0 row(s) in 0.0090 seconds
+
+hbase(main):010:0> put 'student','1','school:name','XYZ'
+0 row(s) in 0.0140 seconds
+
+hbase(main):011:0> put 'student','1','school:name','XYZ_ABC'
+0 row(s) in 0.0090 seconds
+
+
+hbase(main):013:0> scan 'student'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ 1                                                  column=personal:name, timestamp=1667149173893, value=ajay kumar                                                                                        
+ 1                                                  column=school:name, timestamp=1667149227556, value=XYZ_ABC                                                                                             
+1 row(s) in 0.0320 seconds
+
+#to see entire data here
+hbase(main):014:0> scan 'student', {VERSIONS=>10}
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ 1                                                  column=personal:name, timestamp=1667149173893, value=ajay kumar                                                                                        
+ 1                                                  column=personal:name, timestamp=1667149159664, value=ajay                                                                                              
+ 1                                                  column=school:name, timestamp=1667149227556, value=XYZ_ABC                                                                                             
+ 1                                                  column=school:name, timestamp=1667149205520, value=XYZ   
+
+
+#to see entire data here
+scan 'student', {VERSIONS=>10}
+
+
+
+
+##### Hbase table
+
+Create 'test_flight_delays','dims','measures'
+
+##### Hive table #####
+  
+
+
+##################################################################################################
+
+#create serde table
+CREATE EXTERNAL TABLE IF not exists hbase_flight_delays
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES
+("hbase.columns.mapping"=":key,dims:carrier,measures:distance")
+TBLPROPERTIES("hbase.table.name"="test_flight_delays")
+;
+
+
+describe formatted hbase_flight_delays;
+
+
+#create hive stage table
+CREATE EXTERNAL TABLE IF not exists hbase_stg_flight_delays
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+;
+
+
+#create table in cloudera
+
+[cloudera@quickstart ~]$ vi testdata_hbase.csv
+
+
+vi testdata_hbase.csv
+
+1,blr,25000
+2,hyd,30000
+3,pune,15000
+
+
+#load data in table hbase_stg_flight_delays
+
+load data local inpath 'file:///home/cloudera/testdata_hbase.csv' into table hbase_stg_flight_delays;
+
+select * from hbase_stg_flight_delays;
+
+
+#insert data into hbase_flight_delays - (serde table) from hbase_stg_flight_delays
+insert into table hbase_flight_delays select * from hbase_stg_flight_delays;
+
+#load data inpath '/user/hive/warehouse/hbase_stg_flight_delays/' into table hbase_stg_flight_delays;
+
+
+
+
+
+
+#################################################################################################
+
+
+vi testdata_hbase.csv
+
+1,blr,25000
+2,hyd,30000
+3,pune,15000
+
+
+
+#create table
+CREATE EXTERNAL TABLE IF not exists hbase_flight_delays1
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES
+("hbase.columns.mapping"=":key,dims:carrier,measures:distance")
+TBLPROPERTIES("hbase.table.name"="test_flight_delays")
+;
+
+#load data in table after loading data in stage table
+insert into table hbase_flight_delays1 select * from hbase_stg_flight_delays1;
+
+
+
+
+#create stage table
+CREATE EXTERNAL TABLE IF not exists hbase_stg_flight_delays1
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+;
+
+#load data in stag table
+load data local inpath 'file:///home/cloudera/testdata_hbase1.csv' into table hbase_stg_flight_delays1;
+
+
+
+#####################################################################################################
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+HBASE TABLE
+
+create 'test_flight_delays1','dims','measures'
+
+#check data
+scan 'test_flight_delays1'
+
+#command prompt 
+hbase(main):002:0> create 'test_flight_delays1','dims','measures'
+0 row(s) in 5.6290 seconds
+
+=> Hbase::Table - test_flight_delays1
+hbase(main):003:0> scan 'test_flight_delays1'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+0 row(s) in 0.1580 seconds
+
+hbase(main):004:0> 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#create table in cloudera
+vi testdata_hbase_practice.csv
+1,blr,25000
+2,hyd,30000
+3,pune,15000
+
+
+[cloudera@quickstart ~]$ vi testdata_hbase_practice.csv
+[cloudera@quickstart ~]$ cat testdata_hbase_practice.csv
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#create serde table
+CREATE EXTERNAL TABLE IF not exists hbase_flight_delays_practice
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES
+("hbase.columns.mapping"=":key,dims:carrier,measures:distance")
+TBLPROPERTIES("hbase.table.name"="test_flight_delays1")
+;
+
+
+
+#create stage table
+CREATE EXTERNAL TABLE IF not exists hbase_stg_flight_delays_practice
+(key string,
+carrier string,
+distance int
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+;
+
+#load data in stage table
+load data local inpath 'file:///home/cloudera/testdata_hbase_practice.csv' into table hbase_stg_flight_delays_practice;
+
+select * from hbase_stg_flight_delays_practice;
+
+
+#load data in serde table (hbase_flight_delays_practice) from stage table (hbase_stg_flight_delays_practice) 
+insert into table hbase_flight_delays_practice select * from hbase_stg_flight_delays_practice;
+
+select * from hbase_flight_delays_practice;
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#after loading check in hbase shell check data into table
+scan 'test_flight_delays1'
+
+hbase(main):004:0> scan 'test_flight_delays1'
+ROW                                                 COLUMN+CELL                                                                                                                                            
+ 1                                                  column=dims:carrier, timestamp=1667328698096, value=blr                                                                                                
+ 1                                                  column=measures:distance, timestamp=1667328698096, value=25000                                                                                         
+ 2                                                  column=dims:carrier, timestamp=1667328698096, value=hyd                                                                                                
+ 2                                                  column=measures:distance, timestamp=1667328698096, value=30000                                                                                         
+ 3                                                  column=dims:carrier, timestamp=1667328698096, value=pune                                                                                               
+ 3                                                  column=measures:distance, timestamp=1667328698096, value=15000                                                                                         
+3 row(s) in 0.1840 seconds
+
+hbase(main):005:0> put 'test_flight_delays1','5','dims:carrier','ajay kumar verma'
+
+
+#insert data into test_flight_delays1 in hbase table inside hbase
+put 'test_flight_delays1','5','dims:carrier','ajay kumar verma'
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+#check data in hive table that we have put in hbase table 
+hive> select * from hbase_flight_delays_practice;
+OK
+1	blr	25000
+2	hyd	30000
+3	pune	15000
+5	ajay kumar verma	NULL
+Time taken: 0.255 seconds, Fetched: 4 row(s)
+hive> 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

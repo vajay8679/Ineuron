@@ -1,0 +1,58 @@
+-- Active: 1667110509496@@127.0.0.1@3306
+--Create Databaes Command
+create  DATABASE BigDataBootCamp;
+
+Create DATABASE Test;
+
+
+--Show Databaes Command
+show databases;
+
+--Drop Databaes Command
+
+drop DATABASE Test;
+
+--Go inside particular Databaes 
+use BigDataBootCamp;
+
+-- Command to create a TABLE
+create table if not exists employee
+(  
+    id int,
+    name VARCHAR(50)
+);
+
+--show tables
+show tables;
+
+
+--command to list down all TABLES
+show create table employee;
+
+--- Command to create a TABLE
+Create table if not exists employees
+(
+    id int,
+    name VARCHAR(50),
+    salary DOUBLE,
+    hiring_date DATE
+);
+
+
+-- Syntax 1 To insert data into a TABLE
+insert into employees values(1,'Shashank',1000,'2021-09-15');
+
+
+--- This statement will fail
+insert into employees values(2,'Rahul','2021-09-15');
+
+--- Syntax 2 To insert data into a TABLE
+insert into employees(salary,name,id) values(2000,'Rahul',2);
+
+
+--- Insert multiple rows using single insert statement
+insert into employees values(3,'Amit',3000,'2021-09-15'),(4,'Niting',3500,'2021-09-16'),(5,'Kajal',4000,'2021-09-20');
+
+
+--- Use select command to query the data
+Select * from employees;
