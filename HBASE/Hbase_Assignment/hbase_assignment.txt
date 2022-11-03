@@ -1,0 +1,96 @@
+
+###Assignment
+sales .csv
+
+#Already create a schema in Hive 
+
+Create a schema in hive(storage handler)
+
+
+Create a column family in hbase
+
+—----------------------------------------------------------------------------
+
+#CSV file Load to hdfs #Create 
+
+hdfs direcotry hdfs dfs -mkdir /files
+hdfs dfs -mkdir /files/sales_data 
+
+#Transfer from local to hdfs
+hdfs dfs -put sales_order_data.csv /files/sales_data/
+
+ #HBASE Part 
+
+#Create hbase table create
+ 'sales_order_data_hbase','orderDetail','orderTime','productDetail','customerDetail'
+
+ #HIVE Part 
+
+#Create staging table from csv 
+create external table if not exists sales_order_data_staging_hive (ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH decimal(10,5),ORDERLINENUMBER int, SALES decimal(10,5),STATUS string,QTR_ID int, MONTH_ID int, YEAR_ID int,PRODUCTLINE string, MSRP int,PRODUCTCODE string,PHONE string,CITY string,STATE string,POSTALCODE string,COUNTRY string,TERRITORY string,CONTACTLASTNAME string,CONTACTFIRSTNAME string,DEALSIZE string)row format delimitedfields terminated by ','location '/files/sales_data'TBLPROPERTIES ("skip.header.line.count"="1"); 
+
+#Create main table that is linked with hbase 
+create external table if not exists sales_order_data_hive (KEY struct<ORDERNUMBER:int,PRODUCTCODE:string>,ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH decimal(10,5),ORDERLINENUMBER int, SALES decimal(10,5),STATUS string,QTR_ID int, MONTH_ID int, YEAR_ID int,PRODUCTLINE string, MSRP int,PRODUCTCODE string,PHONE string,CITY string,STATE string,POSTALCODE string,COUNTRY string,TERRITORY string,CONTACTLASTNAME string,CONTACTFIRSTNAME string,DEALSIZE string)STORED BY "org.apache.hadoop.hive.hbase.HBaseStorageHandler" WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,orderDetail:ORDERNUMBER,orderDetail:quantity,orderDetail:priceEach,orderDetail:orderLineNumber,orderDetail:sales,orderDetail:status,orderTime:quarter,orderTime:month,orderTime:year,productDetail:productLine,productDetail:msrp,productDetail:productCode,customerDetail:phone,customerDetail:city,customerDetail:state,customerDetail:postalcode,customerDetail:country,customerDetail:territory,customerDetail:lastName,customerDetail:firstName,orderDetail:dealSize")TBLPROPERTIES ("hbase.table.name" = "sales_order_data_hbase"); #Insert data from staging to main table insert into sales_order_data_hive select named_struct('ORDERNUMBER',ORDERNUMBER,'PRODUCTCODE',PRODUCTCODE),ORDERNUMBER,QUANTITYORDERED, PRICEEACH,ORDERLINENUMBER, SALES,STATUS,QTR_ID, MONTH_ID, YEAR_ID,PRODUCTLINE, MSRP,PRODUCTCODE,PHONE,CITY ,STATE ,POSTALCODE ,COUNTRY ,TERRITORY ,CONTACTLASTNAME ,CONTACTFIRSTNAME ,DEALSIZE from sales_order_data_staging_hive; 
+
+
+##################################################################################
+                    Assignment Solution
+##################################################################################
+
+#in hdfs create table with name sales.csv
+
+#command 
+vi sales_order_data1.csv
+
+sales_order_data1.csv
+
+ORDERNUMBER,QUANTITYORDERED,PRICEEACH,ORDERLINENUMBER,SALES,STATUS,QTR_ID,MONTH_ID,YEAR_ID,PRODUCTLINE,MSRP,PRODUCTCODE,PHONE,CITY,STATE,POSTALCODE,COUNTRY,TERRITORY,CONTACTLASTNAME,CONTACTFIRSTNAME,DEALSIZE
+1,15,145.50,1,120.30,completed,1,11,2022,New,175,NEW150,1234567890,indore,MP,452001,India,Middle India,Kumar,Ajay,M
+2,20,155.50,2,150.50,pending,2,10,2021,Latest,180,NEW151,1234567891,bhopal,UP,452011,India,East India,Kumar,Amit,S
+3,25,165.50,3,140.50,shipped,3,12,2020,Trending,190,NEW152,1234567892,delhi,HP,462001,India,North India,Kumar,Sumit,L
+4,45,175.50,4,160.10,completed,4,09,2022,Fashion,200,NEW153,1234567893,nagpur,JK,462091,India,South India,Kumar,Rahul,XL
+
+
+#to check directories in hdfs location
+hdfs dfs -ls /
+
+#create hdfs direcotry 
+hdfs dfs -mkdir /files
+
+#create folder in files folder
+hdfs dfs -mkdir /files/sales_data 
+
+#transfer from local to hdfs
+hdfs dfs -put sales_order_data1.csv /files/sales_data/
+
+#to check sales.csv file is in sales_data folder
+hdfs dfs -ls /files/sales_data/
+
+
+#Create hbase table inside hbase shell
+create 'sales_order_data_hbase1','orderDetail','orderTime','productDetail','customerDetail'
+
+#check data in hbase table in hbase shell
+scan 'sales_order_data_hbase1'
+
+
+#Create main table that is linked with hbase inside hive 
+create external table if not exists sales_order_data_hive1 (KEY struct<ORDERNUMBER:int,PRODUCTCODE:string>,ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH decimal(10,5),ORDERLINENUMBER int, SALES decimal(10,5),STATUS string,QTR_ID int, MONTH_ID int, YEAR_ID int,PRODUCTLINE string, MSRP int,PRODUCTCODE string,PHONE string,CITY string,STATE string,POSTALCODE string,COUNTRY string,TERRITORY string,CONTACTLASTNAME string,CONTACTFIRSTNAME string,DEALSIZE string)STORED BY "org.apache.hadoop.hive.hbase.HBaseStorageHandler" WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,orderDetail:ORDERNUMBER,orderDetail:quantity,orderDetail:priceEach,orderDetail:orderLineNumber,orderDetail:sales,orderDetail:status,orderTime:quarter,orderTime:month,orderTime:year,productDetail:productLine,productDetail:msrp,productDetail:productCode,customerDetail:phone,customerDetail:city,customerDetail:state,customerDetail:postalcode,customerDetail:country,customerDetail:territory,customerDetail:lastName,customerDetail:firstName,orderDetail:dealSize") TBLPROPERTIES ("hbase.table.name" = "sales_order_data_hbase1"); 
+
+#Insert data from staging to main table
+ insert into sales_order_data_hive1 select named_struct('ORDERNUMBER',ORDERNUMBER,'PRODUCTCODE',PRODUCTCODE),ORDERNUMBER,QUANTITYORDERED, PRICEEACH,ORDERLINENUMBER, SALES,STATUS,QTR_ID, MONTH_ID, YEAR_ID,PRODUCTLINE, MSRP,PRODUCTCODE,PHONE,CITY ,STATE ,POSTALCODE ,COUNTRY ,TERRITORY ,CONTACTLASTNAME ,CONTACTFIRSTNAME ,DEALSIZE from sales_order_data_staging_hive1;
+
+
+
+#Create staging table from csv 
+create external table if not exists sales_order_data_staging_hive1 (ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH decimal(10,5),ORDERLINENUMBER int, SALES decimal(10,5),STATUS string,QTR_ID int, MONTH_ID int, YEAR_ID int,PRODUCTLINE string, MSRP int,PRODUCTCODE string,PHONE string,CITY string,STATE string,POSTALCODE string,COUNTRY string,TERRITORY string,CONTACTLASTNAME string,CONTACTFIRSTNAME string,DEALSIZE string) row format delimited fields terminated by ','location '/files/sales_data' TBLPROPERTIES ("skip.header.line.count"="1");
+
+
+#load data in staging table
+load data local inpath 'file:///home/cloudera/sales_order_data1.csv' into table sales_order_data_staging_hive1;
+
+#check data in staging table in hive
+select * from sales_order_data_staging_hive1;
+
+#check data in main table in hive
+select * from sales_order_data_hive1;
