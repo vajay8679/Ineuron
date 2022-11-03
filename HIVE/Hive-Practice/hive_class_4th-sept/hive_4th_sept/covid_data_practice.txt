@@ -1,0 +1,34 @@
+create table country_wise_coivd_data_1
+    (
+     country_name string,
+     confirmed int,
+     death int,
+     recovered int,
+     active int,
+     new_cases int,
+     new_death int,
+     new_recovered int,
+     death_per_100_cases float,
+     recovered_per_100_cases float,
+     death_per_100_recovered float,
+     confirmed_last_week int,
+     one_week_changes int,
+     one_weekk_percentage_increased float,
+     who_region string
+     )
+     ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde';
+
+load data local inpath 'file:///home/cloudera/data/country_wise_latest.csv' into table country_wise_coivd_data_1;
+
+set hive.cli.print.header = true;
+
+select * from country_wise_coivd_data;
+select * from country_wise_coivd_data_1 limit 10; 
+select * from country_wise_coivd_data_1 where confirmed > 100000;
+select * from country_wise_coivd_data_1 where country_name like "%a";
+select sum(confirmed) as Confirmed_cases from country_wise_coivd_data_1;
+select country_name from country_wise_coivd_data_1;
+select distinct(who_region) from country_wise_coivd_data_1;
+select count(confirmed) from country_wise_coivd_data_1;
+
+select count(confirmed) as total_rows from country_wise_coivd_data_1;
