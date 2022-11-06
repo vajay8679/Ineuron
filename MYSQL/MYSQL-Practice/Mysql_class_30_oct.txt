@@ -1,58 +1,114 @@
--- Active: 1667110509496@@127.0.0.1@3306
---Create Databaes Command
-create  DATABASE BigDataBootCamp;
+--create database command
 
-Create DATABASE Test;
+create DATABASE BigDataBootCamp;
 
+create DATABASE test;
 
---Show Databaes Command
-show databases;
+--get list of existing DATABASE
+show DATABASES;
 
---Drop Databaes Command
+--dropping DATABASE
+drop DATABASE test;
 
-drop DATABASE Test;
-
---Go inside particular Databaes 
+--go inside DATABASE
 use BigDataBootCamp;
 
--- Command to create a TABLE
+--command to create TABLE
 create table if not exists employee
-(  
+(
     id int,
     name VARCHAR(50)
 );
 
---show tables
+
+--Command to list down all the TABLES
 show tables;
 
-
---command to list down all TABLES
+--Command to list down all the TABLES
 show create table employee;
 
---- Command to create a TABLE
-Create table if not exists employees
+--command to DELETE TABLE
+drop table employee;
+
+--commoand to create table
+create table if not exists employee
 (
     id int,
     name VARCHAR(50),
-    salary DOUBLE,
-    hiring_date DATE
+    salary DOUBLE, 
+    hiring_data DATE
+);
+
+--insert data into table
+insert into employee values(1,'AJAY',10000,'2021-09-15');
+
+--This statement will fail
+insert into employee values(1,'AJAY','2021-09-15');
+
+--syntax 2 to insert data into a table
+insert into employee(salary,name,id) values(10000,'Rahul',2);
+
+--insert multiple rows using single insert statement
+insert into employee values(3,'Amit',25000,'2021-09-15'),(4,'Sumit',45600,'2023-09-25'),(5,'Ravi',4000,'2021-09-10');
+
+
+--use select command to query the data
+SELECT * from employee;
+
+--Example for integrity constraints
+create table if not exists employee_with_constraints
+(
+    id int NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    salary DOUBLE, 
+    hiring_data DATE DEFAULT '2021-01-01',
+    UNIQUE (id),
+    CHECK (salary > 1000)
+);
+
+--Example 1 for Integrity Constraints failure
+-- exception will be thrown -> Column 'id' cannot be null
+insert into employee_with_constraints values(null,'Amit',3000,'2021-02-03');
+
+--Example 2 for Integrity Constraints failure
+-- exception will be thrown -> Column 'name' cannot be null
+insert into employee_with_constraints values(3,null,3000,'2021-02-03');
+
+--Example 3 for Integrity Constraints failure
+-- exception will be thrown -> Check constraint 'employee_with_constraints_chk_1' is violated.
+insert into employee_with_constraints values(1,'Amit',500,'2021-02-03');
+
+--insert correct data
+insert into employee_with_constraints values(1,'Amit',5000,'2021-02-03');
+
+
+--Example 4 for Integrity Constraints failure
+-- exception will be thrown -> Duplicate entry '1' for key 'employee_with_constraints.id'
+insert into employee_with_constraints values(1,'Amit',1300,'2022-02-03');
+
+
+--Example 5 for Integrity Constraints failure
+insert into employee_with_constraints values(2,'Amit',1300,null);
+
+
+insert into employee_with_constraints(id,name,salary) values(3,'Sumit',1300);
+
+select * FROM employee_with_constraints;
+
+
+--Add alias name for constraints
+create table if not exists employee_with_constraints_tmp
+(
+    id int NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    salary DOUBLE, 
+    hiring_data DATE DEFAULT '2021-01-01',
+   CONSTRAINT  unique_id UNIQUE (id),
+   CONSTRAINT salary_check CHECK (salary > 1000)
 );
 
 
--- Syntax 1 To insert data into a TABLE
-insert into employees values(1,'Shashank',1000,'2021-09-15');
 
-
---- This statement will fail
-insert into employees values(2,'Rahul','2021-09-15');
-
---- Syntax 2 To insert data into a TABLE
-insert into employees(salary,name,id) values(2000,'Rahul',2);
-
-
---- Insert multiple rows using single insert statement
-insert into employees values(3,'Amit',3000,'2021-09-15'),(4,'Niting',3500,'2021-09-16'),(5,'Kajal',4000,'2021-09-20');
-
-
---- Use select command to query the data
-Select * from employees;
+--Example 3 for Integrity Constraints failure
+-- exception will be thrown -> Check constraint 'salary_check' is violated.
+insert into employee_with_constraints_tmp values(1,'Amit',500,'2021-02-03');
