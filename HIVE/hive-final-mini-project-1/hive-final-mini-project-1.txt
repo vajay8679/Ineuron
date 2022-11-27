@@ -46,43 +46,45 @@ use hive_final_min_project_1;
 
 #create table AgentLogingReport
 
- create table AgentLogingReport
-    > (
-    > sr_no int,
-    > agent_name string,
-    > date string,
-    > login_time string,
-    > logout_time string,
-    > duration string
-    > )
-    > row format delimited
-    > fields terminated by ',';
+Create table AgentLogingReport
+(
+sr_no int,
+Agent string,
+Date date,
+Login string,
+Logout string,
+Duration string
+)
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
 
 
 #create table AgentPerformance
 
-create table AgentPerformance
-    > (
-    > sl_no int,
-    > date string,
-    > agent_name string,
-    > total_chats int,
-    > avg_response_time string,
-    > avg_resolution_time string,
-    > avg_rating float,
-    > total_feedback int
-    > )
-    > row format delimited
-    > fields terminated by ',';
+Create table AgentPerformance
+(
+sr_no int,
+Date date,
+Agent_Name string,
+Total_charts int,
+Avg_Response_Time string,
+Avg_Resolution_Time string,
+Avg_Rating float,
+Total_Feedback int
+)
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
 
 
 2. Dump the data inside the hdfs in the given schema location.
 
 #load data into AgentLogingReport table
-load data local inpath 'file:///tmp/hive_class/AgentLogingReport.csv' into table AgentLogingReport;
+load data local inpath '/home/cloudera/AgentLogingReport.csv' into table AgentLogingReport;
 
 #load data into AgentPerformance table
-load data local inpath 'file:///tmp/hive_class/AgentPerformance.csv' into table AgentPerformance;
+load data local inpath '/home/cloudera/AgentPerformance.csv' into table AgentPerformance;
 
 
 3. List of all agents' names. 
