@@ -1340,3 +1340,641 @@ inner join Students s2 on f.friend_id = s2.id
 inner join Packages p2 on s2.id = p2.id
 where p1.salary < p2.salary
 order by p2.salary; 
+
+
+--Q151.
+--Hackers table:
+create table if not exists Hackers
+(
+    hacker_id int,
+    name VARCHAR(50)
+);
+
+insert into Hackers VALUES (5580,'Rose'),(8439,'Angela'),(27205,'Frank'),(52243,'Patrick'),(52348,'Lisa'),(57645,'Kimberly'),(77726,'Bonnie'),(83082,'Michael'),(86870,'Todd'),(90411,'Joe');
+
+select * from Hackers;
+
+
+
+--Difficulty: table:
+create table if not exists Difficulty
+(
+    difficulty_level int,
+    score int
+);
+
+
+insert into Difficulty VALUES (1,20),(2,30),(3,40),(4,60),(5,80),(6,100),(7,120);
+
+select * from Difficulty;
+
+
+
+--Challenges table:
+create table if not exists Challenges
+(
+    challenge_id int,
+    hacker_id int,
+    difficulty_level int
+);
+
+
+insert into Challenges VALUES (4810,77726,4),(21089,27205,1),(36566,5580,7),(66730,52243,6),(71055,52243,2);
+
+select * from Challenges;
+
+
+
+--Submissions table:
+create table if not exists Submissions
+(
+    submission_id int,
+    hacker_id int,
+    challenge_id int,
+    score int
+);
+
+insert into Submissions VALUES (68628,77726,36566,30),(65300,77726,21089,10),(40326,52243,36566,77),(8941,27205,4810,4),(83554,77726,66730,30),(97397,90411,4810,40),(84162,83082,4810,40),(97431,90411,71055,30);
+
+select * from Submissions;
+
+
+--Write a query to print the respective hacker_id and name of hackers who achieved full scores for more than one challenge. Order your output in descending order by the total number of challenges in which the hacker earned a full score. If more than one hacker received full scores in the same number of challenges, then sort them by ascending hacker_id.
+
+SELECT S.hacker_id, name
+FROM Submissions AS S
+JOIN Hackers AS H ON S.hacker_id = H.hacker_id
+JOIN Challenges AS C ON S.challenge_id = C.challenge_id
+JOIN Difficulty AS D ON C.difficulty_level = D.difficulty_level
+WHERE S.score = D.score
+GROUP BY name, S.hacker_id
+HAVING count(S.challenge_id) > 1
+ORDER BY count(S.challenge_id) DESC, S.hacker_id;
+
+
+
+--Q152.
+--table Projects
+create table if not exists Projects
+(
+    Task_ID int,
+    Start_Date date,
+    End_Date date
+);
+
+insert into Projects VALUES (1,'2015-10-01','2015-10-02'),(2,'2015-10-02','2015-10-03'),(3,'2015-10-03','2015-10-04'),(4,'2015-10-13','2015-10-14'),(5,'2015-10-14','2015-10-15'),(6,'2015-10-28','2015-10-29'),(7,'2015-10-30','2015-10-31');
+
+
+
+--Write a query to output the start and end dates of projects listed by the number of days it took to complete the project in ascending order. If there is more than one project that have the same number of completion days, then order by the start date of the project.
+Select Start_Date, MIN(End_Date)
+From
+    (Select b.Start_Date
+    From Projects as a
+    RIGHT Join Projects as b
+    ON b.Start_Date = a.End_Date
+    WHERE a.Start_Date IS NULL
+    ) sd,
+    (Select a.End_Date
+    From Projects as a
+    Left Join Projects as b
+    ON b.Start_Date = a.End_Date
+    WHERE b.End_Date IS NULL
+    ) ed
+Where Start_Date < End_Date
+GROUP BY Start_Date
+ORDER BY datediff(MIN(End_Date), Start_Date), Start_Date;
+
+
+--Q153.
+--transactions Table:
+create table if not exists transactions
+(
+    user_id int,
+    amount float,
+    transaction_date TIMESTAMP
+);
+
+insert into transactions VALUES (1,9.99,'08/01/2022 10:00:00'),(1,55,'08/17/2022 10:00:00'),(2,149.5,'08/05/2022 10:00:00'),(2,4.89,'08/06/2022 10:00:00'),(2,34,'08/07/2022 10:00:00');
+
+select * from transactions;
+
+--In an effort to identify high-value customers, Amazon asked for your help to obtain data about users who go on shopping sprees. A shopping spree occurs when a user makes purchases on 3 or more consecutive days. List the user IDs who have gone on at least 1 shopping spree in ascending order.
+
+
+
+--Q154 .
+--payments Table:
+--You are given a table of PayPal payments showing the payer, the recipient, and the amount paid. A two-way unique relationship is established when two people send money back and forth. Write a query to find the number of two-way unique relationships in this data.Assumption:
+--A payer can send money to the same recipient multiple times.
+create table if not exists payments
+(
+    payer_id int,
+    recipient_id int,
+    amount int
+);
+
+insert into payments VALUES (101,201,30), (201,101,10), (101,301,20), (301,101,80), (201,301,70);
+
+select * from payments;
+
+WITH T1 AS 
+  (SELECT
+   payer_id,
+   recipient_id
+  FROM payments
+  INTERSECT
+  SELECT
+   recipient_id,
+   payer_id
+  FROM payments)
+
+SELECT
+ COUNT(payer_id)/2 AS UNIQUE_RELATIONSHIPS
+FROM
+ T1;
+
+
+--Q155 .
+--user_logins Table:
+
+create table if not exists user_logins
+(
+    user_id int,
+    login_date DATETIME
+);
+
+insert into user_logins VALUES (725,'03/03/2022 12:00:00'), (245,'03/28/2022 12:00:00'), (112,'03/05/2022 12:00:00'), (245,'04/29/2022 12:00:00'), (112,'04/05/2022 12:00:00');
+
+select * from user_logins;
+
+--Assume you are given the table below containing information on Facebook user logins. Write a query to obtain the number of reactivated users (which are dormant users who did not log in the previous month, then logged in during the current month).Output the current month (in numerical) and number of reactivated users.
+
+
+
+--Q156.
+--user_transactions Table:
+create table if not exists user_transactions
+(
+    transaction_id int,
+    product_id int,
+    spend decimal (5,2),
+    transaction_date DATETIME
+);
+
+insert into user_transactions VALUES (759274,111,49.50,'02/03/2022 00:00:00'),(850371,111,51.00,'03/15/2022 00:00:00'),(615348,145,36.30,'03/22/2022 00:00:00'),(137424,156,151.00,'04/04/2022 00:00:00'),(248475,156,87.00,'04/16/2022 00:00:00');
+
+select * from user_transactions;
+
+--Write a query to obtain the list of customers whose first transaction was valued at $50 or more. Output the number of users.
+
+
+
+--Q157.
+--measurements Table:
+create table if not exists measurements
+(
+    measurement_id int,
+    measurement_value DECIMAL,
+    measurement_time datetime
+);
+
+insert into measurements VALUES (131233,1109.51,'07/10/2022 09:00:00'), (135211,1662.74,'07/10/2022 11:00:00'), (523542,1246.24,'07/10/2022 13:15:00'), (143562,1124.50,'07/11/2022 15:00:00'), (346462,1234.14,'07/11/2022 16:45:00');
+
+select * from measurements;
+
+
+--Write a query to obtain the sum of the odd-numbered and even-numbered measurements on a particular day, in two different columns.
+WITH ranked_measurements AS (
+  SELECT 
+    CAST(measurement_time AS DATE) AS measurement_day, 
+    measurement_value, 
+    ROW_NUMBER() OVER (
+      PARTITION BY CAST(measurement_time AS DATE) 
+      ORDER BY measurement_time) AS measurement_num 
+  FROM measurements
+) 
+
+SELECT 
+  measurement_day, 
+  SUM(
+    CASE WHEN measurement_num % 2 != 0 THEN measurement_value 
+      ELSE 0 END) AS odd_sum, 
+  SUM(
+  CASE WHEN measurement_num % 2 = 0 THEN measurement_value 
+    ELSE 0 END) AS even_sum 
+FROM ranked_measurements
+GROUP BY measurement_day;
+
+
+
+
+--Q158.
+--transactions Table:
+--transactions Table:
+create table if not exists transactions
+(
+    user_id int,
+    amount float,
+    transaction_date TIMESTAMP
+);
+
+insert into transactions VALUES (1,9.99,'08/01/2022 10:00:00'),(1,55,'08/17/2022 10:00:00'),(2,149.5,'08/05/2022 10:00:00'),(2,4.89,'08/06/2022 10:00:00'),(2,34,'08/07/2022 10:00:00');
+
+select * from transactions;
+
+--In an effort to identify high-value customers, Amazon asked for your help to obtain data about users who go on shopping sprees. A shopping spree occurs when a user makes purchases on 3 or more consecutive days. List the user IDs who have gone on at least 1 shopping spree in ascending order.
+
+
+--Q159.
+--rental_amenities Table:
+create table if not exists rental_amenities
+(
+    rental_id int,
+    amenity VARCHAR(50)
+);
+
+insert into rental_amenities VALUES (123,'pool'), (123,'kitchen'), (234,'hot tub'), (234,'fireplace'), (345,'kitchen'), (345,'pool'), (456,'pool');
+
+select * from rental_amenities;
+
+--write a query to find the unique combination of two Airbnb rentals with the same exact amenities offered.
+
+
+
+--Q160.
+--ad_campaigns Table:
+create table if not exists ad_campaigns
+(
+    campaign_id int,
+    spend int,
+    revenue FLOAT,
+    advertiser_id int
+);
+
+insert into ad_campaigns VALUES (1,500,7500,3), (2,1000,900,1),(3,3000,12000,2),(4,500,2000,4),(5,100,400,4);
+
+select * from ad_campaigns;
+
+--Write a query to calculate the return on ad spend (ROAS) for each advertiser across all ad campaigns. Round your answer to 2 decimal places, and order your output by the advertiser_id.
+select advertiser_id, round(cast(sum(revenue)/sum(spend) as numeric),2) as ROAS
+from ad_campaigns 
+group by advertiser_id
+order by advertiser_id;
+
+
+--Q161.
+--employee_pay Table:
+create table if not exists employee_pay
+(
+    employee_id int,
+    salary int,
+    title VARCHAR(50)
+);
+
+insert into employee_pay VALUES (101,80000,'Data Analyst'), (102,90000,'Data Analyst'),(103,100000,'Data Analyst'),(104,30000,'Data Analyst'),(105,120000,'Data Scientist'),(106,100000,'Data Scientist'),(107,80000,'Data Scientist'),(108,310000,'Data Scientist');
+
+select * from employee_pay;
+
+
+--Write a query that shows the following data for each compensation outlier: employee ID, salary, and whether they are potentially overpaid or potentially underpaid (refer to Example Output below).
+
+
+
+
+--Q162.
+--payments table
+create table if not exists payments
+(
+    payer_id int,
+    recipient_id int,
+    amount int
+);
+
+insert into payments VALUES (101,201,30), (201,101,10), (101,301,20), (301,101,80), (201,301,70);
+
+select * from payments;
+
+WITH T1 AS 
+  (SELECT
+   payer_id,
+   recipient_id
+  FROM payments
+  INTERSECT
+  SELECT
+   recipient_id,
+   payer_id
+  FROM payments)
+
+SELECT
+ COUNT(payer_id)/2 AS UNIQUE_RELATIONSHIPS
+FROM
+ T1;
+
+
+--Q163.
+--purchases Table:
+
+create table if not exists purchases
+(
+    user_id int,
+    product_id int,
+    quantity int,
+    purchase_date DATETIME
+);
+
+insert into purchases VALUES (536,3223,6,'01/11/2022 12:33:44'),(827,3585,35,'02/20/2022 14:05:26'),(536,3223,5,'03/02/2022 09:33:28'),(536,1435,10,'03/02/2022 08:40:00'),(827,2452,45,'04/09/2022 00:00:00');
+
+select * from purchases;
+
+--Write a query to obtain the number of users who purchased the same product on two or more different days. Output the number of unique users.
+
+
+
+
+--Q164.
+--search_category Table:
+create table if not exists search_category
+(
+    country VARCHAR(50),
+    search_cat VARCHAR(50),
+    num_search int,
+    invalid_result_pct DECIMAL
+);
+
+insert into search_category VALUES ('UK','home',null,null),('UK','tax',98000,1.00),('UK','travel',100000,3.25);
+
+select * from search_category;
+--Write a query to obtain the percentage of invalid searches.Output the country in ascending order, total searches and overall percentage of invalid searches rounded to 2 decimal places.
+
+
+
+--Q165.
+--transactions Table:
+create table if not exists transactions
+(
+    transaction_id VARCHAR(50),
+    type enum('deposit','withdrawal'),
+    amount DECIMAL,
+    transaction_date DATETIME
+);
+
+insert into transactions VALUES (19153,'deposit',65.90,'07/10/2022 10:00:00'),(53151,'deposit',178.55,'07/08/2022 10:00:00'),(29776,'withdrawal',25.90,'07/08/2022 10:00:00'),(16461,'withdrawal',45.99,'07/08/2022 10:00:00'),(77134,'deposit',32.60,'07/10/2022 10:00:00');
+
+select * from transactions;
+
+--Write a query to print the cumulative balance of the merchant account at the end of each day, with the total balance reset back to zero at the end of the month. Output the transaction date and cumulative balance.
+
+
+
+
+--Q166.
+--product_spend Table:
+
+create table if not exists product_spend
+(
+    category VARCHAR(50),
+    product VARCHAR(50),
+    user_id int,
+    spend int,
+    transaction_date TIMESTAMP
+);
+
+insert into product_spend VALUES ('appliance','refrigerator',165,246.00,'12/26/2021 12:00:00'),('appliance','refrigerator',123,299.99,'03/02/2022 12:00:00'),('appliance','washing machine',123,219.80,'03/02/2022 12:00:00'),('electronics','vacuum',178,152.00,'04/05/2022 12:00:00'),('electronics','wireless headset',156,249.90,'07/08/2022 12:00:00'),('electronics','vacuum',145,189.00,'07/15/2022 12:00:00');
+
+select * from product_spend;
+
+--Identify the top two highest-grossing products within each category in 2022. Output the category, product, and total spend.
+SELECT 
+  category, 
+  product, 
+  total_spend 
+FROM (
+    SELECT 
+      *, 
+      RANK() OVER (
+        PARTITION BY category 
+        ORDER BY total_spend DESC) AS ranking 
+    FROM (
+        SELECT 
+          category, 
+          product, 
+          SUM(spend) AS total_spend 
+        FROM product_spend 
+        WHERE transaction_date >= '2022-01-01' 
+          AND transaction_date <= '2022-12-31' 
+        GROUP BY category, product) AS total_spend
+  ) AS top_spend 
+WHERE ranking <= 2 
+ORDER BY category, ranking;
+
+
+--Q167.
+--users Table:
+create table if not exists users
+(
+    user_id int,
+    signup_date DATETIME,
+    last_login DATETIME
+);
+
+insert into users VALUES (1001,'06/01/2022 12:00:00','07/05/2022 12:00:00'),(1002,'06/03/2022 12:00:00','06/15/2022 12:00:00'),(1004,'06/02/2022 12:00:00','06/15/2022 12:00:00'),(1006,'06/15/2022 12:00:00','07/05/2022 12:00:00'),(1012,'06/16/2022 12:00:00','07/22/2022 12:00:00');
+
+select * from users;
+
+--Write a query to generate the churn rate by week in June 2022. Output the week number (1, 2, 3, 4, ...) and the corresponding churn rate rounded to 2 decimal places.
+
+
+
+--Q168.
+--songs_history Table:
+create table if not exists songs_history
+(
+    history_id int,
+    user_id int,
+    song_id int,
+    song_plays int
+);
+
+insert into songs_history VALUES (10011,777,1238,11),(12452,695,4520,1);
+
+select * from songs_history;
+
+
+--songs_weekly Table:
+create table if not exists songs_weekly
+(
+    user_id int,
+    song_id int,
+    listen_time DATETIME
+);
+
+insert into songs_weekly VALUES (777,1238,'08/01/2022 12:00:00'),(695,4520,'08/04/2022 08:00:00'),(125,9630,'08/04/2022 16:00:00'),(695,9852,'08/07/2022 12:00:00');
+
+select * from songs_weekly;
+
+--Write a query to output the user id, song id, and cumulative count of song plays as of 4 August 2022 sorted in descending order.
+SELECT user_id, song_id, SUM(song_plays) AS song_count
+FROM (
+  SELECT user_id, song_id, song_plays
+  FROM songs_history
+  UNION ALL
+  SELECT user_id, song_id, COUNT(song_id) AS song_plays
+  FROM songs_weekly
+  WHERE listen_time <= '08/04/2022 23:59:59'
+  GROUP BY user_id, song_id
+) AS report
+GROUP BY user_id, song_id
+ORDER BY song_count DESC;
+
+
+
+--Q169.
+--emails Table:
+create table if not exists emails
+(
+    email_id int,
+    user_id int,
+    signup_date DATETIME
+);
+
+insert into emails VALUES (125,7771,'06/14/2022 00:00:00'),(236,6950,'07/01/2022 00:00:00'),(433,1052,'07/09/2022 00:00:00');
+
+select * from emails;
+
+--texts Table:
+create table if not exists texts
+(
+    text_id int,
+    email_id int,
+    signup_action VARCHAR(50)
+);
+
+insert into texts VALUES (6878,125,'Confirmed'),(6920,236,'Not Confirmed'),(6994,236,'Confirmed');
+
+select * from texts;
+
+
+--Write a query to find the confirmation rate of users who confirmed their signups with text messages. Round the result to 2 decimal places.
+SELECT
+  ROUND(SUM(signup)::DECIMAL / COUNT(user_id), 2) AS confirmation_rate
+FROM (
+  SELECT
+    user_id,
+    CASE WHEN texts.email_id IS NOT NULL THEN 1
+      ELSE 0 END AS signup
+  FROM emails
+  LEFT JOIN texts
+    ON emails.email_id = texts.email_id
+    AND signup_action = 'Confirmed'
+) AS rate;
+
+
+
+--Q170.
+--tweets Table:
+create table if not exists tweets
+(
+    tweet_id int,
+    user_id int,
+    tweet_date timestamp
+);
+
+insert into tweets VALUES (214252,111,'06/01/2022 12:00:00'),(739252,111,'06/01/2022 12:00:00'),(846402,111,'06/02/2022 12:00:00'),(241425,254,'06/02/2022 12:00:00'),(137374,111,'06/04/2022 12:00:00');
+
+select * from tweets;
+
+
+--Calculate the 3-day rolling average of tweets published by each user for each date that a tweet was posted. Output the user id, tweet date, and rolling averages rounded to 2 decimal places.
+SELECT
+  user_id,
+  tweet_date,
+  ROUND(
+    AVG(tweet_num) OVER (
+      PARTITION BY user_id
+      ORDER BY user_id, tweet_date
+      ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2)
+  AS rolling_avg_3d
+FROM (
+  SELECT
+    user_id,
+    tweet_date,
+    COUNT(DISTINCT tweet_id) AS tweet_num
+  FROM tweets
+  GROUP BY user_id, tweet_date) AS tweet_count;
+
+
+--Q171.
+--activities Table:
+create table if not exists activities
+(
+    activity_id int,
+    user_id int,
+    activity_type enum ('send', 'open', 'chat'),
+    time_spent FLOAT,
+    activity_date DATETIME
+);
+
+insert into activities VALUES (7274,123,'open',4.50,'06/22/2022 12:00:00'),(2425,123,'send',3.50,'06/22/2022 12:00:00'),(1413,456,'send',5.67,'06/23/2022 12:00:00'),(1414,789,'chat',11.00,'06/25/2022 12:00:00'),(2536,456,'open',3.00,'06/25/2022 12:00:00');
+
+select * from activities;
+
+
+--age_breakdown Table:
+create table if not exists age_breakdown
+(
+    user_id int,
+    age_bucket varchar(50)
+);
+
+insert into age_breakdown VALUES (123,'31-35'),(456,'26-30'),(789,'21-25');
+
+select * from age_breakdown;
+
+--Write a query to obtain a breakdown of the time spent sending vs. opening snaps (as a percentage of total time spent on these activities) for each age group.
+
+
+
+
+--Q172 .
+--personal_profiles Table:
+create table if not exists personal_profiles
+(
+    profile_id int,
+    name varchar(50),
+    followers int
+);
+
+insert into personal_profiles VALUES (1,'Nick Singh',92000),(2,'Zach Wilson',199000),(3,'Daliana Liu',171000),(4,'Ravit Jain',107000),(5,'Vin Vashishta',139000),(6,'Susan Wojcicki',39000);
+
+select * from personal_profiles;
+
+--employee_company Table:
+create table if not exists employee_company
+(
+    personal_profile_id int,
+    company_id int
+);
+
+insert into employee_company VALUES (1,4),(1,9),(2,2),(3,1),(4,3),(5,6),(6,5);
+
+select * from employee_company;
+
+--company_pages Table:
+create table if not exists company_pages
+(
+    company_id int,
+    name VARCHAR(50),
+    followers int
+);
+
+insert into company_pages VALUES (1,'The Data Science Podcast',8000),(2,'Airbnb',700000),(3,'The Ravit Show',6000),(4,'DataLemur',200),(5,'YouTube',16000000),(9,'Ace The Data Science Interview',4479);
+
+select * from company_pages;
+
+
+--Write a query to return the IDs of these LinkedIn power creators in ascending order.
+
+
+
+
