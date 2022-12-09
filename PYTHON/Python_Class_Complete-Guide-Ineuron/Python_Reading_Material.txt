@@ -1,0 +1,23 @@
+# Long hour course on youtube
+https://www.youtube.com/watch?v=_uQrJ0TkZlc&t=16285s
+
+# Blogs for python
+https://www.javatpoint.com/python-tutorial
+
+# Read about python collections like set, dictionary, string, list etc.
+https://docs.python.org/3/tutorial/datastructures.html
+https://www.youtube.com/watch?v=QswQA1lRIQY
+
+
+# Python lambda functions
+https://www.youtube.com/watch?v=RQRCWDK9UkA
+https://www.geeksforgeeks.org/python-lambda-anonymous-functions-filter-map-reduce/
+
+
+# OOPS in python
+https://www.youtube.com/watch?v=Ej_02ICOIgs
+
+# Exception Handling in Python
+https://www.youtube.com/watch?v=NMTEjQ8-AJM
+https://www.javatpoint.com/python-exception-handling
+https://realpython.com/python-exceptions/
