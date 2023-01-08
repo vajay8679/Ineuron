@@ -1,0 +1,18 @@
+abc@fdc009f06feb:~/workspace$ hadoop fs -ls /
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -mkdir /input_data
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -ls /
+Found 1 items
+drwxr-xr-x   - abc supergroup          0 2023-01-08 17:57 /input_data
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -ls /input_data
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -put departments.csv /input_data
+2023-01-08 18:08:45,402 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -ls /input_data
+Found 1 items
+-rw-r--r--   1 abc supergroup        708 2023-01-08 18:08 /input_data/departments.csv
+
+abc@fdc009f06feb:~/workspace$ hadoop fs -put employees.csv /input_data
