@@ -1,0 +1,115 @@
+b1-glue-job
+#################################################################
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+empDf = glueContext.create_dynamic_frame.from_catalog(
+     database="b1-glue-catalog-db",
+     table_name="s3fileemployees_csv",
+     transformation_ctx = "s3_input_new"
+    )
+    
+empDf.printSchema()
+sparkEmpDf = empDf.toDF()
+sparkEmpDf.show()
+print(sparkEmpDf.count())
+job.commit()
+
+
+
+
+
+####################################
+     transformation_ctx = "s3_input_new"
+
+above line no.22 will create kind of log file where we can find all the relevent information of job scheduling and and job running,error or any kind of relevent information we can find in 's3_input_new' file.
+
+
+
+ETL Pipeline in workflows
+
+1.Initiate Trigger - >EventBridge will land here
+2.Select Crawler that we created
+3.Add trigger for glue job -> Event ->start after ANY watched event
+4.Select glue job 'b1-glue-job'
+
+
+After above create EventBridge rule 
+https://us-east-1.console.aws.amazon.com/events/home?region=us-east-1#/
+https://us-east-1.console.aws.amazon.com/events/home?region=us-east-1#/rules/create 
+
+Rule -> scheduled
+
+schedule pattern - 
+cron -> */3 - 5 - * - * - ? - *
+
+select local time zone
+
+target - > glueWorkflow
+workflow name -> 'glue_workflow_name'
+
+copy IAM role and go to IAM Roles
+
+then select  and done creating Roles
+
+
+paste IAM Role create by EventBridge for us in IAM
+
+and attach below policies
+1.CloudWatchEventsBuiltInTargetExecutionAccess  
+2.CloudWatchEventsInvocationAccess policies
+
+https://docs.aws.amazon.com/glue/latest/dg/starting-workflow-eventbridge.html
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "glue:notifyEvent"
+      ],
+      "Resource": [
+        "arn:aws:glue:<region>:<account-id>:workflow/<workflow-name>"
+      ]
+    }
+  ]
+}
+
+
+
+
+############################################################
+ATHENA
+
+https://ap-south-1.console.aws.amazon.com/athena/home?region=ap-south-1#/query-editor
+
+
+select * from "db_name"."table_name" limit 5;
+
+
+
+
+
+#######################################################################
+Redshift
+https://ap-south-1.console.aws.amazon.com/redshiftv2/home?region=ap-south-1#landing
+
+
+https://docs.aws.amazon.com/redshift/latest/dg/c_SQL_commands.html
+
+it is datawarehousing service

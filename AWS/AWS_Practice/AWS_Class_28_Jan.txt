@@ -1,0 +1,307 @@
+SNS -> Simple Notification Service
+
+https://us-east-1.console.aws.amazon.com/sns/v3/home?region=us-east-1#/topic/arn:aws:sns:us-east-1:700947433671:batch1-sns-topic
+send-message
+
+
+subscription
+https://ap-south-1.console.aws.amazon.com/sns/v3/home?region=ap-south-1#/create-subscription
+https://ap-south-1.console.aws.amazon.com/sns/v3/home?region=ap-south-1#/subscriptions
+
+
+Subscription confirmed!
+You have successfully subscribed.
+
+Your subscription's id is:
+arn:aws:sns:ap-south-1:700947433671:send-message:bbde5816-3a21-4209-acc7-e08f011bf3b1
+
+
+######################################################################
+import boto3
+import pandas as pd
+from io import BytesIO
+import json
+
+# s3_client = boto3.client('s3')
+client = boto3.client('sns')
+snsArn = "arn:aws:sns:ap-south-1:566373416292:batch1-sns-topic"
+
+def lambda_handler(event, context):
+    message = "Hi,This is test message from Lambda !!!"
+    
+    response = client.publish(
+        TargetArn=snsArn,
+        Message=message,
+        MessageStructure='text'
+    )
+    print(response)
+
+
+
+
+EC2 Instance
+
+https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#InstanceDetails:instanceId=i-07ce488347a91349d
+
+
+
+chmod 400 ec2_rds.pem
+ssh -i "ec2_rds.pem" ec2-user@ec2-15-207-21-90.ap-south-1.compute.amazonaws.com
+
+pwd
+ls
+
+
+
+RDS
+https://ap-south-1.console.aws.amazon.com/rds/home?region=ap-south-1#launch-dbinstance:gdb=false;s3-import=false
+
+Master username - root
+Master password - Vajay8679
+
+
+https://ap-south-1.console.aws.amazon.com/rds/home?region=ap-south-1#databases:
+
+https://ap-south-1.console.aws.amazon.com/rds/home?region=ap-south-1#database:id=batch-1-test-db;is-cluster=false
+
+
+VPC - Virtual Private Network
+
+
+rds connectivity follow strictly this link
+https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-ec2-bastion-host/
+
+ ssh -i "ec2_rds.pem" ec2-user@ec2-15-207-21-90.ap-south-1.compute.amazonaws.com
+
+for port and end point
+https://ap-south-1.console.aws.amazon.com/rds/home?region=ap-south-1#database:id=batch-1-test-db;is-cluster=false
+
+local port  = 3304 (you can take any port number)
+
+1.    Configure an SSH tunnel using the following command:
+ssh -i "YOUR_EC2_KEY" -L LOCAL_PORT:RDS_ENDPOINT:REMOTE_PORT EC2_USER@EC2_HOST -N -f
+1. ssh -i "ec2_rds.pem" -L 3304:batch-1-test-db.cwbr36r4jhbu.ap-south-1.rds.amazonaws.com:3306 ec2-user@ec2-15-207-21-90.ap-south-1.compute.amazonaws.com -N -f
+
+2.    To test and confirm that the tunnel is listening on the local port, run the following commands:
+lsof -i4 -P | grep -i "listen" | grep LOCAL_PORT
+2. lsof -i4 -P | grep -i "listen" | grep 3304
+
+3.    If your tunnel is successfully listening on your local port, then you see an output similar to the following:
+nc -zv 127.0.0.1 LOCAL_PORT
+3. nc -zv 127.0.0.1 3304
+
+4.    Run the following command to connect to your RDS instance from your local machine using your EC2 instance as a bastion host:
+mysql -h 127.0.0.1 -P LOCAL_PORT -u RDS_USER -p
+4. mysql -h 127.0.0.1 -P 3304 -u root -p
+password - Vajay8679
+
+#####################################################################################
+connect to RDS 
+#####################################################################################
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ ssh -i "ec2_rds.pem" -L 3304:batch-1-test-db.cwbr36r4jhbu.ap-south-1.rds.amazonaws.com:3306 ec2-user@ec2-15-207-21-90.ap-south-1.compute.amazonaws.com -N -f
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ lsof -i4 -P | grep -i "listen" | grep 3304
+ssh       284143 dell    5u  IPv4 8123224      0t0  TCP localhost:3304 (LISTEN)
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ nc -zv 127.0.0.1 3304
+Connection to 127.0.0.1 3304 port [tcp/*] succeeded!
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ mysql -h 127.0.0.1 -P 3304 -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 113
+Server version: 8.0.28 Source distribution
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.04 sec)
+
+mysql> create database test;
+Query OK, 1 row affected (0.05 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+5 rows in set (0.03 sec)
+
+mysql> use test;
+Database changed
+mysql> 
+
+#####################################################################################
+
+
+
+EMR (Elastic Map Reduce)
+https://ap-south-1.console.aws.amazon.com/emr/home?region=ap-south-1#/clusters
+
+https://ap-south-1.console.aws.amazon.com/emr/home?region=ap-south-1#/createCluster
+
+
+
+EMR overview guide
+https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview.html
+
+
+The node types in Amazon EMR are as follows:
+
+Master node: A node that manages the cluster by running software components to coordinate the distribution of data and tasks among other nodes for processing. The master node tracks the status of tasks and monitors the health of the cluster. Every cluster has a master node, and it's possible to create a single-node cluster with only the master node.
+
+Core node: A node with software components that run tasks and store data in the Hadoop Distributed File System (HDFS) on your cluster. Multi-node clusters have at least one core node.
+
+Task node: A node with software components that only runs tasks and does not store data in HDFS. Task nodes are optional.
+
+
+https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-iam-role.html
+https://aws.amazon.com/premiumsupport/knowledge-center/emr-default-role-invalid/
+
+while creating cluster in EMR
+
+Amazon EC2 key pair for SSH to the cluster - optional
+test-ec2.pem
+
+Permissions
+Service role for Amazon EMR
+EMR_Default_Roles_for_Ec2  -> (EMR)
+IAM role for instance profile
+EMR_EC2_DefaultRole -> (EMR for EC2)
+
+####################################################################
+chmod 400 "emr-ec2-practice1.pem"
+
+ssh -i "emr-ec2-practice1.pem" hadoop@ec2-3-108-44-35.ap-south-1.compute.amazonaws.com
+####################################################################
+
+
+
+Permissions
+Service role for Amazon EMR
+EMR_Default_Role_Practice 
+IAM role for instance profile
+EMR_EC2_Practice 
+
+
+
+
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ chmod 400 "emr-ec2-practice1.pem"
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/AWS/AWS_Practice$ ssh -i "emr-ec2-practice1.pem" hadoop@ec2-3-108-44-35.ap-south-1.compute.amazonaws.com
+Last login: Mon Feb 13 03:47:48 2023
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+18 package(s) needed for security, out of 18 available
+Run "sudo yum update" to apply all updates.
+                                                                    
+EEEEEEEEEEEEEEEEEEEE MMMMMMMM           MMMMMMMM RRRRRRRRRRRRRRR    
+E::::::::::::::::::E M:::::::M         M:::::::M R::::::::::::::R   
+EE:::::EEEEEEEEE:::E M::::::::M       M::::::::M R:::::RRRRRR:::::R 
+  E::::E       EEEEE M:::::::::M     M:::::::::M RR::::R      R::::R
+  E::::E             M::::::M:::M   M:::M::::::M   R:::R      R::::R
+  E:::::EEEEEEEEEE   M:::::M M:::M M:::M M:::::M   R:::RRRRRR:::::R 
+  E::::::::::::::E   M:::::M  M:::M:::M  M:::::M   R:::::::::::RR   
+  E:::::EEEEEEEEEE   M:::::M   M:::::M   M:::::M   R:::RRRRRR::::R  
+  E::::E             M:::::M    M:::M    M:::::M   R:::R      R::::R
+  E::::E       EEEEE M:::::M     MMM     M:::::M   R:::R      R::::R
+EE:::::EEEEEEEE::::E M:::::M             M:::::M   R:::R      R::::R
+E::::::::::::::::::E M:::::M             M:::::M RR::::R      R::::R
+EEEEEEEEEEEEEEEEEEEE MMMMMMM             MMMMMMM RRRRRRR      RRRRRR
+                                                                    
+[hadoop@ip-172-31-43-3 ~]$ hadoop fs -mkdir /input
+[hadoop@ip-172-31-43-3 ~]$ hadoop fs -ls /
+Found 5 items
+drwxr-xr-x   - hdfs   hdfsadmingroup          0 2023-02-13 03:46 /apps
+drwxr-xr-x   - hadoop hdfsadmingroup          0 2023-02-13 04:01 /input
+drwxrwxrwt   - hdfs   hdfsadmingroup          0 2023-02-13 03:47 /tmp
+drwxr-xr-x   - hdfs   hdfsadmingroup          0 2023-02-13 03:46 /user
+drwxr-xr-x   - hdfs   hdfsadmingroup          0 2023-02-13 03:46 /var
+[hadoop@ip-172-31-43-3 ~]$ 
+
+
+
+
+hive
+
+pyspark
+
+
+
+chmod 400 "ec2-for-emr-feb14.pem"
+
+ssh -i "ec2-for-emr-feb14.pem" hadoop@ec2-13-232-13-45.ap-south-1.compute.amazonaws.com
+
+
+##############################################################################
+vim test_pyspark1.py
+##############################################################################
+
+#necessary libraries of pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType,StructField, StringType, IntegerType
+
+spark = SparkSession.builder.appName("demoApp").getOrCreate()
+
+#Create list of data to prepare data frame
+person_list = [("Berry","","Allen",1,"M"),
+    ("Oliver","Queen","",2,"M"),
+    ("Robert","","Williams",3,"M"),
+    ("Tony","","Stark",4,"F"),
+    ("Rajiv","Mary","Kumar",5,"F")
+]   
+
+
+#defining schema for dataset
+schema = StructType([ \
+    StructField("firstname",StringType(),True), \
+    StructField("middlename",StringType(),True), \
+    StructField("lastname",StringType(),True), \
+    StructField("id", IntegerType(), True), \
+    StructField("gender", StringType(), True), \
+])  
+    
+#creating spark dataframe
+df = spark.createDataFrame(data=person_list,schema=schema)
+
+#Printing data frame schema
+df.printSchema()
+
+#Printing data
+df.show(truncate=False)
+
+#Writing file in hadoop
+df.write.csv("/output/record.csv")
+#################################################################################
+
+
+
+spark submit command
+
+spark-submit --master yarn --deploy-mode cluster test_pyspark1.py
+
+
+hadoop fs -ls /
+
+hadoop fs -ls /output
+
+hadoop fs -ls /output/record.csv

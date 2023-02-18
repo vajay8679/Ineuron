@@ -1,0 +1,131 @@
+Lambda
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/create/function?firstrun=true
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions/batch1-practice-lambda-function?newFunction=true&tab=code
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions
+
+batch1-practice-lambda-function
+
+
+###inside lambda function###
+##########################################################
+import json
+
+def sum_number(a,b):
+    return a+b
+
+def lambda_handler(event, context):
+    print("Hello,This is first lambda function !!")
+   
+    print("Sum of a,b is = ",sum_number(2,4))
+##########################################################
+
+
+
+lambda logs
+
+https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fbatch1-practice-lambda-function
+https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fbatch1-practice-lambda-function/log-events/2023$252F02$252F07$252F$255B$2524LATEST$255D8849d3c6a2d147d586edf3d36c891de6
+
+
+
+
+
+
+boto3.amazonaws.com
+
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
+
+
+#########################################
+batch1-practice-lambda-function1
+
+
+import json
+import boto3
+
+s3 = boto3.resource('s3')
+
+def lambda_handler(event, context):
+    bucket = s3.Bucket('batch1-s3-practice-bucket')
+    
+    print(bucket.objects.all())
+    print("==========================")
+    for obj in bucket.objects.all():
+        key = obj.key
+        print(key)
+
+
+
+
+#######################
+create role
+https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/home
+https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles
+
+https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles/create?commonUseCase=Lambda&policies=arn%3Aaws%3Aiam%3A%3Aaws%3Apolicy%2FAmazonS3FullAccess&step=review&trustedEntityType=AWS_SERVICE
+
+policy name  = 'AmazonS3FullAccess'
+
+Role name = 'lambda-to-s3-access'
+https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles/details/lambda-to-s3-access?section=permissions
+
+
+we have to create inline policy
+https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles/details/lambda-to-s3-access?section=permissions
+https://us-east-1.console.aws.amazon.com/iam/home#/roles/lambda-to-s3-access$createPolicy?step=edit
+
+https://us-east-1.console.aws.amazon.com/iamv2/home#/roles/details/lambda-to-s3-access?section=permissions
+
+
+select policies
+https://us-east-1.console.aws.amazon.com/iamv2/home#/roles/details/lambda-to-s3-access/attach-policies
+
+policiy name  = 'AWSLambdaBasicExecutionRole'
+
+
+
+you can find out errors and solve it by below links
+https://repost.aws/knowledge-center/s3-access-old-tls
+
+
+cloudwatch is inside -> Lambda -> Functions -> batch1-practice-lambda-function -> monitor
+
+https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logStream:group=%252Faws%252Flambda%252Fbatch1-practice-lambda-function1
+
+https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fbatch1-practice-lambda-function1/log-events/2023$252F02$252F08$252F$255B$2524LATEST$255Db3489afa44a3491bb4c1e0e381d31a56
+
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions/batch1-practice-lambda-function1?tab=configure
+
+
+s3-properties
+
+https://s3.console.aws.amazon.com/s3/buckets/batch1-s3-practice-bucket?region=ap-south-1&tab=properties
+
+
+event notification
+
+https://s3.console.aws.amazon.com/s3/buckets/batch1-s3-practice-bucket?region=ap-south-1&tab=properties
+
+
+console log
+https://ap-south-1.console.aws.amazon.com/cloudwatch/home?region=ap-south-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fbatch1-first-lambda-function/log-events/2023$252F02$252F08$252F$255B$2524LATEST$255D7939056f324043e28de1f9d4dd926cd3
+
+
+
+
+
+#######################
+https://jsonformatter.curiousconcept.com/
+
+
+
+create a new layer
+
+https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/create/layer
+

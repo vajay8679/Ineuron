@@ -1,0 +1,159 @@
+AWS GLUE
+
+https://ap-south-1.console.aws.amazon.com/glue/home?region=ap-south-1#/v2/service-landing
+
+
+create bucket in s3
+
+"batch1-athena-input-data"
+
+employee.csv
+
+
+Crawlers
+
+https://ap-south-1.console.aws.amazon.com/glue/home?region=ap-south-1#/v2/data-catalog/crawlers
+
+
+
+AWS Database
+https://ap-south-1.console.aws.amazon.com/glue/home?region=ap-south-1#/v2/data-catalog/databases/add
+
+
+"b1-glue-catalog-db"
+
+
+https://ap-south-1.console.aws.amazon.com/glue/home?region=ap-south-1#/v2/data-catalog/databases
+
+
+AWS Glue JOB
+https://ap-south-1.console.aws.amazon.com/gluestudio/home?region=ap-south-1#/jobs
+
+#############################################################################
+https://ap-south-1.console.aws.amazon.com/gluestudio/home?region=ap-south-1#/editor/job/b1-glue-job/script
+
+"b1-glue-job"  -> script 
+#############################################################################
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+empDf = glueContext.create_dynamic_frame.from_catalog(
+     database="b1-glue-catalog-db",
+     table_name="s3fileemployees_csv"
+    )
+    
+empDf.printSchema()
+sparkEmpDf = empDf.toDF()
+sparkEmpDf.show()
+df2=sparkEmpDf.select('employee_id')
+df2.show()
+
+# job = Job(glueContext)
+# job.init(args['JOB_NAME'], args)
+# job.commit()
+
+#############################################################################
+
+
+
+
+
+
+AWS GLUE SCRIPT
+Programming ETL scripts
+
+https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming.html
+
+
+
+
+https://docs.aws.amazon.com/glue/latest/dg/using-identity-based-policies.html
+
+https://docs.aws.amazon.com/glue/latest/dg/glue-policy-examples-iam.html
+
+
+IAM
+Roles
+b1-aws-glue-s3-role
+
+create role -> glue
+
+
+https://ap-south-1.console.aws.amazon.com/gluestudio/home?region=ap-south-1#/editor/job/b1-glue-job/runs
+
+
+https://ap-south-1.console.aws.amazon.com/cloudwatch/home?region=ap-south-1#logsV2:log-groups/log-group/$252Faws-glue$252Fjobs$252Foutput/log-events/jr_dc0884a64110cb54485dd883ec885ca50c4414c8fd806d27a1850c71cc74c117
+
+
+############################################
+create IAM role 
+add inline polity 
+
+"cloud watch logs"
+
+select all
+
+"cloudwatch-logs"
+############################################
+
+database name
+
+'b1-glue-catalog-db'
+
+
+
+
+#########################################################
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+empDf = glueContext.create_dynamic_frame.from_catalog(
+     database="b1-glue-catalog-db",
+     table_name="s3fileemployees_csv"
+    )
+    
+empDf.printSchema()
+sparkEmpDf = empDf.toDF()
+sparkEmpDf.show()
+print(sparkEmpDf.count())
+job.commit()
+#################################################################
+
+**************
+Glue Workflow
+
+
+https://ap-south-1.console.aws.amazon.com/glue/home?region=ap-south-1#etl:tab=workflows
+
+
+
+
+Amazon EventBridge
+https://ap-south-1.console.aws.amazon.com/events/home?region=ap-south-1#/
+
+
+https://ap-south-1.console.aws.amazon.com/events/home?region=ap-south-1#/rules

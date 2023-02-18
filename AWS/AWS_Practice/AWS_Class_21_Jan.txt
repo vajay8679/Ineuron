@@ -1,0 +1,62 @@
+https://docs.aws.amazon.com/?nc2=h_ql_doc_do
+
+https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all
+
+https://aws.amazon.com/pricing/?aws-products-pricing.sort-by=item.additionalFields.productNameLowercase&aws-products-pricing.sort-order=asc&awsf.Free%20Tier%20Type=*all&awsf.tech-category=*all
+
+https://portal.aws.amazon.com/billing/signup?refid=em_127222&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start/email
+
+https://ap-south-1.console.aws.amazon.com/console/home?region=ap-south-1
+
+https://us-east-1.console.aws.amazon.com/billing/home?region=ap-south-1#/
+
+
+S3
+https://s3.console.aws.amazon.com/s3/buckets?region=ap-south-1
+
+##########################
+bucket name - batch1-s3-practice-bucket
+##########################
+
+##########################
+object url
+https://s3.console.aws.amazon.com/s3/object/batch1-s3-practice-bucket?region=ap-south-1&prefix=departments.csv
+##########################
+
+S3 URI - (universal resource identitityfier)
+
+s3://batch1-s3-practice-bucket/departments.csv
+
+s3:         //batch1-s3-practice-bucket/     employee_test        /employees.csv
+
+file         bucket name                       prefix              object name 
+system 
+name
+
+
+##########################
+Amazon Resource Name (ARN)
+
+arn:aws:s3:::batch1-s3-practice-bucket/employee_test/employees.csv
+
+ARN used to create policy in 
+https://s3.console.aws.amazon.com/s3/buckets/batch1-s3-practice-bucket?region=ap-south-1&tab=permissions
+
+
+
+
+########################################################################################################
+https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#Home:
+
+https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#LaunchInstances:
+
+
+inside Download folder
+
+chmod 400 batch1-practice-ec2.pem
+ ssh -i "batch1-practice-ec2.pem" ec2-user@ec2-13-127-149-81.ap-south-1.compute.amazonaws.com
+
+
+ https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#Instances:
+
+ 
