@@ -1,0 +1,8 @@
+datadir
+credential.txt
+notebook
+older_pyspark
+old_pyspark
+**/*.env
+**/*.egg-info
+**/*.log

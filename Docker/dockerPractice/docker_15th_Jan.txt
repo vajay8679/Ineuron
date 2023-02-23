@@ -1,0 +1,90 @@
+https://www.docker.com/
+
+https://hub.docker.com/
+
+https://hub.docker.com/search?q=
+
+https://hub.docker.com/_/mysql
+
+docker pull mysql
+
+check in docker desktop -> image
+
+
+
+#dokcer file
+DOckerfile
+
+#docker image
+docker build -t <img> latest 
+
+
+#docker container
+docker run image_name
+
+
+#docker installation guide
+https://github.com/vishalsingh17/DockerInstallation/blob/main/DockerInstallation.pdf
+
+
+
+#in ubutu
+sudo apt update
+sudo apt install snapd
+sudo apt install docker-compose
+docker
+
+#install kubernetes
+sudo install kubectl -classic
+kubectl
+
+
+
+#play with docker
+https://labs.play-with-docker.com/
+
+docker --version
+docker pull nginx
+docker image ls   #check images 
+docker ps         #check running container
+docker ps -a      #all containers
+
+
+https://hub.docker.com/_/mongo
+docker pull mongo
+docker image ls #check images
+docker run 0534  (first 4 digit of image id)
+
+#check docker container
+docker ps  
+docker ps -a
+
+
+docker run -p 27017:8080 0458 (first 4 digit of image id)
+
+
+
+#install nginx image command
+https://hub.docker.com/_/nginx
+
+docker pull nginx   #install image nginx
+dokcer image ls
+docker ps
+docker ps -a
+docker run -p 9000:8080 0455 (first 4 digit of image id)
+
+#remove container
+docker rm 0453 (first 4 digit of container id)
+
+#remove all container
+dokcer rm $(dokcer ps -a -q)   #remove all container
+docker ps -a 
+
+
+
+#to check all container id
+docker ps -a -q
+
+
+#remove docker image
+docker rmi 34s2 (first 4 digit of image id)

@@ -1,0 +1,19 @@
+com.eclipsesource.minimal-json:minimal-json:0.9.4
+com.amazon.redshift:redshift-jdbc42:2.0.0.4
+org.apache.hadoop:hadoop-aws:3.3.2
+com.amazonaws:aws-java-sdk-s3:1.11.1026
+org.apache.spark:spark-hadoop-cloud_2.13:3.3.0
+com.google.guava:guava:23.1-jre
+
+
+--packages  org.apache.spark:spark-avro_2.11:2.4.0,com.databricks:spark-redshift_2.10:2.0.0,io.github.spark-redshift-community:spark-redshift_2.11:4.0.0,mysql:mysql-connector-java:8.0.11,com.eclipsesource.minimal-json:minimal-json:0.9.4,com.amazon.redshift:redshift-jdbc42:2.0.0.4,org.apache.hadoop:hadoop-aws:3.3.2,com.amazonaws:aws-java-sdk-s3:1.11.1026,org.apache.spark:spark-hadoop-cloud_2.13:3.3.0,com.google.guava:guava:23.1-jre
+
+
+
+spark-redshift_2.10-3.0.0-preview1.jar
+RedshiftJDBC41-1.1.10.1010.jar
+hadoop-aws-2.7.1.jar
+aws-java-sdk-1.7.4.jar
+(aws-java-sdk-s3-1.11.60.jar）
+
+--packages com.databricks:spark-redshift_2.11:3.0.0-preview1,com.amazon.redshift:redshift-jdbc41:1.1.10.1010,org.apache.hadoop:hadoop-aws:2.7.1,com.amazonaws:aws-java-sdk:1.7.4,com.amazonaws:aws-java-sdk-s3:1.11.60

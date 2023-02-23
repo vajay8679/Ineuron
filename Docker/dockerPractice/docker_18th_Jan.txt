@@ -1,0 +1,132 @@
+docker --version
+docker images ls
+docker ps -a
+
+docker pull bitnami/nginx
+
+docker image ls
+
+#for particular version
+docker pull bitnami/nginx:1.23
+
+
+#run docker image
+docker run bitnami/nginx
+
+
+#running container
+docker ps
+
+#all container
+docker ps -a 
+
+
+#stop container
+docker stop 34a0 (first 4 digit of container id)
+
+
+#remove container
+docker rm 6eda (first 4 digit of container id)
+
+#remove all containers
+docker rm $(docker ps -a -q)
+
+#gives container id 
+docker ps -a -q
+
+dell@dell-Latitude-3410:~$ docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS                NAMES
+7138df3ab227   bitnami/nginx   "/opt/bitnami/script…"   57 seconds ago   Up 56 seconds   8080/tcp, 8443/tcp   vibrant_poincare
+
+dell@dell-Latitude-3410:~$ docker rm 7138
+Error response from daemon: You cannot remove a running container 7138df3ab227c9d480a47088a53a25959eadd48703d28a207cb9dcd9e876c8a0. Stop the container before attempting removal or force remove
+
+dell@dell-Latitude-3410:~$ docker stop 7138
+7138
+
+dell@dell-Latitude-3410:~$ docker rm 7138
+7138
+
+dell@dell-Latitude-3410:~$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+#forcefully delete container
+docker rm -f 7d0c
+
+#####################################################################################
+#port mapping
+docker run -p 9000:8080 bitnami/nginx
+
+docker run -p 9001:8080 bitnamin/nginx
+
+docker run -p 8080:8080 bitnami/nginx
+
+docker run --name ajay -p 8080:8080 bitnami/nginx
+
+#run in a detached mode(even terminal is closed then we can see container is running)
+docker run --name ajayverma -p 8080 -d bitnami/nginx
+
+#####################################################################################
+
+#docekr container remove
+docker rm container_id
+
+
+#run docker image on local
+docker run nginx
+
+
+#if we can close the terminal then even container should be running
+docker run -d nginx
+
+
+#remove docker container
+docker rm $(docker ps -aq)
+
+#remove docker image  (if 2 image have same id)
+docker rmi -f 6b6a
+
+
+#to find all the image id
+docker image ls -q
+
+#remove all images
+docker rmi $(docker image ls -q)
+
+
+docker image ls
+
+
+#################################################################################################
+#we have to create pyenv file as well
+#we have to create 'hellopython' folder first then create 'app.py' file inside it
+1. python3 -m venv pyenv
+2. source pyenv/bin/activate
+#create requirements.txt file and add package you want to install and then run below command
+3. pip3 install -r requirements.txt
+
+
+#create docekr file
+4. touch Dockerfile
+
+#create dockerignore file
+5. touch .dockerignore
+#put pyenv file here in '.dockerignore' file
+
+#to convert dokcer file into a docker image 
+6. docker build -t hellopython:latest .   #(dot represents rootdirectory of Dockerfile)
+
+7. docker image ls
+
+#run docker image
+8. docker run 45fw (4 digits of image id)
+
+#by running above command for image (docker run 45fw) url will give Error for this so we have to give port name
+
+9. docker run -p 8082:8070 hellopython
+
+#run below command from docker desktop or direct from here paste below command
+http://localhost:8082/
+#####################################################################################################
+
+

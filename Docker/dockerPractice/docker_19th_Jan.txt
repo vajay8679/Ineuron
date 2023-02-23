@@ -1,0 +1,91 @@
+https://github.com/vishalsingh17/getting-started.git
+
+
+#create docker file
+touch Dockerfile
+
+
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/Docker$ cd getting-started/
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/Docker/getting-started$ code .
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/Docker/getting-started$ cd app
+dell@dell-Latitude-3410:~/Desktop/Ajay/Ineuron/Docker/getting-started/app$ docker build -t getting-started:latest .
+
+
+docker build -t getting-started:latest .
+docker run -p 3000:3000 getting-started
+
+#detached mode 
+docker run -dp 3000:3000 getting-started
+
+
+#stop docker
+docker stop b4be
+
+
+
+https://hub.docker.com/
+
+
+https://hub.docker.com/repository/docker/vajay8679/getting-started/general
+
+docker push getting-started
+
+docker tag getting-started vajay8679/getting-started
+
+
+docker run -p 3002:3002 vajay8679/getting-started
+
+
+#################################################################
+#create network
+docker network create todo-app
+
+
+#deteched mode
+docker run -d `
+--network todo-app --network-alias mysql `
+-v todo-mysql-data:/var/lib/mysql `
+-e MYSQL_ROOT_PASSWORD=secreat `
+-e MYSQL_DATABASE=todos `
+mysql:8.0
+
+
+https://hub.docker.com/_/mysql
+
+docker run mysql
+
+#go inside container
+docker exec -it 8f93 mysql -u root -p
+
+
+secret
+
+
+#how to connect databases
+docker run -it --network todo-app nicolaka/netshoot
+ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'secret';
+
+flush privileges;
+exit
+
+docker run -dp 3000:3000 `
+-w /app -v $(pwd):/appcls
+
+
+########################
+docker run -p 3000:3000 `
+-w /app -v "$(pwd):/app" `
+--network todo-app `
+-e MYSQL_HOST=mysql `
+-e MYSQL_USER=root
+-e MYSQL_PASSWORD=secret `
+-e MYSQL_DB=todos `
+node:18-alpine
+sh -c "yarn install && yarn run dev"
+
+###########################
+
+
+docker-compose --version
+docker compose up
+docker compose down
