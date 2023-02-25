@@ -1,0 +1,30 @@
+https://github.com/vishalsingh17/Git-Github
+
+
+mkdir gitdemo
+
+
+git init
+git status
+git add .
+git commit -m "message here"
+
+#change master to main
+git branch -M main
+
+git push origin main
+git remote origin https://github.com/vishalsingh17/Git-Github
+git push origin main
+git pull origin main
+
+
+
+git add . && git commit -m "Updated demo file"
+
+
+merge conflict will happen when we run code
+git add . && git commit -m "Updated demo file"
+
+and 
+
+git pull origin master  (if directly changes inside repository)

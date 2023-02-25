@@ -1,0 +1,37 @@
+SequentailExeUsingDocker
+How to run
+Clone the repository
+git clone https://github.com/vishalsingh17/SequentailExeUsingDocker
+Change the directory to SequentailExeUsingDocker.
+
+Create the user using the command below
+
+docker-compose up airflow-init
+Turn up your docker compose file
+docker-compose up
+Open "localhost:8081" in your brower and the the credentials as user = admin and password = airflow
+
+
+
+
+
+https://docs.docker.com/compose/compose-file/
+
+
+##error
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+
+
+###solve
+sudo chmod 666 /var/run/docker.sock
+sudo service docker start && docker-compose up -d
+
+docker-compose up airflow-init
+
+
+http://localhost:8081
+
+
+
+#docker compose file
+https://airflow.apache.org/docs/apache-airflow/2.5.1/docker-compose.yaml

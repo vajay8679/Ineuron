@@ -1,0 +1,43 @@
+#create branch name
+git checkout -b dev
+
+#check commits
+git log
+
+
+#change branch
+git checkout dev
+
+git branch
+git add .
+git commit -am "message"
+git push origin dev
+
+
+
+#first git add . && got commit -m "all files"
+then git checkout branch
+
+
+#remove changes 
+git stash
+
+#get back changes
+git stash pop
+
+
+
+#how to run html file from terminal
+start hello.html
+
+#go live extension for vs code
+
+
+setting->page->deploy fromm a branch -> main branch -> root
+
+
+#action on git
+for deloyment and pipline
+
+
+github action market place
