@@ -1,0 +1,55 @@
+# Use root/example as user/password credentials
+version: '3.1'
+networks:
+  bigdata:
+    driver: bridge
+
+services:
+
+  pyspark:
+    image: avnish327030/pyspark-3.2.1:latest
+    container_name: pyspark
+    restart: always
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    ports:
+      - "4040:4040"
+    volumes:
+      - "./mysql-kafka-s3:/project"
+    networks:
+      - bigdata
+
+  db:
+    image: mysql
+    container_name: mysql
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - "./datadir:/var/lib/mysql"
+    networks:
+      - bigdata
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8085:8080
+    networks:
+      - bigdata
+  
+  older_pyspark:
+   image: avnish327030/pyspark-2.4.8-hadoop-3.0:latest
+   container_name: pyspark_v2.4.8
+   environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+   volumes:
+    - "./kafka-redshift:/project"
+
