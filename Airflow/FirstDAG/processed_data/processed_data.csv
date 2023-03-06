@@ -1,0 +1,16 @@
+client_id,booking_date,room_type,hotel_id,booking_cost,currency,age,client_name,client_type,hotel_name
+4,2016-11-02,first_class_2_bed,6,3140.0,GBP,43.0,Bianca,VIP,The New View
+3,2017-10-17,standard_3_bed,6,1980.0,GBP,30.0,Tom,standard,The New View
+4,2019-08-07,first_class_2_bed,1,2910.0,GBP,43.0,Bianca,VIP,Astro Resort
+4,2021-08-07,standard_1_bed,1,2910.0,GBP,43.0,Bianca,VIP,Astro Resort
+2,2020-08-07,first_class_2_bed,1,2910.0,GBP,38.0,Ben,standard,Astro Resort
+2,2021-08-07,standard_1_bed,1,2910.0,GBP,38.0,Ben,standard,Astro Resort
+3,2020-08-07,first_class_2_bed,1,2910.0,GBP,30.0,Tom,standard,Astro Resort
+1,2018-03-20,balcony_2_bed,1,2740.0,GBP,,Ann,standard,Astro Resort
+5,2021-08-07,standard_1_bed,1,2910.0,GBP,49.0,Caroline,standard,Astro Resort
+2,2017-07-13,balcony_2_bed,2,1860.0,GBP,38.0,Ben,standard,Dream Connect
+6,2019-09-14,first_class_2_bed,2,1840.0,GBP,28.0,Kate,VIP,Dream Connect
+7,2022-03-12,first_class_2_bed,2,1848.6400000000003,GBP,25.0,Vishal,VIP,Dream Connect
+2,2019-10-10,standard_2_bed,5,1760.0,GBP,38.0,Ben,standard,The Clift Royal
+3,2018-01-16,standard_1_bed,4,,,30.0,Tom,standard,Millennium Times Square
+5,2019-12-24,standard_2_bed,3,4000.0,GBP,49.0,Caroline,standard,Green Acres

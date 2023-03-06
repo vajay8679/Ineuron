@@ -1,0 +1,17 @@
+README.md
+setup.py
+e_shopping.egg-info/PKG-INFO
+e_shopping.egg-info/SOURCES.txt
+e_shopping.egg-info/dependency_links.txt
+e_shopping.egg-info/top_level.txt
+src/__init__.py
+src/logging.py
+src/config/__init__.py
+src/config/environment.py
+src/config/spark_manager.py
+src/consumer/__init__.py
+src/consumer/kafka_reader.py
+src/entity/__init__.py
+src/producer/__init__.py
+src/producer/kafka_writer.py
+src/utils/__init__.py

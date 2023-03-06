@@ -1,0 +1,2 @@
+[ 2023-03-05 16:03:07,052 ] file name kafka_writer.py line number 32 root - INFO - Starting function produce data to kafka topic
+[ 2023-03-05 16:03:07,053 ] file name kafka_writer.py line number 34 root - INFO - Creating environment variable object
