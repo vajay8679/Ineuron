@@ -70,17 +70,17 @@ MYSQL_USER_NAME="root"
 MYSQL_PASSWORD="example"
 BUCKET_NAME="retail-data-analysis-b1"
 
-create src folder
-create comsumer.py
-create producer.py
-create setup.py
 
+#remove  below lines from -> /project/src/config/spark_manager.py
+.config("spark.executor.memory", "6g") 
+.config("spark.driver.memory", "6g") 
+.config("spark.executor.memoryOverhead", "8g")
 
 then run command on terminal
 1. python3 producer.py
 
 
-
+bucket name='retail-data-analysis-b2'
 
 for kafka-redship 
 we will use old version of pyspark

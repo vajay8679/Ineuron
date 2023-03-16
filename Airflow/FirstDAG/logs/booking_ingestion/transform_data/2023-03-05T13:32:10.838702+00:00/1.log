@@ -1,0 +1,22 @@
+[2023-03-06 13:32:15,891] {taskinstance.py:896} INFO - Dependencies all met for <TaskInstance: booking_ingestion.transform_data 2023-03-05T13:32:10.838702+00:00 [queued]>
+[2023-03-06 13:32:15,905] {taskinstance.py:896} INFO - Dependencies all met for <TaskInstance: booking_ingestion.transform_data 2023-03-05T13:32:10.838702+00:00 [queued]>
+[2023-03-06 13:32:15,906] {taskinstance.py:1087} INFO - 
+--------------------------------------------------------------------------------
+[2023-03-06 13:32:15,906] {taskinstance.py:1088} INFO - Starting attempt 1 of 1
+[2023-03-06 13:32:15,906] {taskinstance.py:1089} INFO - 
+--------------------------------------------------------------------------------
+[2023-03-06 13:32:15,945] {taskinstance.py:1107} INFO - Executing <Task(PythonOperator): transform_data> on 2023-03-05T13:32:10.838702+00:00
+[2023-03-06 13:32:15,954] {standard_task_runner.py:52} INFO - Started process 106 to run task
+[2023-03-06 13:32:15,968] {standard_task_runner.py:76} INFO - Running: ['airflow', 'tasks', 'run', 'booking_ingestion', 'transform_data', '2023-03-05T13:32:10.838702+00:00', '--job-id', '7', '--pool', 'default_pool', '--raw', '--subdir', 'DAGS_FOLDER/data_ingestion_dag/main.py', '--cfg-path', '/tmp/tmplt19iipv', '--error-file', '/tmp/tmpb_t1_1ln']
+[2023-03-06 13:32:15,969] {standard_task_runner.py:77} INFO - Job 7: Subtask transform_data
+[2023-03-06 13:32:16,041] {logging_mixin.py:104} INFO - Running <TaskInstance: booking_ingestion.transform_data 2023-03-05T13:32:10.838702+00:00 [running]> on host e51f9e9f2cb0
+[2023-03-06 13:32:16,122] {taskinstance.py:1300} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=airflow
+AIRFLOW_CTX_DAG_ID=booking_ingestion
+AIRFLOW_CTX_TASK_ID=transform_data
+AIRFLOW_CTX_EXECUTION_DATE=2023-03-05T13:32:10.838702+00:00
+AIRFLOW_CTX_DAG_RUN_ID=scheduled__2023-03-05T13:32:10.838702+00:00
+[2023-03-06 13:32:16,194] {python.py:151} INFO - Done. Returned value was: None
+[2023-03-06 13:32:16,203] {taskinstance.py:1204} INFO - Marking task as SUCCESS. dag_id=booking_ingestion, task_id=transform_data, execution_date=20230305T133210, start_date=20230306T133215, end_date=20230306T133216
+[2023-03-06 13:32:16,276] {taskinstance.py:1265} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2023-03-06 13:32:16,335] {local_task_job.py:151} INFO - Task exited with return code 0

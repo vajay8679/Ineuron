@@ -1,0 +1,51 @@
+Linux and hadoop command :
+
+mkdir  test 
+//To ceate a new directory 
+
+mv test1.txt test2.txt
+//to change a file name 
+
+rm  test1.txt
+//to Delete a file 
+
+vi test.txt
+//to create a new file 
+
+!:wq - to exit from file 
+
+du 
+//to check a disk usases in your system
+
+Chmod 777 test.txt
+//To give all the privalages to a file 
+
+sudo su 
+//to get into a superuser 
+
+history 
+/to see all the command that you have executed 
+
+cat test.txt
+/to see all the content in your file in console
+
+tail -n test.txt
+//to see a last n number of line in file 
+
+rmdir test
+//to remove a directory 
+
+ls 
+//to list all the file in direcotry 
+
+hadoop fs -ls /
+//to see all the list of file and directory in base direcotry of hadoop
+
+hadoop fs -put test.txt / 
+//to move you test.txt from local to hadoop parent directory 
+
+hadoop fs -get /test.txt / 
+//to move file from hadoop to local system 
+
+Rest of the linux command will work as it is in hadoop file system except vi 
+
