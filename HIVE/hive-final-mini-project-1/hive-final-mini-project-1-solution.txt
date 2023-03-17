@@ -1,0 +1,67 @@
+This is a real time dataset of the ineuron technical consultant team. You have to perform hive analysis on this given dataset.
+Download Dataset 1 - https://drive.google.com/file/d/1WrG-9qv6atP-W3P_-gYln1hHyFKRKMHP/view
+Download Dataset 2 - https://drive.google.com/file/d/1-JIPCZ34dyN6k9CqJa-Y8yxIGq6vTVXU/view
+Note: both files are csv files. 
+
+
+1. Create a schema based on the given dataset
+
+# creating table 
+Hive> Create table AgentLogingReport
+(
+sr_no int,
+Agent string,
+Date date,
+Login string,
+Logout string,
+Duration string
+)
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
+
+
+
+Hive> Create table AgentPerformance
+(
+sr_no int,
+Date date,
+Agent_Name string,
+Total_charts string,
+Avg_Response_Time string,
+Avg_Resolution_Time string,
+Avg_Rating float,
+Total_Feedback int
+)
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
+
+
+hive> alter table AgentPerformance change Total_charts Total_charts int;
+
+
+
+2. Dump the data inside the hdfs in the given schema location.
+Load data local inpath '/home/cloudera/ajay/Challenge/mini _project_1/AgentLogingReport.csv' into table AgentLogingReport;
+Load data local inpath '/home/cloudera/ajay/Challenge/mini _project_1/AgentPerformance.csv' into table AgentPerformance;
+
+3. List of all agents' names. 
+Hive>  select distinct Agent_Name from AgentPerformance;
+
+Hive>  select count(distinct Agent_Name) from AgentPerformance;
+
+4. Find out agent average rating.
+Hive> select Agent_name,avg(Avg_Rating) from AgentPerformance group by Agent_name;
+
+5. Total working days for each agents 
+Hive> select Agent,count(distinct Date) from AgentLogingReport group by Agent;
+
+
+6. Total query that each agent have taken 
+Hive> select Agent_name,sum(total_chats) from AgentPerformance group by Agent_name;
+
+
+7. Total Feedback that each agent have received 
+Hive> select Agent_name,sum(Total_Feedback) from AgentPerformance group by Agent_name;
+

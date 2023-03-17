@@ -1,0 +1,385 @@
+Objective - The assignment is meant for you to apply learnings of the module on Hive on a real-life dataset. One of the major objectives of this assignment is gaining familiarity with how an analysis works in Hive and how you can gain insights from large datasets.
+ 
+Problem Statement - New York City is a thriving metropolis and just like most other cities of similar size, one of the biggest problems its residents face is parking. The classic combination of a huge number of cars and a cramped geography is the exact recipe that leads to a large number of parking tickets.
+ 
+In an attempt to scientifically analyse this phenomenon, the NYC Police Department regularly collects data related to parking tickets. This data is made available by NYC Open Data portal. We will try and perform some analysis on this data.
+
+Download Dataset - https://data.cityofnewyork.us/browse?q=parking+tickets
+
+Hive> create table parking_violations_issued
+(
+Summons_Number int,
+Plate_ID string,
+Registration_State string,
+Plate_Type string,
+Issue_Date date,
+Violation_Code int,
+Vehicle_Body_Type string,
+Vehicle_Make string,
+Issuing_Agency string,
+Street_Code1 int,
+Street_Code2 int,
+Street_Code3 int,
+Vehicle_Expiration Date,	
+Violation_Location int,
+Violation_Precinct int,
+Issuer_Precinct int,
+Issuer_Code int,
+Issuer_Command string,
+Issuer_Squad string,
+Violation_Time int,
+Time_First_Observed string,
+Violation_County string,
+Violation_In_Front_Of_Or_Opposite string,
+House_Number string,
+Street_Name string,
+Intersecting_Street string,
+Date_First_Observed int,
+Law_Section int,
+Sub_Division string,
+Violation_Legal_Code string,
+Days_Parking_In_Effect string,
+From_Hours_In_Effect string,
+To_Hours_In_Effect string,
+Vehicle_Color string,
+Unregistered_Vehicle int,
+Vehicle_Year string,
+Meter_Number string,
+Feet_From_Curb int,
+Violation_Post_Code string,
+Violation_Description string,
+No_Standing_or_Stopping_Violation string,
+Hydrant_Violation string,
+Double_Parking_Violation string)
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
+
+
+alter table  parking_violations_issued change Summons_Number Summons_Number bigint;
+alter table  parking_violations_issued change Violation_Time Violation_Time string;
+
+load data local inpath '/home/cloudera/ajay/Challenge/mini_project_2/Parking_Violations_Issued_-_Fiscal_Year_2017.csv' into table parking_violations_issued;
+
+select * from parking_violations_issued limit 20;
+
+
+Note: Consider only the year 2017 for analysis and not the Fiscal year.
+for year 2017 only
+
+Hive>  create table parking_violations_issued_2017
+(
+Summons_Number bigint,Plate_ID string,Registration_State string,Plate_Type string,Issue_Date date,
+Violation_Code int,Vehicle_Body_Type string,Vehicle_Make string,Issuing_Agency string,
+Street_Code1 int,Street_Code2 int,Street_Code3 int,Vehicle_Expiration Date,Violation_Location int,
+Violation_Precinct int,Issuer_Precinct int,Issuer_Code int,Issuer_Command string,Issuer_Squad string,
+Violation_Time string,Time_First_Observed string,Violation_In_Front_Of_Or_Opposite string,
+House_Number string,Street_Name string,Intersecting_Street string,Date_First_Observed int,
+Law_Section int,Sub_Division string,Violation_Legal_Code string,Days_Parking_In_Effect string,
+From_Hours_In_Effect string,To_Hours_In_Effect string,Vehicle_Color string,
+Unregistered_Vehicle int,Vehicle_Year string,Meter_Number string,Feet_From_Curb int,
+Violation_Post_Code string,Violation_Description string,No_Standing_or_Stopping_Violation string,
+Hydrant_Violation string,Double_Parking_Violation string)
+COMMENT 'A bucketed sorted parking_violations_issued_2017'
+partitioned by (Violation_County string)
+CLUSTERED BY (Violation_Code) sorted by (Violation_Code) INTO 8 BUCKETS
+row format delimited
+fields terminated by ','
+tblproperties ("skip.header.line.count" = "1");
+
+To load data into partition and bucket table we need to set few properties to enable bucketing and 
+Dynamic partition
+
+hive>set hive.exec.dynamic.partition=true;
+hive>set hive.exec.dynamic.partition.mode=nonstrict; 
+hive>set hive.enforce.bucketing = true;
+Hive>  insert into parking_violations_issued_2017 partition(Violation_County) select 
+Summons_Number,Plate_ID,Registration_State,Plate_Type,Issue_Date,Violation_Code,Vehicle_Body_Type,Vehicle_Make,
+Issuing_Agency,Street_Code1,Street_Code2,Street_Code3,Vehicle_Expiration,Violation_Location,Violation_Precinct,
+Issuer_Precinct,Issuer_Code,Issuer_Command,Issuer_Squad,Violation_Time,Time_First_Observed,
+Violation_In_Front_Of_Or_Opposite,House_Number,Street_Name,Intersecting_Street,Date_First_Observed,Law_Section,
+Sub_Division,Violation_Legal_Code,Days_Parking_In_Effect,From_Hours_In_Effect,To_Hours_In_Effect,Vehicle_Color,
+Unregistered_Vehicle,Vehicle_Year,Meter_Number,Feet_From_Curb,Violation_Post_Code,Violation_Description,
+No_Standing_or_Stopping_Violation,Hydrant_Violation,Double_Parking_Violation,Violation_County from parking_violations_issued where 
+year(Issue_Date) = '2017';
+
+
+The analysis can be divided into two parts:
+ Part-I: Examine the data
+1.) Find the total number of tickets for the year.
+Hive>  select count(distinct summons_number) No_Tickets  ,year(issue_date) as year from parking_violations_issued_2017 group by year(issue_date);
+
+Total number of tickets for the year 2017 are 539901
+2.) Find out how many unique states the cars which got parking tickets came from.
+Hive>  select count(distinct Registration_State) as Reg_state_count from parking_violations_issued_2017;
+
+Hive>  select distinct(Registration_State) as Reg_state from parking_violations_issued_2017;
+
+
+Hive>  SELECT Registration_State,Count(1) as Number_of_Records from parking_violations_issued_2017  group by Registration_State order by Number_of_Records;
+
+3.) Some parking tickets don’t have addresses on them, which is cause for concern. Find out how many such tickets there are(i.e. tickets where either "Street Code 1" or "Street Code 2" or "Street Code 3" is empty )
+Hive> select count(distinct summons_number) as No_Tickets_without_address from parking_violations_issued where Street_code1 = 0 or Street_code2 = 0 or Street_code3 = 0;
+
+
+Part-II: Aggregation tasks
+
+1.) How often does each violation code occur? (frequency of violation codes - find the top 5)
+Hive> select count(Violation_Code) as frequency_of_violation,Violation_Code from parking_violations_issued_2017 group by Violation_Code order by frequency_of_violation desc limit 5;
+
+2.) How often does each vehicle body type get a parking ticket? How about the vehicle make? (find the top 5 for both)
+Hive> select Vehicle_Body_Type,count(summons_number)as frequency_of_getting_parking_ticket  from challenge.parking_violations_issued_2017 group by Vehicle_Body_Type order by frequency_of_getting_parking_ticket desc limit 5; --done
+
+
+Hive> select Vehicle_make,count(summons_number)as frequency_of_getting_parking_ticket from challenge.parking_violations_issued_2017 group by Vehicle_make order by frequency_of_getting_parking_ticket desc limit 5; --done
+
+
+3.) A precinct is a police station that has a certain zone of the city under its command. Find the (5 highest) frequencies of:
+      a.) Violating Precincts (this is the precinct of the zone where the violation occurred)
+
+hive> select Violation_Precinct,count(*) as IssuedTicket from challenge.parking_violations_issued group by  Violation_Precinct order by IssuedTicket desc limit 6;--correct
+
+      b.) Issuer Precincts (this is the precinct that issued the ticket)
+Hive> select Issuer_Precinct,count(*) as IssuedTicket from challenge.parking_violations_issued group by Issuer_Precinct order by IssuedTicket desc limit 6;--correct 
+
+4.) Find the violation code frequency across 3 precincts which have issued the most number of tickets - do these precinct zones have an exceptionally high frequency of certain violation codes?
+select Issuer_Precinct,Violation_Code, count(*) as TicketsIssued from challenge.parking_violations_issued_2017  group by Issuer_Precinct, Violation_Code order by TicketsIssued desc limit 7;
+
+
+We will not be considering 0. Therefore 18,19,14 are the three issuer precincts which have the maximum number of violations. Lets analyze the Issuer Precincts one by one.
+--Issuer Precinct 18
+select Violation_Code, count(*) as TicketsIssued from challenge.parking_violations_issued_2017 where Issuer_Precinct=18 group by Violation_Code order by TicketsIssued desc limit 7;
+
+--Issuer Precinct 19
+select Violation_Code, count(*) as TicketsIssued from challenge.parking_violations_issued_2017 where Issuer_Precinct=19 group by Violation_Code order by TicketsIssued desc limit 7;
+
+
+--Issuer Precinct 14
+Hive> select Violation_Code, count(*) as TicketsIssued from challenge.parking_violations_issued_2017 where Issuer_Precinct=14 group by Violation_Code order by TicketsIssued desc limit 7;
+--Common codes accross precincts
+Hive>  select Issuer_Precinct,Violation_Code, count(*) as TicketsIssued from challenge.parking_violations_issued_2017 where Issuer_Precinct in (18,19,14) 
+group by Issuer_Precinct,Violation_Code order by TicketsIssued desc limit 10;
+
+
+5.) Find out the properties of parking violations across different times of the day: The Violation Time field is specified in a strange format. Find a way to make this into a time attribute that you can use to divide into groups.
+Hive> select from_unixtime(unix_timestamp(regexp_extract(violation_time,'(.*)[A-Z]',1),'HHmm'),"HH:mm") as date_data from parking_violations_issued limit 2;--> converted to time format 01:43
+Hive> select from_unixtime(unix_timestamp(concat(violation_time,'M'), 'HHmmaaa'),"HH:mmaaa") as date_data from parking_violations_issued limit 2;-->  working 01:43AM
+
+
+6.) Divide 24 hours into 6 equal discrete bins of time. The intervals you choose are at your discretion. For each of these groups, find the 3 most commonly occurring violations
+partitoned view :
+hive> create view vw_parking_violations_2017_partitioned_bins partitioned on (Violation_Code) as 
+SELECT Summons_Number, Violation_Time, Issuer_Precinct, 
+case 
+when substring(Violation_Time,1,2) in ('00','01','02','03','12') and upper(substring(Violation_Time,-1))='A' then 1 
+when substring(Violation_Time,1,2) in ('04','05','06','07') and upper(substring(Violation_Time,-1))='A' then 2 
+when substring(Violation_Time,1,2) in ('08','09','10','11') and upper(substring(Violation_Time,-1))='A' then 3 
+when substring(Violation_Time,1,2) in ('12','00','01','02','03') and upper(substring(Violation_Time,-1))='P' then 4 
+when substring(Violation_Time,1,2) in ('04','05','06','07') and upper(substring(Violation_Time,-1))='P' then 5 
+when substring(Violation_Time,1,2) in ('08','09','10','11') and upper(substring(Violation_Time,-1))='P'then 6 
+else null end as Violation_Time_bin,Violation_Code 
+from parking_violations_issued_2017 
+where Violation_Time is not null or (length(Violation_Time)=5 and upper(substring(Violation_Time,-1))in ('A','P') 
+and substring(Violation_Time,1,2) in ('00','01','02','03','04','05','06','07', '08','09','10','11','12'));
+----------------------------------------------------------------------------------------------------------------
+bin1 
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 1 group by Violation_Code order by TicketsIssued desc limit 3;
+Violation_code
+TicktesIssued
+21
+3660
+40
+2584
+14
+1574
+
+
+bin2
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 2 group by Violation_Code order by TicketsIssued desc limit 3;
+
+Violation_code
+TicktesIssued
+14
+7250
+40
+6403
+21
+5669
+
+bin3 
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 3 group by Violation_Code order by TicketsIssued desc limit 3;
+
+Violation_code
+TicktesIssued
+21
+59465
+36
+37767
+38
+17587
+
+bin4 
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 4 group by Violation_Code order by TicketsIssued desc limit 3;
+Violation_code
+TicktesIssued
+36
+28600
+38
+23877
+37
+16777
+
+
+bin5 
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 5 group by Violation_Code order by TicketsIssued desc limit 3;
+Violation_code
+TicktesIssued
+38
+10148
+14
+7609
+37
+6944
+
+bin6 
+select Violation_Code,count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Time_bin == 6 group by Violation_Code order by TicketsIssued desc limit 3;
+Violation_code
+TicktesIssued
+7
+2602
+40
+2159
+14
+2091
+
+
+7.) Now, try another direction. For the 3 most commonly occurring violation codes, find the most common times of day (in terms of the bins from the previous part)
+Hive>  select Violation_Time_bin, count(*) TicketsIssued from vw_parking_violations_2017_partitioned_bins where Violation_Code in (21, 37, 38,36) 
+group by Violation_Time_bin order by TicketsIssued desc limit 3;
+
+Violation_Time_bin
+TicketsIssued
+3
+116785
+4
+76701
+5
+18437
+
+
+
+
+
+
+
+8.) Let’s try and find some seasonality in this data
+      a.) First, divide the year into some number of seasons, and find frequencies of tickets for each season. (Hint: A quick Google search reveals the following seasons in NYC: Spring(March, April, March); Summer(June, July, August); Fall(September, October, November); Winter(December, January, February))
+
+Season    Month interval
+spring    March, April, May
+summer    June, July, August
+autumn    September, October, November
+winter    December, January, February
+
+normal view 
+----------------------
+Hive>  create view vw_tickets_issued_2017_bins as 
+select Violation_Code , Issuer_Precinct, 
+case 
+when MONTH(Issue_Date) between 03 and 05 then 'spring' 
+when MONTH(Issue_Date) between 06 and 08 then 'summer' 
+when MONTH(Issue_Date) between 09 and 11 then 'autumn' 
+when MONTH(Issue_Date) in (1,2,12) then 'winter' 
+else 'unknown' end  as season from parking_violations_issued_2017;
+
+--------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+partioned view :
+----------------------
+Hive>  create view vw_tickets_issued_2017_partitioned_bins partitioned on (Violation_Code) as
+select Issuer_Precinct, 
+case 
+when MONTH(Issue_Date) between 03 and 05 then 'spring' 
+when MONTH(Issue_Date) between 06 and 08 then 'summer' 
+when MONTH(Issue_Date) between 09 and 11 then 'autumn' select 
+when MONTH(Issue_Date) in (1,2,12) then 'winter' 
+else 'unknown' end  as season,Violation_Code from parking_violations_issued_2017;
+
+Hive>  select season, count(*) as TicketsIssued from vw_tickets_issued_2017_partitioned_bins group by season order by TicketsIssued desc;
+
+
+Season
+TicktesIssued
+Spring
+285875
+Winter
+169466
+Summer
+84560
+autumn
+0
+
+
+      b.)Then, find the 3 most common violations for each of these seasons.
+
+# spring season
+select Violation_Code, count(*) as TicketsIssued from vw_tickets_issued_2017_partitioned_bins where  
+season = 'spring' group by Violation_Code order by TicketsIssued desc limit 3;
+
+
+
+Violation_Code
+TicketsIssued
+21
+40045
+36
+34354
+38
+27001
+
+# winter season
+select Violation_Code, count(*) as TicketsIssued from vw_tickets_issued_2017_partitioned_bins where  
+season = 'winter' group by Violation_Code order by TicketsIssued desc limit 3;
+
+Violation_Code
+TicketsIssued
+21
+23684
+36
+22084
+38
+18450
+
+# summer season
+select Violation_Code, count(*) as TicketsIssued from vw_tickets_issued_2017_partitioned_bins where  
+season = 'summer' group by Violation_Code order by TicketsIssued desc limit 3;
+
+Violation_Code
+TicketsIssued
+21
+12565
+36
+9655
+38
+8331
+
+# autumn season
+select Violation_Code, count(*) as TicketsIssued from vw_tickets_issued_2017_partitioned_bins where  
+season = 'autumn' group by Violation_Code order by TicketsIssued desc limit 3;
+
+
+Violation_Code
+TicketsIssued
+
+
+
+
+I have used partionsed and Bucketing on Table - parking_violations_issued_2017 , and partions on views - vw_parking_violations_2017_partitioned_bins partitioned, vw_tickets_issued_2017_bins
+That improves query performance.
+
+Note: Please ensure you make necessary optimizations to your queries like selecting the appropriate table format, using partitioned/bucketed tables. Marks will be awarded for keeping the performance also in mind.
