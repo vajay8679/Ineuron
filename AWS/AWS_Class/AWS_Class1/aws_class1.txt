@@ -1,0 +1,5 @@
+https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&al[%E2%80%A6]2!3!536324516040!e!!g!!aws%20s3&awsf.Free%20Tier%20Types=*all&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Categories=*all
+
+https://aws.amazon.com/pricing/?p=ft&c=hp&z=5&aws-products-pricing.sort-by=item.additionalFields.productNameLowercase&awsf.Free%20Tier%20Type=*all&awsf.tech-category=*all&aws-products-pricing.sort-order=asc
+
+https://docs.aws.amazon.com/index.html
