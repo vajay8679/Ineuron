@@ -1,0 +1,51 @@
+{
+  "$id": "http://example.com/myURI.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "Sample schema to help you get started.",
+  "properties": {
+    "date": {
+      "description": "The type(v) type is used.",
+      "type": "string"
+    },
+    "code": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "province": {
+      "description": "The type(v) type is used.",
+      "type": "string"
+    },
+    "avg_temp": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "min_temp": {
+        "description": "The type(v) type is used.",
+        "type": "number"
+    },
+    "max_temp": {
+        "description": "The type(v) type is used.",
+        "type": "number"
+    },
+    "precipitation": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "max_wind_speed": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "most_wind_direction": {
+        "description": "The type(v) type is used.",
+        "type": "number"
+    },
+    "avg_relative_humidity": {
+        "description": "The type(v) type is used.",
+        "type": "number"
+    }
+  },
+  "title": "SampleRecord",
+  "type": "object"
+}
+

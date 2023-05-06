@@ -1,0 +1,58 @@
+{
+  "$id": "http://example.com/myURI.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "Sample schema to help you get started.",
+  "properties": {
+    "academy_ratio": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "city": {
+      "description": "The type(v) type is used.",
+      "type": "string"
+    },
+    "code": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "elderly_alone_ratio": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "elderly_population_ratio": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "elementary_school_count": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "kindergarten_count": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "latitude": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "longitude": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "nursing_home_count": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    },
+    "province": {
+      "description": "The type(v) type is used.",
+      "type": "string"
+    },
+    "university_count": {
+      "description": "The type(v) type is used.",
+      "type": "number"
+    }
+  },
+  "title": "SampleRecord",
+  "type": "object"
+}
