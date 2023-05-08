@@ -1,0 +1,14 @@
+README.md
+setup.py
+redshift_consumer.egg-info/PKG-INFO
+redshift_consumer.egg-info/SOURCES.txt
+redshift_consumer.egg-info/dependency_links.txt
+redshift_consumer.egg-info/top_level.txt
+src/__init__.py
+src/config/__init__.py
+src/config/environment.py
+src/config/spark_manager.py
+src/entity/__init__.py
+src/pipeline/__init__.py
+src/pipeline/s3_to_redshift.py
+src/utils/__init__.py

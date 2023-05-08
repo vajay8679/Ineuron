@@ -18,7 +18,7 @@ S3_KEY_DIM_CUST="dim_customers"
 S3_KEY_DIM_PROD="dim_products"
 S3_KEY_DIM_DATE="dim_dates"
 S3_KEY_DIM_LOC="dim_locations"
-S3_BUCKET_NAME ="eshop-redshift"
+S3_BUCKET_NAME ="retail-data-analysis-b3"
 S3_ROOT_KEY="kafka-topic"
 
 

@@ -17,13 +17,13 @@ password - example
 4. docker exec -i mysql sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' < "./database-dump/mysqlsampledatabase.sql"
 
 #on pellet type 
-dev containers:running
+5. dev containers:running
 
 #select updated one for mysql-kafka-s3
-pyspark 3.2.1
+6. pyspark 3.2.1
 
 create account
-https://confluent.cloud/signup
+7. https://confluent.cloud/signup
 
 create cluster - KAFKA_DEMO_CLUSTER
 create topic - dim_customers,dim_dates,dim_employees,dim_locations,dim_products,fact_sales
@@ -51,7 +51,7 @@ create 'requirements.txt'
 -e.
 python-dotenv
 
-after it run below command
+#after it run below command
 pip install -r requirements.txt
 
 
@@ -80,8 +80,38 @@ then run command on terminal
 1. python3 producer.py
 
 
-bucket name='retail-data-analysis-b2'
+bucket name='retail-data-analysis-b3'
 
-for kafka-redship 
+
+################################################
+#for kafka-redshift 
+
 we will use old version of pyspark
 pyspark-2.4.8
+
+
+#then create .env file and paste
+
+REDSHIFT_USER_NAME="admin"
+REDSHIFT_PASSWORD="Vajay8679"
+TEMP_BUCKET_NAME=""
+REDSHIFT_JDBC_URL="jdbc:redshift://redshiftdemo.700947433671.ap-south-1.redshift-serverless.amazonaws.com:5439/dev?user=<user_name>&password=<password>&ssl=true&sslfactory=com.amazon.redshift.ssl.NonValidatingFactory"
+
+
+#in terminal 
+
+pip install -r requirements.txt
+
+
+#in src > config >__init__.py
+
+#change bucket name with 
+S3_BUCKET_NAME ="retail-data-analysis-b3"
+
+#then on termial
+sh start.sh
+
+
+#then run query on redshift query editor
+
+select * from eshop.fact_sales limit 5;
