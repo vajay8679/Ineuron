@@ -20,12 +20,16 @@ Our data is picked from the hdfs layer and read by the spark engine. After readi
 Storage:
 Finally we can store the data as table in hive meatstore if required we can also create real time dashboards by using some dashboarding tools.
 
-To run this project :
-First we have to keep our files in the hdfs using the command
-hdfs dfs -put users.csv /
-hdfs dfs -put movies.csv /
-hdfs dfs -put ratings.csv /
 
-After the files are placed in the hdfs we can run the script python main.py 
+Setup
+To run this project, install it locally: first copy all files from local to HDFS location
 
+$ hdfs dfs -put users.csv /
+$ hdfs dfs -put movies.csv /
+$ hdfs dfs -put ratings.csv /
+Then on the Spark shell run the below command from CLI
+
+$ Python main.py
+or
+$ spark-submit main.py
 
