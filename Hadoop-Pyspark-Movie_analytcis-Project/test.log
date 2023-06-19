@@ -1,0 +1,1159 @@
+DEBUG:py4j.java_gateway:GatewayClient.address is deprecated and will be removed in version 1.0. Use GatewayParameters instead.
+DEBUG:py4j.clientserver:Command to send: A
+371c0c0003a5c54f5d557b5333304a42d4976c7f20c781b25e428170f371ff21
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.SparkConf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.api.java.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.api.python.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.ml.python.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.mllib.api.python.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.resource.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.sql.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.sql.api.python.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+org.apache.spark.sql.hive.*
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: j
+i
+rj
+scala.Tuple2
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: r
+u
+SparkConf
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.SparkConf
+DEBUG:py4j.clientserver:Command to send: i
+org.apache.spark.SparkConf
+bTrue
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro0
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.master
+sspark://localhost:7077
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro1
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.app.name
+sdemo
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro2
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.sql.warehouse.dir
+s/config/workspace/spark-warehouse
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro3
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.sql.catalogImplementation
+shive
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro4
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.serializer.objectStreamReset
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybfalse
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.serializer.objectStreamReset
+s100
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro5
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.rdd.compress
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybfalse
+DEBUG:py4j.clientserver:Command to send: c
+o0
+set
+sspark.rdd.compress
+sTrue
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro6
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.master
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybtrue
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.app.name
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybtrue
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.master
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybtrue
+DEBUG:py4j.clientserver:Command to send: c
+o0
+get
+sspark.master
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark://localhost:7077
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.app.name
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybtrue
+DEBUG:py4j.clientserver:Command to send: c
+o0
+get
+sspark.app.name
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysdemo
+DEBUG:py4j.clientserver:Command to send: c
+o0
+contains
+sspark.home
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybfalse
+DEBUG:py4j.clientserver:Command to send: c
+o0
+getAll
+e
+
+DEBUG:py4j.clientserver:Answer received: !yto7
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i0
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro8
+DEBUG:py4j.clientserver:Command to send: c
+o8
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.sql.catalogImplementation
+DEBUG:py4j.clientserver:Command to send: c
+o8
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !yshive
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i1
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro9
+DEBUG:py4j.clientserver:Command to send: c
+o9
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.master
+DEBUG:py4j.clientserver:Command to send: c
+o9
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark://localhost:7077
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i2
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro10
+DEBUG:py4j.clientserver:Command to send: c
+o10
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.app.name
+DEBUG:py4j.clientserver:Command to send: c
+o10
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysdemo
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i3
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro11
+DEBUG:py4j.clientserver:Command to send: c
+o11
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.rdd.compress
+DEBUG:py4j.clientserver:Command to send: c
+o11
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysTrue
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i4
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro12
+DEBUG:py4j.clientserver:Command to send: c
+o12
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.serializer.objectStreamReset
+DEBUG:py4j.clientserver:Command to send: c
+o12
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys100
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i5
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro13
+DEBUG:py4j.clientserver:Command to send: c
+o13
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.submit.pyFiles
+DEBUG:py4j.clientserver:Command to send: c
+o13
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i6
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro14
+DEBUG:py4j.clientserver:Command to send: c
+o14
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.submit.deployMode
+DEBUG:py4j.clientserver:Command to send: c
+o14
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysclient
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro15
+DEBUG:py4j.clientserver:Command to send: c
+o15
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.ui.showConsoleProgress
+DEBUG:py4j.clientserver:Command to send: c
+o15
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ystrue
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: a
+g
+o7
+i8
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro16
+DEBUG:py4j.clientserver:Command to send: c
+o16
+_1
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysspark.sql.warehouse.dir
+DEBUG:py4j.clientserver:Command to send: c
+o16
+_2
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys/config/workspace/spark-warehouse
+DEBUG:py4j.clientserver:Command to send: a
+e
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi9
+DEBUG:py4j.clientserver:Command to send: r
+u
+JavaSparkContext
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.java.JavaSparkContext
+DEBUG:py4j.clientserver:Command to send: i
+org.apache.spark.api.java.JavaSparkContext
+ro0
+e
+
+DEBUG:py4j.clientserver:Command to send: A
+371c0c0003a5c54f5d557b5333304a42d4976c7f20c781b25e428170f371ff21
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o1
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o2
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o3
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o4
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o5
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o6
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o7
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Answer received: !yro17
+DEBUG:py4j.clientserver:Command to send: c
+o17
+sc
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro18
+DEBUG:py4j.clientserver:Command to send: c
+o18
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro19
+DEBUG:py4j.clientserver:Command to send: r
+u
+PythonAccumulatorV2
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.python.PythonAccumulatorV2
+DEBUG:py4j.clientserver:Command to send: i
+org.apache.spark.api.python.PythonAccumulatorV2
+s127.0.0.1
+i49385
+s371c0c0003a5c54f5d557b5333304a42d4976c7f20c781b25e428170f371ff21
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro20
+DEBUG:py4j.clientserver:Command to send: c
+o17
+sc
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro21
+DEBUG:py4j.clientserver:Command to send: c
+o21
+register
+ro20
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: r
+u
+PythonUtils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.python.PythonUtils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.api.python.PythonUtils
+isEncryptionEnabled
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.api.python.PythonUtils
+isEncryptionEnabled
+ro17
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybfalse
+DEBUG:py4j.clientserver:Command to send: r
+u
+PythonUtils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.python.PythonUtils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.api.python.PythonUtils
+getPythonAuthSocketTimeout
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.api.python.PythonUtils
+getPythonAuthSocketTimeout
+ro17
+e
+
+DEBUG:py4j.clientserver:Answer received: !yL15
+DEBUG:py4j.clientserver:Command to send: r
+u
+PythonUtils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.python.PythonUtils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.api.python.PythonUtils
+getSparkBufferSize
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.api.python.PythonUtils
+getSparkBufferSize
+ro17
+e
+
+DEBUG:py4j.clientserver:Answer received: !yi65536
+DEBUG:py4j.clientserver:Command to send: r
+u
+org
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark.SparkFiles
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.SparkFiles
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.SparkFiles
+getRootDirectory
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.SparkFiles
+getRootDirectory
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys/tmp/spark-7da6c58a-1ed3-436c-8afb-94ea533ec30f/userFiles-0ce01201-aaf1-42cc-94b0-ed55efe52790
+DEBUG:py4j.clientserver:Command to send: c
+o19
+get
+sspark.submit.pyFiles
+s
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys
+DEBUG:py4j.clientserver:Command to send: r
+u
+org
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark.util
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark.util.Utils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.util.Utils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.util.Utils
+getLocalDir
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+o17
+sc
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro22
+DEBUG:py4j.clientserver:Command to send: c
+o22
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro23
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.util.Utils
+getLocalDir
+ro23
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys/tmp/spark-7da6c58a-1ed3-436c-8afb-94ea533ec30f
+DEBUG:py4j.clientserver:Command to send: r
+u
+org
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark.util
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !yp
+DEBUG:py4j.clientserver:Command to send: r
+u
+org.apache.spark.util.Utils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.util.Utils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.util.Utils
+createTempDir
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.util.Utils
+createTempDir
+s/tmp/spark-7da6c58a-1ed3-436c-8afb-94ea533ec30f
+spyspark
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro24
+DEBUG:py4j.clientserver:Command to send: c
+o24
+getAbsolutePath
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys/tmp/spark-7da6c58a-1ed3-436c-8afb-94ea533ec30f/pyspark-6f43b48d-0468-40cb-b8aa-e8151958726b
+DEBUG:py4j.clientserver:Command to send: c
+o19
+get
+sspark.python.profile
+sfalse
+e
+
+DEBUG:py4j.clientserver:Answer received: !ysfalse
+DEBUG:py4j.clientserver:Command to send: r
+u
+SparkSession
+rj
+e
+
+DEBUG:py4j.clientserver:Command to send: m
+d
+o0
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o8
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o9
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o10
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o11
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o12
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o13
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o14
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o15
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o16
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o18
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o21
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o22
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o23
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: m
+d
+o24
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.sql.SparkSession
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.sql.SparkSession
+getDefaultSession
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.sql.SparkSession
+getDefaultSession
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro25
+DEBUG:py4j.clientserver:Command to send: c
+o25
+isDefined
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybfalse
+DEBUG:py4j.clientserver:Command to send: r
+u
+SparkSession
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.sql.SparkSession
+DEBUG:py4j.clientserver:Command to send: c
+o17
+sc
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro26
+DEBUG:py4j.clientserver:Command to send: i
+org.apache.spark.sql.SparkSession
+ro26
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro27
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sqlContext
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro28
+DEBUG:py4j.clientserver:Command to send: r
+u
+SparkSession
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.sql.SparkSession
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.sql.SparkSession
+setDefaultSession
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.sql.SparkSession
+setDefaultSession
+ro27
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: r
+u
+SparkSession
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.sql.SparkSession
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.sql.SparkSession
+setActiveSession
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.sql.SparkSession
+setActiveSession
+ro27
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sessionState
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro29
+DEBUG:py4j.clientserver:Command to send: c
+o29
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro30
+DEBUG:py4j.clientserver:Command to send: c
+o30
+setConfString
+sspark.master
+sspark://localhost:7077
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sessionState
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro31
+DEBUG:py4j.clientserver:Command to send: c
+o31
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro32
+DEBUG:py4j.clientserver:Command to send: c
+o32
+setConfString
+sspark.app.name
+sdemo
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sessionState
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro33
+DEBUG:py4j.clientserver:Command to send: c
+o33
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro34
+DEBUG:py4j.clientserver:Command to send: c
+o34
+setConfString
+sspark.sql.warehouse.dir
+s/config/workspace/spark-warehouse
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sessionState
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro35
+DEBUG:py4j.clientserver:Command to send: c
+o35
+conf
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro36
+DEBUG:py4j.clientserver:Command to send: c
+o36
+setConfString
+sspark.sql.catalogImplementation
+shive
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o28
+read
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro37
+DEBUG:py4j.clientserver:Command to send: c
+o37
+option
+sheader
+strue
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro38
+DEBUG:py4j.clientserver:Command to send: r
+u
+PythonUtils
+rj
+e
+
+DEBUG:py4j.clientserver:Answer received: !ycorg.apache.spark.api.python.PythonUtils
+DEBUG:py4j.clientserver:Command to send: r
+m
+org.apache.spark.api.python.PythonUtils
+toSeq
+e
+
+DEBUG:py4j.clientserver:Answer received: !ym
+DEBUG:py4j.clientserver:Command to send: i
+java.util.ArrayList
+e
+
+DEBUG:py4j.clientserver:Answer received: !ylo39
+DEBUG:py4j.clientserver:Command to send: c
+o39
+add
+s/movies.csv
+e
+
+DEBUG:py4j.clientserver:Answer received: !ybtrue
+DEBUG:py4j.clientserver:Command to send: c
+z:org.apache.spark.api.python.PythonUtils
+toSeq
+ro39
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro40
+DEBUG:py4j.clientserver:Command to send: c
+o38
+csv
+ro40
+e
+
+DEBUG:py4j.clientserver:Command to send: m
+d
+o39
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Answer received: !yro41
+DEBUG:py4j.clientserver:Command to send: c
+o41
+showString
+i20
+i20
+bFalse
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys+-------+--------------------+--------------------+-------------+------+\n|Movieid|               Title|              Genres|        empty|empty1|\n+-------+--------------------+--------------------+-------------+------+\n|      1|    Toy Story (1995)|Animation|Childre...|         null|  null|\n|      2|      Jumanji (1995)|Adventure|Childre...|         null|  null|\n|      3|Grumpier Old Men ...|      Comedy|Romance|         null|  null|\n|      4|Waiting to Exhale...|        Comedy|Drama|         null|  null|\n|      5|Father of the Bri...|              Comedy|         null|  null|\n|      6|         Heat (1995)|Action|Crime|Thri...|         null|  null|\n|      7|      Sabrina (1995)|      Comedy|Romance|         null|  null|\n|      8| Tom and Huck (1995)|Adventure|Children's|         null|  null|\n|      9| Sudden Death (1995)|              Action|         null|  null|\n|     10|    GoldenEye (1995)|Action|Adventure|...|         null|  null|\n|     11|  American President|                null|         null|  null|\n|     12|             Dracula| Dead and Loving ...|Comedy|Horror|  null|\n|     13|        Balto (1995)|Animation|Children's|         null|  null|\n|     14|        Nixon (1995)|               Drama|         null|  null|\n|     15|Cutthroat Island ...|Action|Adventure|...|         null|  null|\n|     16|       Casino (1995)|      Drama|Thriller|         null|  null|\n|     17|Sense and Sensibi...|       Drama|Romance|         null|  null|\n|     18|   Four Rooms (1995)|            Thriller|         null|  null|\n|     19|         Ace Ventura| When Nature Call...|       Comedy|  null|\n|     20|  Money Train (1995)|              Action|         null|  null|\n+-------+--------------------+--------------------+-------------+------+\nonly showing top 20 rows\n
+DEBUG:py4j.clientserver:Command to send: c
+o27
+sql
+sCREATE DATABASE IF NOT EXISTS analytics
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro42
+DEBUG:py4j.clientserver:Command to send: c
+o41
+write
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro43
+DEBUG:py4j.clientserver:Command to send: c
+o43
+mode
+soverwrite
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro44
+DEBUG:py4j.clientserver:Command to send: c
+o44
+saveAsTable
+sanalytics.movies
+e
+
+DEBUG:py4j.clientserver:Command to send: m
+d
+o42
+e
+
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Answer received: !yv
+DEBUG:py4j.clientserver:Command to send: c
+o28
+read
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro45
+DEBUG:py4j.clientserver:Command to send: c
+o45
+table
+sanalytics.movies
+e
+
+DEBUG:py4j.clientserver:Answer received: !yro46
+DEBUG:py4j.clientserver:Command to send: c
+o46
+showString
+i20
+i20
+bFalse
+e
+
+DEBUG:py4j.clientserver:Answer received: !ys+-------+--------------------+--------------------+-------------+------+\n|Movieid|               Title|              Genres|        empty|empty1|\n+-------+--------------------+--------------------+-------------+------+\n|      1|    Toy Story (1995)|Animation|Childre...|         null|  null|\n|      2|      Jumanji (1995)|Adventure|Childre...|         null|  null|\n|      3|Grumpier Old Men ...|      Comedy|Romance|         null|  null|\n|      4|Waiting to Exhale...|        Comedy|Drama|         null|  null|\n|      5|Father of the Bri...|              Comedy|         null|  null|\n|      6|         Heat (1995)|Action|Crime|Thri...|         null|  null|\n|      7|      Sabrina (1995)|      Comedy|Romance|         null|  null|\n|      8| Tom and Huck (1995)|Adventure|Children's|         null|  null|\n|      9| Sudden Death (1995)|              Action|         null|  null|\n|     10|    GoldenEye (1995)|Action|Adventure|...|         null|  null|\n|     11|  American President|                null|         null|  null|\n|     12|             Dracula| Dead and Loving ...|Comedy|Horror|  null|\n|     13|        Balto (1995)|Animation|Children's|         null|  null|\n|     14|        Nixon (1995)|               Drama|         null|  null|\n|     15|Cutthroat Island ...|Action|Adventure|...|         null|  null|\n|     16|       Casino (1995)|      Drama|Thriller|         null|  null|\n|     17|Sense and Sensibi...|       Drama|Romance|         null|  null|\n|     18|   Four Rooms (1995)|            Thriller|         null|  null|\n|     19|         Ace Ventura| When Nature Call...|       Comedy|  null|\n|     20|  Money Train (1995)|              Action|         null|  null|\n+-------+--------------------+--------------------+-------------+------+\nonly showing top 20 rows\n
