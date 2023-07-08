@@ -1,0 +1,22 @@
+demo_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: mysql
+      server: localhost
+      port: 3306  # optional
+      database: dbt_demo # optional, should be same as schema
+      schema: dbt_demo
+      username: root1
+      password: Vajay8679@
+      driver: MySQL ODBC 8.0 ANSI Driver
+    prod:
+      type: mysql
+      server: [server/host]
+      port: [port]  # optional
+      database: [schema] # optional, should be same as schema
+      schema: [schema]
+      username: [username]
+      password: [password]
+      driver: MySQL ODBC 8.0 ANSI Driver
+

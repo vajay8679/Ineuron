@@ -1,0 +1,4 @@
+name,age,gender
+Ajay,25,M
+Amit,24,M
+shreya,23,F
