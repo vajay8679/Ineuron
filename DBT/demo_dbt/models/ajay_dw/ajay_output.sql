@@ -1,3 +1,4 @@
+
 {{ 
     config(
         materialized='incremental',
@@ -6,10 +7,13 @@
 }}
 
 
-select * from  dbt_demo.Persons t 
+-- select * from  dbt_demo.Persons t 
+select * from {{source('dbt_demo','Persons')}} t
+
 
 {% if is_incremental() %}
 
-   where t.PersonID >= (select MAX(PersonID) from {{ this }})
+   --this filter will only be applied on incremental run
+   where t.PersonID > (select MAX(PersonID) from {{ this }})
 
 {% endif %}
