@@ -19,7 +19,7 @@ ssh -> myIP
 
 #4. on terminal after creating EMR cluster
 1. chmod 400 emrdatapipeline.pem
-2. ssh -i ~/Desktop/Ajay/Ineuron/5\ Days\ Placement\ Crash\ Course/Data_Pipeline/emrdatapipeline.pem hadoop@ec2-3-110-218-220.ap-south-1.compute.amazonaws.com
+2. ssh -i ~/Desktop/Ajay/Ineuron/5\ Days\ Placement\ Crash\ Course/ETL_Data_Pipeline_on_AWS_EMR_Cluster/emrdatapipeline.pem hadoop@ec2-3-110-218-220.ap-south-1.compute.amazonaws.com
 
 
 
