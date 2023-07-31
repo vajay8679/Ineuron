@@ -142,3 +142,11 @@ hive> show partitions final_sales_tbl;
 
 #for visualization we can use tablue
 
+#Table Desktop  
+to a server -> more-> Amazon EMR Hadoop Hive -> download and install driver
+
+#Then restart tablue desktop then -> 
+ Amazon EMR Hadoop Hive -> general -> server name from EMR (Master Public DNS) -> 
+ port (10000) -> username(hive) -> require(SSL) -> signin
+
+after signin we will reach to UI and where we can select final_sales_tbl and start working on visualization side

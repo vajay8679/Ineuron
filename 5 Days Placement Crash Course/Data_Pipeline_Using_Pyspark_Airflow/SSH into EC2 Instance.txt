@@ -1,0 +1,6 @@
+Connect to the instance using SSH
+
+
+ssh -i "D:\path\to\private\key.pem" user@Public_DNS
+
+Example: ssh -i "D:\Users\imran\Desktop\datapipeline.pem" ec2-user@ec2-34-235-133-172.compute-1.amazonaws.com
