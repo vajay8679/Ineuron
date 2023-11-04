@@ -1,0 +1,23 @@
+{
+    "emp_details": [
+        {
+            "emp_name": "Ajay",
+            "email": "ajay@gmail.com",
+            "age": 28,
+            "department": "IT"
+        },
+        {
+            "emp_name": "AMit",
+            "email": "amit@gmail.com",
+            "age": 26,
+            "department": "Agricutlute"
+        },
+        {
+            "emp_name": "Sumit",
+            "email": "sumit@gmail.com",
+            "age": 24,
+            "department": "Business"
+        }
+
+    ]
+}
