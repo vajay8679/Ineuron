@@ -92,3 +92,21 @@ with open('office.csv', 'r') as csvfile:
 
 
 # Instead of passing three individual formatting patterns, let's look at how to use dialects to read this file.
+
+
+
+date.today() creates a datetime.date instance with the current local date.
+datetime.now() creates a datetime.datetime instance with the current local date and time.
+datetime.combine() combines instances of datetime.date and datetime.time into a single datetime.datetime instance.
+
+
+https://realpython.com/python-datetime/
+
+
+# The strftime() method is defined under classes date, datetime and time. The method creates a formatted string from a given date, datetime or time object.
+
+# The strptime() method creates a datetime object from a given string (representing date and time). 
+
+# Handling timezone in Python
+from datetime import datetime
+import pytz
