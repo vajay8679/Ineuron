@@ -1,0 +1,71 @@
+{
+	"assignment_results": [
+		{
+			"deep_link": "https://www.booking.com/searchresults.en-US.html?dest_type=hotel&dest_id=4480704&checkin=2021-2-1;checkout=2021-2-2&selected_currency=USD;",
+			"hotel_name": "Home2 Suites By Hilton San Francisco Airport North",
+			"hotel_id": "4480704",
+			"ext_data": {
+				"scan_longitude": -122.3992458,
+				"scan_latitude": 37.65710296,
+				"scan_occupancy_from_scan": 4,
+				"scan_checkin_from_scan": null,
+				"scan_checkout_from_scan": null,
+				"taxes": "{ \"13 % TAX\":\"14.70\", \"City tax\":\"4.01\"}"
+			},
+			"cancellation_policy": "Guests:",
+			"number_of_guests": 4,
+			"breakfast": "included",
+			"shown_price": {
+				"King Studio Suite - Hearing Accessible/Non-Smoking": "113.05",
+				"King Studio Suite - Non Smoking": "90",
+				"King Room - Mobility/Hearing Accessible - Non-Smoking": "115.05",
+				"Queen Suite with Two Queen Beds - Non-Smoking": "112.05"
+			},
+			"currency": "USD",
+			"net_price": {
+				"King Studio Suite - Hearing Accessible/Non-Smoking": "113.05",
+				"King Studio Suite - Non Smoking": "90",
+				"King Room - Mobility/Hearing Accessible - Non-Smoking": "115.05",
+				"Queen Suite with Two Queen Beds - Non-Smoking": "112.05"
+			},
+			"availability": "",
+			"ci_date": "2021-02-01",
+			"co_date": "2021-02-02",
+			"los": 1,
+			"site_name": "booking",
+			"site_type": "ota",
+			"shown_currency": "USD",
+			"pos": "US",
+			"snapshot_url": [
+				"https://storage.googleapis.com/prod-public-snapshots.gcphosts.net/booking_hotel/202101/60041b12fef076f02f58a8a5%253A%253A27-968117.png"
+			]
+		}
+	],
+	"aux_data": {
+		"pid": "4480704",
+		"input_uniqueness_key": "203628//booking/Home2 Suites by Hilton San Francisco Airport North, CA/[69260]/2021-02-01/2021-02-02/US/en-US/USD///public/Hilton Corporate/group_3//hotel//413962644/",
+		"pos": "US",
+		"los": 1,
+		"assignment_id": 413962644,
+		"shop_currency_id": "USD",
+		"region": "North America",
+		"access_level": "public",
+		"name": "Home2 Suites by Hilton San Francisco Airport North, CA",
+		"address": "USA, Home2 Suuites by Hilton-San Francisco Airport North, CA, South San Francisco",
+		"provider": "booking",
+		"customer_name": "Hilton Corporate",
+		"scan_level": "hotel",
+		"scan_method": "web",
+		"fn_hotel_id": 203628,
+		"scan_date": "2021-01-17",
+		"city": "South San Francisco",
+		"country": "USA",
+		"brand": "Home2 Suites by Hilton",
+		"chain": "Hilton",
+		"language_id": "en-US",
+		"site_hotel_id": "4480704",
+		"checkin": "2021-02-01",
+		"checkout": "2021-02-02",
+		"device": "web"
+	}
+}
