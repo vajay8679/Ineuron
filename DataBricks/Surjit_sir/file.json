@@ -1,0 +1,24 @@
+{
+    "country": "United Kingdom,"
+    "state": "England",
+    "city": "London",
+    "latitude": 51.466652350000004,
+    "longitude": -0.09686637642617651,
+    "date": "2022-04-13",
+    "current_time": "03:12:55.044",
+    "sunrise": "06:09",
+    "sunset": "19:53",
+    "sun_status": "-",
+    "solar_noon": "13:01",
+    "day_length": "13:44",
+    "sun_altitude": -23.19751117067553,
+    "sun_distance": 1.4988500851835912E8,
+    "sun_azimuth": 35.781559107335625,
+    "moonrise": "15:43",
+    "moonset": "05:28",
+    "moon_status": "-",
+    "moon_altitude": 20.615536932562232,
+    "moon_distance": 387894.3437906608,
+    "moon_azimuth": 266.5048405334666,
+    "moon_parallactic_angle": 34.5669393631715
+}
