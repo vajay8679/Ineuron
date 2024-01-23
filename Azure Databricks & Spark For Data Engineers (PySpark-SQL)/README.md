@@ -294,4 +294,61 @@ spark.conf.set("fs.azure.account.oauth2.client.secret.<storage-account>.dfs.core
 spark.conf.set("fs.azure.account.oauth2.client.endpoint.<storage-account>.dfs.core.windows.net", "https://login.microsoftonline.com/<directory-id>/oauth2/token")
 
 
+################################
+client_id = "28ecc4a8-1683-472b-b989-e1b58a010be7"
+tenant_id = "f4bcbf87-8f54-476e-9ded-e78763f85179"
+client_secret = ".tM8Q~EBHpwkEkSVPNcoeFltavnx7LCcFEXYdb27"
+
+#authenticate using service principal
+spark.conf.set("fs.azure.account.auth.type.formula1dlajay.dfs.core.windows.net", "OAuth")
+spark.conf.set("fs.azure.account.oauth.provider.type.formula1dlajay.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider")
+spark.conf.set("fs.azure.account.oauth2.client.id.formula1dlajay.dfs.core.windows.net", client_id)
+spark.conf.set("fs.azure.account.oauth2.client.secret.formula1dlajay.dfs.core.windows.net", client_secret)
+spark.conf.set("fs.azure.account.oauth2.client.endpoint.formula1dlajay.dfs.core.windows.net", f"https://login.microsoftonline.com/{tenant_id}/oauth2/token")
+###################################
+
 for IAM role - > go to storage account and then add role 'Storage Blob Data Contributor' and then add member 'Formula 1' from azure active directory
+
+
+32. Cluster Scoped Authentication
+
+for this we will edit our cluster and go to 'advanced option' -> Spark config -> add details
+
+paste below code and restart cluster
+
+fs.azure.account.key.formula1dlajay.dfs.core.windows.net i49cKHszeU4Pn+qcQ6jji+RxNjxfmOiFcCw+GlgqCjz6prDowWCOJhLhQOD+ZGAe4j98RXzq0gXG+AStkaJ50A==
+
+
+
+33. Access Azure Data Lake using Credential Passthrough
+
+
+for this we will edit our cluster and go to 'advanced option' -> Spark config -> Enable credential passthrough for user-level data access 
+
+
+and then we have to go storage account and then 'access control (IAM)
+
+select role - 'Storage Blob Data Contributor' 
+
+and after running notebook remove 'Enable credential passthrough for user-level data access ' from cluster
+
+
+
+34. Recommended Approach for Course Project
+
+using service principal is best
+
+
+
+######################################
+Section 7 - Securing Access to Azure Data Lake
+
+35. Securing Secrets Overview
+
+  1. Databricks Secret Scope
+  2. Azure Key Vault
+
+
+
+
+36. Creating Azure Key Vault
