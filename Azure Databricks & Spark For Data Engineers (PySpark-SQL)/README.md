@@ -352,3 +352,93 @@ Section 7 - Securing Access to Azure Data Lake
 
 
 36. Creating Azure Key Vault
+
+go to create resource then search 'key vault'and click and then create
+
+https://portal.azure.com/#view/Microsoft_Azure_Marketplace/MarketplaceOffersBlade/selectedMenuItemId/home/searchQuery/key%20vault/searchInitiatedFrom/plusNewBladeSearchContext/suggestionCorrelationGuid/f3f46dd6-66a3-495c-900f-ef4562521002/suggestionResponseRequestId/b84e639a-6ef3-46d9-8c20-27b25c1c4de8
+
+ Key vault name - formula1-key-vault-ajay
+
+ soft delete - enabled
+ Permission model - Vault access policy
+
+
+then go to 'resource'
+
+and then go to 'Secrets' in sidebar
+
+and then create 
+
+Name - formula1dl-account-key
+value - i49cKHszeU4Pn+qcQ6jji+RxNjxfmOiFcCw+GlgqCjz6prDowWCOJhLhQOD+ZGAe4j98RXzq0gXG+AStkaJ50A==
+
+
+
+
+37. Creating Secret Scope
+
+go to databricks and click on azure icon and then url like this
+
+https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#secrets/createScope
+
+and give name - 'formula1-scope'
+
+and from key-vault go to properties section and copy and paste in scope
+
+Vault URI - https://formula1-key-vault-ajay.vault.azure.net/
+Resource ID - /subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-rg/providers/Microsoft.KeyVault/vaults/formula1-key-vault-ajay
+
+
+
+38. Databricks Secrets Utility
+
+dbutils.secrets
+
+dbutils.secrets.help()
+dbutils.secrets.listScopes()
+dbutils.secrets.list(scope = 'formula1-scope')
+dbutils.secrets.get(scope = 'formula1-scope', key = 'formula1dl-account-key')
+
+39. Using Secrets to Access Azure Data Lake using notebooks
+
+
+formula1dl_account_key = dbutils.secrets.get(scope = 'formula1-scope' , key = 'formula1dl-account-key')
+
+spark.conf.set("fs.azure.account.key.formula1dlajay.dfs.core.windows.net", formula1dl_account_key)
+
+dbutils.fs.ls('abfss://demo@formula1dlajay.dfs.core.windows.net/')
+
+
+40. Using Secrets to Access Azure Data Lake using notebooks (Assignment)
+
+https://portal.azure.com/#view/Microsoft_Azure_KeyVault/CreateSecretBlade/secret~/null/vaultId/%2Fsubscriptions%2F49a84c57-21dd-4dde-a744-8c4a8075b500%2FresourceGroups%2Fdatabrickscourse-rg%2Fproviders%2FMicrosoft.KeyVault%2Fvaults%2Fformula1-key-vault-ajay
+
+create secret for sas token
+copy sas token from container demo from storage account and then paste in place of value
+
+name - formula1dl-demo-sas-token
+
+same we did for service principal
+
+formula1-account-client-secret - client_secret
+formula1-account-tenant-id - tenant_id
+formula1-account-client-id - client_id
+
+
+
+41. Using Secrets Utility in Clusters
+
+
+go to cluster and edit and advacned option and then paste below line and after complete remove it and restart cluster
+
+fs.azure.account.key.formula1dlajay.dfs.core.windows.net {{secrets/formula1-scope/formula1dl-account-key}}
+
+                                                                   {{secrets/scope/access-key}} 
+
+
+
+#######################################
+section -8 -Mounting Data lake Container to Databricks
+
+
+43. Databricks File System (DBFS)
