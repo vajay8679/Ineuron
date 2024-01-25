@@ -442,3 +442,103 @@ section -8 -Mounting Data lake Container to Databricks
 
 
 43. Databricks File System (DBFS)
+
+go to admin setting -> Advanced ->Other ->dbfs browser enabled
+
+dbutils.fs.ls('/')
+display(dbutils.fs.ls('dbfs:/FileStore/'))
+display(spark.read.csv('dbfs:/FileStore/circuits.csv'))
+display(spark.read.csv('/FileStore/circuits.csv'))
+
+
+44. Databricks Mount overview
+
+https://learn.microsoft.com/en-us/azure/databricks/dbfs/mounts
+
+dbfs -> /mnt/stroage1
+
+using 'service principal' from 'azure active directory'
+
+45. Mounting Azure Data Lake Storage Gen2
+
+
+Mount Azure Data Lake using Service Principal
+https://learn.microsoft.com/en-us/azure/databricks/dbfs/mounts
+
+
+client_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-id")
+tenant_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-tenant-id") 
+client_secret = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-secret") 
+
+configs = {"fs.azure.account.auth.type": "OAuth",
+          "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+          "fs.azure.account.oauth2.client.id": client_id,
+          "fs.azure.account.oauth2.client.secret": client_secret,
+          "fs.azure.account.oauth2.client.endpoint": f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"}
+
+dbutils.fs.mount(
+  source = "abfss://demo@formula1dlajay.dfs.core.windows.net/",
+  mount_point = "/mnt/formula1dlajay/demo", #we ca give name whatever we want
+  extra_configs = configs)
+
+display(dbutils.fs.ls('/mnt/formula1dlajay/demo'))
+
+spark.read.csv("/mnt/formula1dlajay/demo")
+
+display(spark.read.csv("/mnt/formula1dlajay/demo"))
+
+display(dbutils.fs.mounts())
+
+dbutils.fs.unmount('/mnt/formula1dlajay/demo')
+
+
+46. Mounting Azure Data Lake Storage Gen2 (Assignment)
+
+def mount_adls(storage_account_name,container_name):
+    #get secrets from key-vault
+    client_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-id")
+    tenant_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-tenant-id") 
+    client_secret = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-secret") 
+
+    #set spark configurations
+    configs = {"fs.azure.account.auth.type": "OAuth",
+          "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+          "fs.azure.account.oauth2.client.id": client_id,
+          "fs.azure.account.oauth2.client.secret": client_secret,
+          "fs.azure.account.oauth2.client.endpoint": f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"}
+    
+    #unmount the storage account container
+    if any(mount.mountPoint == f"/mnt/{storage_account_name}/{container_name}" for mount in dbutils.fs.mounts()):
+        dbutils.fs.unmount(f"/mnt/{storage_account_name}/{container_name}")
+    
+    #Mount the storage account container
+    dbutils.fs.mount(
+        source = f"abfss://{container_name}@{storage_account_name}.dfs.core.windows.net/",
+        mount_point = f"/mnt/{storage_account_name}/{container_name}", #we ca give name whatever we want
+        extra_configs = configs)
+    display(dbutils.fs.mounts())
+
+
+mount_adls('formula1dlajay','raw')
+mount_adls('formula1dlajay','processed')
+mount_adls('formula1dlajay','presentation')
+
+display(dbutils.fs.ls("/mnt/formula1dlajay/demo"))
+
+
+##################################################################
+section -9  - Formula1 Project Overview
+
+
+48. Formula1 Data Overview
+
+https://ergast.com/mrd/
+
+
+
+49. Upload Formula1 Data to Data Lake
+
+upload from 'row' folder all 6 files and 2 folder into 'raw' container
+
+
+50. Project Requirement Overview
