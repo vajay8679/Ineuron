@@ -254,3 +254,171 @@ section -12 Data Ingestion - JSON
 
 
 65. Constructors File - Requirements
+
+json -> read -> transform -> write -> parquet
+
+data ingestion json
+
+
+
+66. Constructors File - Read Data
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrameReader.schema.html
+
+constructor_schema = "constructorId INT,constructorRef string,name string, nationality string, url string"
+construct_df = spark.read.schema(constructor_schema).json('/mnt/formula1dlajay/raw/constructors.json/')
+construct_df.printSchema()
+display(construct_df)
+
+
+67. Constructors File - Transform & Write Data
+
+from pyspark.sql.functions import col
+constructor_dropped_df = construct_df.drop(col('url'))
+
+
+from pyspark.sql.functions import current_timestamp
+
+constructor_renamed_df = constructor_dropped_df.withColumnRenamed("constructorId","constructor_id") \
+                                               .withColumnRenamed("constructorRef","constructor_ref") \
+                                               .withColumn("ingestion_date",current_timestamp())
+
+display(constructor_renamed_df)
+
+constructor_renamed_df.write.mode('overwrite').parquet('/mnt/formula1dlajay/processed/constructors')
+
+
+
+
+68. Drivers File - Requirements
+
+driver.json file
+
+concatenate firstname,lastname and ingest date and rename columns
+
+
+69. Drivers File - Spark Program
+
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType
+
+name_schema = StructType(fields=[StructField("forename",StringType(),True),
+                                 StructField("surname",StringType(),True) 
+                        ])
+
+driver_schema = StructType(fields=[StructField("driverId",IntegerType(),False),
+                                StructField("driverRef",StringType(),True),
+                                StructField("number",IntegerType(),True),
+                                StructField("code",StringType(),True),
+                                StructField("name",name_schema) ,
+                                StructField("dob",DateType(),True),
+                                StructField("nationality",StringType(),True),
+                                StructField("url",StringType(),True),      
+                        ])
+
+driver_df = spark.read.schema(driver_schema).json('/mnt/formula1dlajay/raw/drivers.json')
+
+driver_rename_df = driver_df.withColumnRenamed("driverId","driver_id") \
+                            .withColumnRenamed("driverRef","driver_ref") \
+                            .withColumn("ingestion_date",current_timestamp()) \
+                            .withColumn("name", concat(col("name.forename"),lit(" "),col("name.surname")))  
+
+driver_final_df = driver_rename_df.drop("url")
+
+display(spark.read.parquet('/mnt/formula1dlajay/processed/drivers'))
+
+
+
+
+70. Results File - Requirements
+
+data ingestion of results.json file - assignment
+
+https://ergast.com/docs/f1db_user_guide.txt
+
+
+
+71. Results File - Spark Program (Assignment)
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
+
+results_schema = StructType(fields=[StructField("resultId", IntegerType(), False),
+                                    StructField("raceId", IntegerType(), True),
+                                    StructField("driverId", IntegerType(), True),
+                                    StructField("constructorId", IntegerType(), True),
+                                    StructField("number", IntegerType(), True),
+                                    StructField("grid", IntegerType(), True),
+                                    StructField("position", IntegerType(), True),
+                                    StructField("positionText", StringType(), True),
+                                    StructField("positionOrder", IntegerType(), True),
+                                    StructField("points", FloatType(), True),
+                                    StructField("laps", IntegerType(), True),
+                                    StructField("time", StringType(), True),
+                                    StructField("milliseconds", IntegerType(), True),
+                                    StructField("fastestLap", IntegerType(), True),
+                                    StructField("rank", IntegerType(), True),
+                                    StructField("fastestLapTime", StringType(), True),
+                                    StructField("fastestLapSpeed", FloatType(), True),
+                                    StructField("statusId", StringType(), True)])
+
+results_df = spark.read \
+.schema(results_schema) \
+.json("/mnt/formula1dlajay/raw/results.json")
+
+from pyspark.sql.functions import current_timestamp
+
+
+results_with_columns_df = results_df.withColumnRenamed("resultId", "result_id") \
+                                    .withColumnRenamed("raceId", "race_id") \
+                                    .withColumnRenamed("driverId", "driver_id") \
+                                    .withColumnRenamed("constructorId", "constructor_id") \
+                                    .withColumnRenamed("positionText", "position_text") \
+                                    .withColumnRenamed("positionOrder", "position_order") \
+                                    .withColumnRenamed("fastestLap", "fastest_lap") \
+                                    .withColumnRenamed("fastestLapTime", "fastest_lap_time") \
+                                    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed") \
+                                    .withColumn("ingestion_date", current_timestamp()) 
+
+from pyspark.sql.functions import col
+
+results_final_df = results_with_columns_df.drop(col("statusId"))
+
+results_final_df.write.mode("overwrite").partitionBy('race_id').parquet("/mnt/formula1dl/processed/results")
+
+
+
+72. Pitstops File - Requirements
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
+
+pit_stops_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
+                                    StructField("driverId", IntegerType(), True),
+                                    StructField("stop", StringType(), True),
+                                    StructField("lap", IntegerType(), True),
+                                    StructField("time", StringType(), True),                                                                      
+                                    StructField("duration", StringType(), True),
+                                    StructField("milliseconds", IntegerType(), True)
+                                    ])
+
+pit_stops_df = spark.read \
+.schema(pit_stops_schema) \
+.option("multiLine",True) \ # for multiline
+.json("/mnt/formula1dlajay/raw/pit_stops.json")
+
+display(pit_stops_df)
+
+from pyspark.sql.functions import current_timestamp
+
+
+pit_stops_with_columns_df = pit_stops_df.withColumnRenamed("raceId", "race_id") \
+                                    .withColumnRenamed("driverId", "driver_id") \
+                                    .withColumn("ingestion_date", current_timestamp())
+
+
+display(pit_stops_with_columns_df)
+
+pit_stops_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/processed/pit_stops")
+
+display(spark.read.parquet('/mnt/formula1dlajay/processed/pit_stops'))
+
+
