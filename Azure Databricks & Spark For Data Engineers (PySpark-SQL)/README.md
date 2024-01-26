@@ -542,3 +542,42 @@ upload from 'row' folder all 6 files and 2 folder into 'raw' container
 
 
 50. Project Requirement Overview
+
+dataingestionrequirement
+transofrmdata
+analysisrequiremnt
+schedulingrequirement
+otherrequirement
+
+
+51. Solution Architecture Overview
+
+https://learn.microsoft.com/en-gb/azure/architecture/solution-ideas/articles/azure-databricks-modern-analytics-architecture
+
+https://www.databricks.com/solutions/data-engineering
+
+https://learn.microsoft.com/en-us/azure/architecture/
+
+https://www.databricks.com/blog
+
+solutionarchitechture
+Modern analytics architecture with Azure Databricks
+databricksarchitecture
+
+
+#######################################
+section 10 - Spark Introduction
+
+52. Spark Cluster Architecture
+
+scaling - 
+horizonal scaling - adding more worker node
+vertical scaling -adding more core in the same machine 
+
+clster has - 1driver , 1 or more worker node 
+worker node has  4cpu core or more and it has slots where execution happens
+
+
+
+53. Dataframe & Data Source API Overview
+
