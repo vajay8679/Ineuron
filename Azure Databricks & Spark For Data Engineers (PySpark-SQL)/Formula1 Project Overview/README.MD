@@ -154,3 +154,103 @@ display(circuits_selected_df)
 
 59. Circuits File - WithColumnRenamed
 
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumnRenamed.html#pyspark.sql.DataFrame.withColumnRenamed
+
+
+circuits_renamed_df =  circuits_selected_df.withColumnRenamed("circuitId","circuit_id") \
+                       .withColumnRenamed("circuitRef","circuit_ref") \
+                       .withColumnRenamed("lat","latitude") \
+                       .withColumnRenamed("lng","longitude") \
+                       .withColumnRenamed("alt","altitude")
+
+
+display(circuits_renamed_df)
+
+
+
+
+60. Circuits File - WithColumn
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumns.html#pyspark.sql.DataFrame.withColumns
+
+step -4 Add ingestion data to Dataframe
+from pyspark.sql.functions import current_timestamp, lit #we can use lit function as well to show default values
+
+from pyspark.sql.functions import current_timestamp
+
+
+circuits_final_df = circuits_renamed_df.withColumn('ingestion_date',current_timestamp()).withColumn('env',lit("Production"))
+
+circuits_final_df = circuits_renamed_df.withColumn('ingestion_date',current_timestamp())
+
+display(circuits_final_df)
+
+
+
+61. Circuits File - Dataframe Writer
+
+write data to datalake as parquet format
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrameWriter.parquet.html#pyspark.sql.DataFrameWriter.parquet
+
+
+circuits_final_df.write.mode("overwrite").parquet('/mnt/formula1dlajay/processed/circuits') #to avoide error from rerun we use mode
+
+%fs
+ls /mnt/formula1dlajay/processed/circuits
+
+
+# df = spark.read.parquet('dbfs:/mnt/formula1dlajay/processed/circuits/')
+# display(df)
+display(spark.read.parquet('dbfs:/mnt/formula1dlajay/processed/circuits/'))
+
+62. Races File - Requirements
+
+https://ergast.com/docs/f1db_user_guide.txt
+
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType
+
+races_schema = StructType(fields=[StructField('raceId',IntegerType(),False),
+                                     StructField('year',IntegerType(),True),
+                                     StructField('round',IntegerType(),True),
+                                     StructField('circuitId',IntegerType(),True),
+                                     StructField('name',StringType(),True),
+                                     StructField('date',DateType(),True),
+                                     StructField('time',StringType(),True),
+                                     StructField('url',StringType(),True)])
+
+races_df = spark.read.option("header",True).schema(races_schema).csv('dbfs:/mnt/formula1dlajay/raw/races.csv')
+
+
+display(races_df)
+
+
+from pyspark.sql.functions import current_timestamp, to_timestamp,  concat, col, lit
+
+races_with_timestamp_df = races_df.withColumn('ingestion_date',current_timestamp()) \
+                          .withColumn('race_timestamp',to_timestamp(concat(col("date"), lit(" "), col("time")), "yyyy-MM-dd HH:mm:ss"))
+
+display(races_with_timestamp_df)
+
+races_selected_df = races_with_timestamp_df.select(col("raceId").alias("race_id"), col("year").alias("race_year"), col("round"), col("circuitId").alias("circuit_id"), col("name"), col("ingestion_date"), col("race_timestamp") )
+
+races_selected_df.write.mode("overwrite").parquet('/mnt/formula1dlajay/processed/races')
+
+
+
+64. Races File - Partitioning
+
+partitionBy 'race_year'
+
+races_selected_df.write.mode("overwrite").partitionBy("race_year").parquet('/mnt/formula1dlajay/processed/races')
+
+display(spark.read.parquet('/mnt/formula1dlajay/processed/races'))
+
+
+
+##########################################
+section -12 Data Ingestion - JSON
+
+
+65. Constructors File - Requirements
