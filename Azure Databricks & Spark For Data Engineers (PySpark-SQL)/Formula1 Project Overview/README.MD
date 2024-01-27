@@ -389,6 +389,10 @@ results_final_df.write.mode("overwrite").partitionBy('race_id').parquet("/mnt/fo
 
 72. Pitstops File - Requirements
 
+pitstops file
+
+73. Pitstops File - Spark Program
+
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
 
 pit_stops_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
@@ -422,3 +426,198 @@ pit_stops_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/p
 display(spark.read.parquet('/mnt/formula1dlajay/processed/pit_stops'))
 
 
+#########################################################
+Section -13 -Data Ingestion - Multiple Files
+
+74. Lap Times - Requirements
+
+
+multiple files ingesion from lap_times folder
+
+75. Lap Times - Spark Program
+
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+
+lap_times_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
+                                    StructField("driverId", IntegerType(), True),
+                                    StructField("lap", IntegerType(), True),
+                                    StructField("position", IntegerType(), True),
+                                    StructField("time", StringType(), True),                                                                      
+                                    StructField("milliseconds", IntegerType(), True)                                    
+                                    ])
+
+lap_times_schema_df = spark.read \
+.schema(lap_times_schema) \
+.csv("/mnt/formula1dlajay/raw/lap_times")   #/mnt/formula1dlajay/raw/lap_times/lap_times*.csv we can use like this
+
+lap_times_schema_df.count()
+
+
+display(lap_times_schema_df)
+
+from pyspark.sql.functions import current_timestamp
+
+lap_times_with_columns_df = lap_times_schema_df.withColumnRenamed("raceId", "race_id") \
+                                    .withColumnRenamed("driverId", "driver_id") \
+                                    .withColumn("ingestion_date", current_timestamp())
+
+lap_times_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/processed/lap_times")
+
+display(spark.read.parquet('/mnt/formula1dlajay/processed/lap_times'))
+
+
+76. Qualifying - Requirements
+
+dataingestion_qualifying
+
+77. Qualifying - Spark Program (Assignment)
+
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+
+qualifying_schema = StructType(fields=[StructField("qualifyId", IntegerType(), False),
+                                    StructField("raceId", IntegerType(), True),
+                                    StructField("driverId", IntegerType(), True),
+                                    StructField("constructorId", IntegerType(), True),
+                                    StructField("number", IntegerType(), True),                                                                      
+                                    StructField("position", IntegerType(), True),
+                                    StructField("q1", StringType(), True),
+                                    StructField("q2", StringType(), True),
+                                    StructField("q3", StringType(), True),
+                                    ])
+
+qualifying_df = spark.read \
+.schema(qualifying_schema) \
+.option("multiLine",True) \
+.json("/mnt/formula1dlajay/raw/qualifying")
+
+from pyspark.sql.functions import current_timestamp
+
+qualifying_with_columns_df = qualifying_df.withColumnRenamed("raceId", "race_id") \
+                                    .withColumnRenamed("driverId", "driver_id") \
+                                    .withColumnRenamed("qualifyId", "qualify_id") \
+                                    .withColumnRenamed(" constructorId", "constructor_id") \
+                                    .withColumn("ingestion_date", current_timestamp())
+
+
+qualifying_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/processed/qualifying")
+
+
+
+#####################################
+
+section 14 - Databricks Workflow
+
+
+78. Section Overview
+
+overall flow
+
+79. Including a Child Notebook
+
+configuration:
+
+raw_folder_path = '/mnt/formula1dlajay/raw'
+processed_folder_path = '/mnt/formula1dlajay/processed'
+presentation_folder_path = '/mnt/formula1dlajay/presentation'
+
+common_functions:
+
+from pyspark.sql.functions import current_timestamp
+def add_ingestion_date(input_df):
+  output_df = input_df.withColumn("ingestion_date", current_timestamp())
+  return output_df
+
+
+%run "../includes/configuration"
+
+%run "../includes/common_functions"
+
+circuits_df = spark.read.option("header",True).schema(circuits_schema).csv(f'{raw_folder_path}/circuits.csv')
+
+circuits_final_df.write.mode("overwrite").parquet('{processed_folder_path}/circuits') #to avoide error from rerun we use mode
+
+
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
+
+circuits_final_df.write.mode("overwrite").parquet(f'{processed_folder_path}/circuits') #to avoide error from rerun we use mode
+
+display(spark.read.parquet(f'{processed_folder_path}/circuits/'))
+
+
+
+80. Passing Parameters to Notebooks
+
+we can pass parameters with the help of widgets in new column
+
+dbutils.widgets.help()
+
+dbutils.widgets.text("p_data_source","")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+
+v_data_source
+
+
+from pyspark.sql.functions import lit
+
+circuits_renamed_df =  circuits_selected_df.withColumnRenamed("circuitId","circuit_id") \
+                       .withColumnRenamed("circuitRef","circuit_ref") \
+                       .withColumnRenamed("lat","latitude") \
+                       .withColumnRenamed("lng","longitude") \
+                       .withColumnRenamed("alt","altitude") \
+                       .withColumn("data_source",lit(v_data_source))
+
+
+
+
+81. Notebook Workflows
+
+https://docs.databricks.com/en/notebooks/notebook-workflows.html
+Run multiple notebooks concurrently
+
+
+0.ingest_all_files
+
+dbutils.notebook.help()
+
+v_result = dbutils.notebook.run('1.ingest_circuits_file',0,{"p_data_source":"Ergast API"})
+v_result
+
+v_result = dbutils.notebook.run('2.ingest_race_file',0,{"p_data_source":"Ergast API"})
+v_result
+
+
+we did same for all 8 files
+
+
+82. Databricks Jobs
+
+https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#job/list
+
+creating job cluster
+go to job and create inside databricks
+
+select - single user and single node
+node type - standard 14gp 4cpu core
+
+job name - 'F1 Job'
+cluster name -'F1_Job_cluster'
+
+
+Path - /Formula1/ingestion_with_includes/1.ingest_circuits_file
+Parameters - p_data_source  - E API
+
+databricks_job_cluster2
+
+
+job-run2
+
+
+
+
+job task edit and then change path and remove parameter
+
+Path - /Formula1/ingestion_with_includes/0.ingest_all_files
+
+Parameters -  remove paramter
