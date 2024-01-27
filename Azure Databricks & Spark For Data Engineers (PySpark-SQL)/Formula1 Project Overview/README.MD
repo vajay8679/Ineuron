@@ -621,3 +621,97 @@ job task edit and then change path and remove parameter
 Path - /Formula1/ingestion_with_includes/0.ingest_all_files
 
 Parameters -  remove paramter
+
+
+
+############################################
+section -15 Filters and Join Transformations
+
+
+83. Section Overview
+
+
+
+84. Filter Transformation
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.filter.html#pyspark.sql.DataFrame.filter
+
+
+
+
+85. Join Transformation - Inner Join
+
+%run "../includes/configuration"
+
+demo_df = spark.read.parquet(f"{processed_folder_path}/races")
+
+demo_filter_df = demo_df.filter("race_year = 2019 and round <= 5")
+
+demo_filter_df = demo_df.filter((demo_df["race_year"] == 2019) & (demo_df["round"] <= 5))
+
+demo_filter_df = demo_df.where((demo_df["race_year"] == 2019) & (demo_df["round"] <= 5))
+
+display(demo_filter_df)
+
+
+85. Join Transformation - Inner Join
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.join.html#pyspark.sql.DataFrame.join
+
+%run "../includes/configuration"
+
+races_df = spark.read.parquet(f"{processed_folder_path}/races").filter("race_year = 2019").withColumnRenamed("name","race_name")
+
+circuits_df = spark.read.parquet(f"{processed_folder_path}/circuits").withColumnRenamed("name","circuit_name")
+
+races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"inner") \
+    .select(circuits_df.circuit_name,circuits_df.location,circuits_df.country,races_df.race_name,races_df.round)
+
+display(races_circuits_df)
+
+
+races_circuits_df.select("circuit_name").show()
+
+
+86. Join Transformation - Outer Join
+
+#left outer join
+races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"left") \
+    .select(circuits_df.circuit_name,circuits_df.location,circuits_df.country,races_df.race_name,races_df.round)
+
+#right outer join
+races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"right") \
+    .select(circuits_df.circuit_name,circuits_df.location,circuits_df.country,races_df.race_name,races_df.round)
+
+#full outer join
+races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"full") \
+    .select(circuits_df.circuit_name,circuits_df.location,circuits_df.country,races_df.race_name,races_df.round)
+
+
+
+87. Join Transformation - Semi, Anti & Cross Joins
+
+#semi - similar to inner join but only takes column from left left table
+races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"semi") \
+    .select(circuits_df.circuit_name,circuits_df.location,circuits_df.country)
+
+
+#Anti Join - it is opposite of semi join - it will give data from opposite dataframe
+races_circuits_df = races_df.join(circuits_df, circuits_df.circuit_id == races_df.circuit_id,"anti") 
+
+#cross join - each record from left table join with every record from right tale
+races_circuits_df = races_df.crossJoin(circuits_df)
+
+
+88. Join Race Results - Requirement
+
+joins four tables columns data
+
+
+89. Set-up Presentation Layer (Assignment)
+
+check this -> 8.mount_adls_container_for_project
+
+
+90. Join Race Results - Solution (Assignment)
+
