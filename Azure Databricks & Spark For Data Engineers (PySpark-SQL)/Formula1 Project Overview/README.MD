@@ -896,3 +896,95 @@ final_df = constructor_standings_df.withColumn("rank",rank().over(constructor_ra
 display(final_df.filter("race_year == 2020"))
 
 final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/constructor_standings")
+
+
+
+####################################################
+
+section - 17 - Using SQL in Spark Application
+
+
+97. Local Temp View
+
+Access dataframes using SQL
+
+%run "../includes/configuration"
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_result")
+
+race_result_df.createTempView("v_race_result") #it is temporary table we ca not use in other notebook or if we detech and attach cluster again then below query wont run
+
+race_result_df.createOrReplaceTempView("v_race_result") #use this in place of createTempView because if table exists then it will replace or either create
+
+
+%sql
+select * from v_race_result where race_year = 2020;
+
+%sql
+select count(1) from v_race_result where race_year = 2020;
+
+p_race_year = 2020
+
+#we can pass variable in this kind of query and we can use dataframe for further use but we can not do this in above query
+race_result_2019_df = spark.sql(f"select * from v_race_result where race_year = {p_race_year}")
+
+
+display(race_result_2019_df)
+
+
+
+
+98. Global Temp View
+
+Global Temporary Views
+
+Create global temporary views on dataframes
+Access the view from SQL cell
+Access the view from Python cell
+Acesss the view from another notebook
+
+
+race_result_df.createOrReplaceGlobalTempView("gv_race_result") # we can use this table from other notebook and even after attached and detech cluster and still it will work from other notebook
+
+%sql
+SHOW TABLES in global_temp;
+
+%sql
+select * from global_temp.gv_race_result;
+
+spark.sql("select * from global_temp.gv_race_result").show()
+
+
+we can not run from other notebook 
+
+%sql
+select * from v_race_result;
+
+
+we can run from other notebook 
+
+%sql
+select * from global_temp.gv_race_result;
+
+
+
+#######################################################
+
+Section - 18 - Spark SQL - Databases/Tables/Views
+
+
+
+99. Spark SQL - Introduction
+
+
+hive_meta_store image
+
+
+spark_table_view image
+
+
+
+100. Databases
+
+https://spark.apache.org/docs/latest/api/python/reference/index.html
+
