@@ -715,3 +715,184 @@ check this -> 8.mount_adls_container_for_project
 
 90. Join Race Results - Solution (Assignment)
 
+join_race_result image
+
+joints_tables images
+
+we have connected five table here
+
+https://www.bbc.com/sport/formula1/2020/results
+
+file - race_results
+
+%run "../includes/configuration"
+
+drivers_df = spark.read.parquet(f"{processed_folder_path}/drivers") \
+    .withColumnRenamed("number","driver_number") \
+    .withColumnRenamed("name","driver_name") \
+    .withColumnRenamed("nationality", "driver_nationality")
+
+constructors_df = spark.read.parquet(f"{processed_folder_path}/constructors") \
+        .withColumnRenamed("name", "team")
+
+circuits_df = spark.read.parquet(f"{processed_folder_path}/circuits") \
+        .withColumnRenamed("location", "circuit_location")
+
+races_df = spark.read.parquet(f"{processed_folder_path}/races") \
+        .withColumnRenamed("name", "race_name") \
+        .withColumnRenamed("race_timestamp", "race_date")
+
+results_df = spark.read.parquet(f"{processed_folder_path}/results") \
+        .withColumnRenamed("time", "race_time")
+
+circuits_races_df = races_df.join(circuits_df, circuits_df.circuit_id == races_df.circuit_id,"inner") \
+    .select(races_df.race_id, races_df.race_year, races_df.race_name, races_df.race_date, circuits_df.circuit_location)
+
+race_result_df = results_df.join(circuits_races_df, circuits_races_df.race_id == results_df.race_id) \
+    .join(constructors_df, constructors_df.constructor_id == results_df.constructor_id) \
+    .join(drivers_df, drivers_df.driver_id == results_df.driver_id)
+
+from pyspark.sql.functions import current_timestamp
+
+final_df = race_result_df.select("race_year","race_name","race_date","circuit_location","driver_name","driver_number","driver_nationality",
+                                "team","grid","fastest_lap","race_time","points") \
+                                .withColumn("created_date",current_timestamp())
+
+display(final_df.filter("race_year == 2020 and race_name == 'Abu Dhabi Grand Prix'").orderBy(final_df.points.desc()))
+
+
+final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/race_result")
+
+
+
+
+########################################################
+
+section - 16 Aggregations
+
+
+91. Section Overview
+
+
+
+92. Simple Aggregate functions
+
+aggregation_demo file
+
+
+%run "../includes/configuration"
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_result")
+
+demo_df = race_result_df.filter("race_year == 2020")
+
+from pyspark.sql.functions import count, countDistinct, sum
+
+demo_df.select(count("*")).show()
+
+demo_df.select(count("race_name")).show()
+
+demo_df.select(countDistinct("race_name")).show()
+
+demo_df.select(sum("points")).show()
+
+demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points")).show()
+
+demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points"),countDistinct("race_name")).show()
+
+demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points"),countDistinct("race_name")).withColumnRenamed("sum(points)","sum_points") \
+    .withColumnRenamed("count(DISTINCT race_name)","distinct_race_name").show()
+
+
+93. Group By
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/grouping.html
+
+#group by -> multiple column in groupby using agg()
+
+demo_df \
+    .groupBy("driver_name") \
+    .agg(sum("points").alias("total_point"),countDistinct("race_name").alias("number_of_races")) \
+    .show()
+
+
+94. Window Functions
+
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/window.html
+
+
+demo_grouped_df = demo_df \
+    .groupBy("race_year","driver_name") \
+    .agg(sum("points").alias("total_point"),countDistinct("race_name").alias("number_of_races"))
+
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import desc, rank
+
+driverRankSpec = Window.partitionBy("race_year").orderBy(desc("total_point"))
+
+demo_grouped_df.withColumn("rank",rank().over(driverRankSpec)).show(100)
+
+
+95. Driver Standings
+
+https://www.bbc.com/sport/formula1/drivers-world-championship/standings
+
+results table
+
+2.driver_standings - file
+
+
+%run "../includes/configuration"
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_result")
+
+display(race_result_df)
+
+from pyspark.sql.functions import sum, count, when, col
+
+driver_standings_df = race_result_df \
+    .groupBy("race_year","driver_name","driver_nationality","team") \
+    .agg(sum("points").alias("total_points"),count(when(col("position") == 1, True)).alias("wins"))
+
+display(driver_standings_df.filter("race_year == 2020"))
+
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import desc, rank, asc
+driver_rank_spec = Window.partitionBy("race_year").orderBy(desc("total_points"),desc("wins"))
+final_df = driver_standings_df.withColumn("rank",rank().over(driver_rank_spec))
+
+display(final_df.filter("race_year == 2020"))
+
+final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/driver_standings")
+
+
+
+96. Constructor Standings (Assignment)
+
+
+https://www.bbc.com/sport/formula1/constructors-world-championship/standings
+
+3.constructor_standings - file
+
+%run "../includes/configuration"
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_result")
+
+from pyspark.sql.functions import sum, count, when, col
+
+constructor_standings_df = race_result_df \
+    .groupBy("race_year","team") \
+    .agg(sum("points").alias("total_points"),count(when(col("position") == 1, True)).alias("wins"))
+
+display(constructor_standings_df.filter("race_year == 2020"))
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import desc, rank, asc
+constructor_rank_spec = Window.partitionBy("race_year").orderBy(desc("total_points"),desc("wins"))
+final_df = constructor_standings_df.withColumn("rank",rank().over(constructor_rank_spec))
+
+display(final_df.filter("race_year == 2020"))
+
+final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/constructor_standings")
