@@ -988,3 +988,206 @@ spark_table_view image
 
 https://spark.apache.org/docs/latest/api/python/reference/index.html
 
+
+https://spark.apache.org/docs/latest/sql-ref-syntax.html
+
+
+create database if not exists demo;
+show databases;
+describe database demo;
+describe database extended demo;
+select current_database();
+show tables in demo;
+show tables;
+
+
+
+
+101. Managed Tables
+
+
+Managed Tables
+Type MANAGED
+Location dbfs:/user/hive/warehouse/demo.db/race_result_sql
+
+Create managed table using Python
+
+%run "../includes/configuration"
+
+%python
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_result")
+
+
+%python
+race_result_df.write.format("parquet").saveAsTable("demo.race_result_python")
+
+
+use demo;
+show tables;
+
+desc extended race_result_python;
+
+select * from demo.race_result_python where race_year = 2020;
+
+
+Create managed table using SQL
+
+create table demo.race_result_sql
+as
+select * from demo.race_result_python where race_year = 2020;
+
+desc extended race_result_sql --this table is 'managed' table and location - dbfs:/user/hive/warehouse/demo.db/race_result_sql
+
+drop table demo.race_result_sql; -- if we drop this table then it will delete table with metadata and all data as well
+
+show tables in demo;
+
+
+102. External Tables
+
+External Tables
+1. Create external table using Python
+
+
+%python
+race_result_df.write.format("parquet").option("path",f"{presentation_folder_path}/race_result_ext_py").saveAsTable("demo.race_result_ext_py")
+
+
+desc extended demo.race_result_ext_py;
+
+Type EXTERNAL
+Provider parquet
+Location dbfs:/mnt/formula1dlajay/presentation/race_result_ext_py
+
+
+https://spark.apache.org/docs/latest/sql-ref-syntax-dml-insert-table.html
+
+
+2.Create external table using SQL
+
+CREATE TABLE demo.race_results_ext_sql
+(race_year INT,
+race_name STRING,
+race_date TIMESTAMP,
+circuit_location STRING,
+driver_name STRING,
+driver_number INT,
+driver_nationality STRING,
+team STRING,
+grid INT,
+fastest_lap INT,
+race_time STRING,
+points FLOAT,
+position INT,
+created_date TIMESTAMP
+)
+USING PARQUET
+LOCATION '/mnt/formula1dlajay/presentation/race_results_ext_sql'
+
+
+show tables in demo;
+
+-- we have to insert data into external table then we will get data
+insert into demo.race_results_ext_sql
+select * from demo.race_result_ext_py where race_year = 2020;
+
+select count(1) from demo.race_results_ext_sql;
+
+show tables in demo;
+
+drop table demo.race_results_ext_sql;
+
+show tables in demo;
+
+
+manage table - spark manage meta data as well as data
+external table - spark manage only metadata and we manage data
+
+
+
+103. Views
+
+Views on tables
+
+1. Create Temp View (temporary table)
+
+create or replace temp view v_race_results
+as
+select * from demo.race_result_python
+where race_year = 2018;
+
+select * from v_race_results;
+
+
+
+2. Create Global Temp View
+
+create or replace global temp view gv_race_results
+as 
+select * from demo.race_result_python
+where race_year = 2012;
+
+select * from global_temp.gv_race_results; -- we can run this notebook from other notebook and detech and attach and read data from this table
+
+show tables in global_temp;
+
+
+
+3. Create Permanent View
+
+create or replace view demo.pv_race_results
+as 
+select * from demo.race_result_python
+where race_year = 2000;
+
+show tables in demo;
+
+select * from demo.pv_race_results;
+
+
+temp view - we can use in current notebook in spark session only
+
+global view - we can use it from other notebook and and attach and detech and work in same application and after that batch process or job if you dont need then use global view
+
+permanent view - we can use it from other notebook and and attach and detech and work in application and it will stay even after application has been closed and we need to comeback and use it then we we have to create permanent view
+
+
+104. Formula1 Project SQL Requirement
+
+manage external table
+
+
+
+
+105. Create Table - CSV Source
+
+
+file name - 1.create_raw_tables
+
+create database if not exists f1_raw;
+
+1. Create circuit table
+
+DROP table if exists f1_raw.circuits;
+create table if not exists f1_raw.circuits(circuitId INT,
+circuitRef STRING,
+name STRING,
+location STRING,
+country STRING,
+lat DOUBLE,
+lng DOUBLE,
+alt INT,
+url STRING
+)
+USING csv
+OPTIONS (path "/mnt/formula1dlajay/raw/circuits.csv", header true)
+
+select * from f1_raw.circuits;
+
+
+similar for races table
+
+
+
+
+106. Create Table - JSON Source
