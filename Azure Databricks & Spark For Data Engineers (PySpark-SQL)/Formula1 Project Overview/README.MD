@@ -1191,3 +1191,213 @@ similar for races table
 
 
 106. Create Table - JSON Source
+
+Create constructors table
+Single Line JSON
+Simple structure
+
+1.create_raw_tables -file
+
+
+drop table if exists f1_raw.constructors;
+create table if not exists f1_raw.constructors(
+  constructorId INT, 
+  constructorRef STRING, 
+  name STRING, 
+  nationality STRING, 
+  url STRING
+)
+using json
+options (path "/mnt/formula1dlajay/raw/constructors.json")
+
+
+select * from f1_raw.constructors;
+
+
+1.create_raw_tables -file
+
+Create drivers table
+Single Line JSON
+Complex structure
+
+
+drop table if exists f1_raw.drivers;
+create table if not exists f1_raw.drivers(
+  driverId INT, 
+  driverRef STRING, 
+  number INT, 
+  code STRING, 
+  name STRUCT<forename:STRING, surname:STRING>,
+  dob DATE,
+  nationality STRING,
+  url STRING
+)
+using json
+options (path "/mnt/formula1dlajay/raw/drivers.json")
+
+select * from f1_raw.drivers;
+
+
+1.create_raw_tables -file
+
+Create results table
+Single Line JSON
+Simple structure
+
+drop table if exists f1_raw.results;
+create table if not exists f1_raw.results(
+resultId INT,
+raceId INT,
+driverId INT,
+constructorId INT,
+number INT,grid INT,
+position INT,
+positionText STRING,
+positionOrder INT,
+points INT,
+laps INT,
+time STRING,
+milliseconds INT,
+fastestLap INT,
+rank INT,
+fastestLapTime STRING,
+fastestLapSpeed FLOAT,
+statusId STRING
+)
+using json
+options (path "/mnt/formula1dl/raw/results.json")
+
+select * from f1_raw.results;
+
+
+Create pit stops table
+Multi Line JSON
+Simple structure
+
+
+drop table if exists f1_raw.pit_stops;
+create table if not exists f1_raw.pit_stops(
+driverId INT,
+duration STRING,
+lap INT,
+milliseconds INT,
+raceId INT,
+stop INT,
+time STRING
+)
+using json
+options (path "/mnt/formula1dl/raw/pit_stops.json", multiLine true) -- remember it is multiline
+
+
+select * from f1_raw.pit_stops;
+
+
+
+107. Create Table - Multi Files Source
+
+1.create_raw_tables - file
+
+Create tables for list of files
+
+Create Lap Times Table
+CSV file
+Multiple files
+
+drop table if exists f1_raw.lap_times;
+create table if not exists f1_raw.lap_times(
+raceId INT,
+driverId INT,
+lap INT,
+position INT,
+time STRING,
+milliseconds INT
+)
+using csv
+options (path "/mnt/formula1dlajay/raw/lap_times")
+
+select count(1) from f1_raw.lap_times;
+
+select * from f1_raw.lap_times;
+
+
+Create Qualifying Table
+JSON file
+MultiLine JSON
+Multiple files
+
+
+drop table if exists f1_raw.qualifying;
+create table if not exists f1_raw.qualifying(
+constructorId INT,
+driverId INT,
+number INT,
+position INT,
+q1 STRING,
+q2 STRING,
+q3 STRING,
+qualifyId INT,
+raceId INT
+)
+using json
+options (path "/mnt/formula1dlajay/raw/qualifying", multiLine true)
+
+select count(1) from f1_raw.qualifying;
+
+select * from f1_raw.qualifying;
+
+
+
+108. Create Table - Parquet Source (Processed Data)
+
+inside 
+
+ingestion_with_includes/9.create_processed_database
+
+create database if not exists f1_processed
+location "/mnt/formula1dlajay/processed" -- we choose external path of database
+
+desc database f1_processed;
+
+
+ingestion_with_includes/1.ingest_circuits_file
+
+step 5
+
+circuits_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.circuits")
+
+%sql
+select * from f1_processed.circuits;
+
+
+do similar with all other files and folder as well to write data into processed_folder inside container
+
+
+109. Create Table - Parquet Source (Presentation Data) - Assignment
+
+
+trans/0.create_presentation_database
+
+create database if not exists f1_presentation
+location '/mnt/formula1dlajay/presentation' -- we choose external path of database
+
+desc database f1_presentation
+
+
+we write table for all 3 for presentation_folder for all3 folder database  'f1_presentation' -> 1.race_results & 2.driver_standings & 3.constructor_standings
+
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.race_results")
+
+select * from f1_presentation.race_results;
+
+
+
+
+#######################################################
+
+section - 19 - Spark Sql - Filters/ Joins/ Aggregations
+
+110. Section Overview
+
+
+111. SQL DML Basics
+
