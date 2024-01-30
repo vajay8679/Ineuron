@@ -1502,4 +1502,49 @@ select * from v_driver_standings_2018 d_2018
   cross join v_driver_standings_2020 d_2020;
 
 
-  
+
+##################################################
+
+section - 20 - Spark SQL - Analysis
+
+115. Introduction
+
+
+116. Create Race Results table
+
+trans/4.calculated_race_result
+
+use f1_processed;
+
+select races.race_year,
+       constructors.name as team_name,
+       drivers.name as driver_name,
+       results.position,
+       results.points,
+       11 - results.position as calculated_points
+  from results
+  join drivers on (drivers.driver_id = results.driver_id)
+  join constructors on (constructors.constructor_id = results.constructor_id)
+  join races on (races.race_id = results.race_id)
+  where results.position <= 10;
+
+#put above query in a table inside table in f1_presentation database
+
+create table f1_presentation.calculated_race_results
+using parquet
+as
+select races.race_year,
+       constructors.name as team_name,
+       drivers.name as driver_name,
+       results.position,
+       results.points,
+       11 - results.position as calculated_points
+  from f1_processed.results
+  join f1_processed.drivers on (drivers.driver_id = results.driver_id)
+  join f1_processed.constructors on (constructors.constructor_id = results.constructor_id)
+  join f1_processed.races on (races.race_id = results.race_id)
+  where results.position <= 10;
+
+select * from f1_presentation.calculated_race_results;
+
+117. Dominant Drivers - Analysis
