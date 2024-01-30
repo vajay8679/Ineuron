@@ -1401,3 +1401,105 @@ section - 19 - Spark Sql - Filters/ Joins/ Aggregations
 
 111. SQL DML Basics
 
+
+demo/7.sql_basic_demo
+
+
+show databases;
+use f1_processed;
+select * from f1_processed.drivers limit 10;
+select * from f1_processed.drivers where nationality = "British" and dob >= "1990-01-01";
+select name,dob as date_of_birth from f1_processed.drivers where nationality = "British" and dob >= "1990-01-01";
+select name,dob from f1_processed.drivers where nationality = "British" and dob >= "1990-01-01" order by dob desc;
+select * from f1_processed.drivers order by nationality asc, dob desc; 
+select name, nationality, dob from f1_processed.drivers where (nationality = "British" and dob >= "1990-01-01") or nationality = 'Indian' order by dob desc;
+
+
+112. SQL Simple Functions
+
+demo/8.sql_functions_demo
+
+https://spark.apache.org/docs/latest/api/sql/index.html
+
+https://spark.apache.org/docs/latest/api/sql/index.html#max
+
+
+use f1_processed;
+select * from drivers;
+select *, concat(driver_ref,'-',code)  as new_driver_ref from drivers;
+select *, split(name, ' ') from drivers;
+select *, split(name, ' ') [0] forename,split(name, ' ') [1] surname from drivers;
+select *, current_timestamp() from drivers;
+select *, date_format(dob, 'dd-MM-yyyy') from drivers;
+select *, date_add(dob, 1) from drivers;
+
+
+
+
+
+113. SQL Aggregates/ Window functions
+
+demo/8.sql_functions_demo
+
+use f1_processed;
+select count(*) from drivers;
+select max(dob) from drivers;
+select * from drivers where dob ='2000-05-11';
+select count(*) from drivers where nationality ="British";
+select nationality, count(*) from drivers group by nationality order by nationality desc;
+select nationality, count(*) from drivers group by nationality having count(*) >100 order by nationality desc;
+select nationality, name, dob, rank() over (partition by nationality order by dob desc) as age_rank from drivers order by nationality, age_rank;
+
+
+114. SQL Joins
+
+demo/9.sql_joins_demo
+
+
+inner join
+
+select * from v_driver_standings_2018 d_2018 
+  join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+left join
+
+select * from v_driver_standings_2018 d_2018 
+  left join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+right join
+
+select * from v_driver_standings_2018 d_2018 
+  right join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+full join
+
+select * from v_driver_standings_2018 d_2018 
+  full join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+
+Semi Join
+it is a inner join but it will give records from left table from the join only
+
+select * from v_driver_standings_2018 d_2018 
+  semi join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+Anti Join
+we will get the data that didnot participate in 2020 from participant of 2018 race
+
+select * from v_driver_standings_2018 d_2018 
+  Anti join v_driver_standings_2020 d_2020 
+    on (d_2018.driver_name = d_2020.driver_name);
+
+Cross Join
+each record from left table will join with each record from right table - n X m
+
+select * from v_driver_standings_2018 d_2018 
+  cross join v_driver_standings_2020 d_2020;
+
+
+  
