@@ -1548,3 +1548,131 @@ select races.race_year,
 select * from f1_presentation.calculated_race_results;
 
 117. Dominant Drivers - Analysis
+
+analysis/1.find_dominant_drivers - file
+
+select driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+group by driver_name
+having count(1) > 50
+order by avg_points desc;
+
+
+select driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where race_year between 2011 and 2020
+group by driver_name
+having count(1) > 50
+order by avg_points desc;
+
+select driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where race_year between 2001 and 2010
+group by driver_name
+having count(1) > 50
+order by avg_points desc;
+
+
+
+
+118. Dominant Teams - Analysis
+
+analysis/2.find_dominant_teams
+
+select team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+group by team_name
+having count(1) > 100
+order by avg_points desc;
+
+
+select team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where race_year between 2011 and 2020
+group by team_name
+having count(1) > 100
+order by avg_points desc;
+
+select team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where race_year between 2001 and 2010
+group by team_name
+having count(1) > 100
+order by avg_points desc;
+
+
+119. Dominant Drivers - Visualisation
+
+analysis/3.viz_dominant_drivers
+
+
+create or replace temp view v_dominant_drivers
+as
+select driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points,
+       rank() over(order by avg(calculated_points) desc) as driver_rank
+from f1_presentation.calculated_race_results
+group by driver_name
+having count(1) > 50
+order by avg_points desc;
+
+#line graph
+select race_year,
+       driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where driver_name in (select driver_name from v_dominant_drivers where driver_rank <= 10 )
+group by race_year, driver_name
+order by race_year, avg_points desc;
+
+#bar graph
+select race_year,
+       driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where driver_name in (select driver_name from v_dominant_drivers where driver_rank <= 10 )
+group by race_year, driver_name
+order by race_year, avg_points desc;
+
+
+#areal graph
+select race_year,
+       driver_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where driver_name in (select driver_name from v_dominant_drivers where driver_rank <= 10 )
+group by race_year, driver_name
+order by race_year, avg_points desc;
+
+
+
+
+
+
+120. Dominant Teams - Visualisation
