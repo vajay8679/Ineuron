@@ -1676,3 +1676,280 @@ order by race_year, avg_points desc;
 
 
 120. Dominant Teams - Visualisation
+
+analysis/4.viz_dominant_teams
+
+create or replace temp view v_dominant_teams
+as
+select team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points,
+       rank() over(order by avg(calculated_points) desc) as team_rank
+from f1_presentation.calculated_race_results
+group by team_name
+having count(1) > 100
+order by avg_points desc;
+
+select * from v_dominant_teams;
+
+select race_year,
+       team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where team_name in (select team_name from v_dominant_teams where team_rank <= 5 )
+group by race_year, team_name
+order by race_year, avg_points desc;
+
+select race_year,
+       team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where team_name in (select team_name from v_dominant_teams where team_rank <= 5 )
+group by race_year, team_name
+order by race_year, avg_points desc;
+
+select race_year,
+       team_name,
+       count(1) as total_race,
+       sum(calculated_points) as total_points,
+       avg(calculated_points) as avg_points
+from f1_presentation.calculated_race_results
+where team_name in (select team_name from v_dominant_teams where team_rank <= 5 )
+group by race_year, team_name
+order by race_year, avg_points desc;
+
+
+121. Create dashboards - Drivers
+
+analysis/3.viz_dominant_drivers
+
+%python
+html = """<h1 style="color:Black;text-align:center;font-family:Ariel">Report on Dominant Formula 1 drivers</h1>"""
+displayHTML(html)
+
+display in dashboard
+
+https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#notebook/684797452523711/dashboard/3973152690777811/present
+
+122. Create dashboards - Teams
+
+analysis/4.viz_dominant_teams
+
+%python
+html = """<h1 style="color:Black;text-align:center;font-family:Ariel">Report on Dominant Formula 1 Teams</h1>"""
+displayHTML(html)
+
+https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#notebook/3973152690777799/dashboard/3973152690777813/present
+
+
+
+########################################
+
+Section - 21 - Incremental Load
+
+123. Section Overview
+
+
+
+124. Data Loading Design Patterns
+
+
+day 1- no difference in full load and incremental load
+
+day1(race1) -> Ingestion -> Datalake(race1) -> Transformation -> Data Lake (Race1)
+(full data)
+
+for day2,day3 -> data will append in the data of day1
+
+
+
+125. Formula1 Project Scenario
+
+Scenario1 -.use full data in day1 and then incremental data from day two thatis not good
+
+scenario2 -> use incremental data from day one that will ne better
+
+we can replace this 4 files every week in our datalake because of less data -> circuits,races,constrcutors,drivers (full files) (data from all races)
+
+Results, PitStops, LapTimes, Qualifying - we will receive and process the incremental data only from the weekend from this files (data only from the race)
+
+
+current scenario - overwrite data from (raw,processed,presentation folder)
+
+current scenario - create subfolders for races data in  (raw,processed,presentation folder) and then apply
+
+
+126. Formula1 Project Data Set-up
+
+download - incremental_load_data folder
+
+
+we will do incremental load data so delete all folders from containers raw,processed, presentation folder
+
+utils/1.prepare_for_incremental_load - file
+
+
+drop database if exists f1_processed cascade;
+
+create database if not exists f1_processed 
+Location '/mnt/formula1dlajay/processed';
+
+drop database if exists f1_presentation cascade;
+
+create database if not exists f1_presentation 
+Location '/mnt/formula1dlajay/presentation';
+
+
+upload folders from 'incremental_load_data' in containers 'raw' folder
+
+
+
+127. Full Refresh Implementation
+
+#full load scenario
+
+ingestion_with_includes/1.ingest_circuits_file - file name
+ingestion_with_includes/1.ingest_races_file - file name
+ingestion_with_includes/1.ingest_constructors_file - file name
+ingestion_with_includes/1.ingest_drivers_file - file name
+
+
+changes in above files - circuits,races,constructors,drivers  (full load scenario)
+
+dbutils.widgets.text("p_file_date","2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+v_file_date
+
+circuits_df = spark.read.option("header",True).schema(circuits_schema).csv(f'{raw_folder_path}/{v_file_date}/circuits.csv')
+
+circuits_renamed_df =  circuits_selected_df.withColumnRenamed("circuitId","circuit_id") \
+                       .withColumnRenamed("circuitRef","circuit_ref") \
+                       .withColumnRenamed("lat","latitude") \
+                       .withColumnRenamed("lng","longitude") \
+                       .withColumnRenamed("alt","altitude") \
+                       .withColumn("data_source",lit(v_data_source)) \
+                       .withColumn("file_date",lit(v_file_date))
+
+%sql
+select * from f1_processed.circuits;
+
+
+128. Incremental Load - Method 1
+
+files - Results,PitStops,LapTimes,Qualifying
+
+ingestion_with_includes/5.ingest_results_file
+
+spark.read.json("/mnt/formula1dlajay/raw/2021-03-21/results.json").createOrReplaceTempView("results_cutover")
+
+%sql
+select raceId, count(1) from results_cutover group by raceId order by raceId desc;
+
+spark.read.json("/mnt/formula1dlajay/raw/2021-03-28/results.json").createOrReplaceTempView("results_w1")
+
+%sql
+select raceId, count(1) from results_w1 group by raceId order by raceId desc;
+
+spark.read.json("/mnt/formula1dlajay/raw/2021-04-18/results.json").createOrReplaceTempView("results_w2")
+
+%sql
+select raceId, count(1) from results_w2 group by raceId order by raceId desc;
+
+
+dbutils.widgets.text("p_file_date","2021-03-28")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+results_df = spark.read \
+.schema(results_schema) \
+.json(f"{raw_folder_path}/{v_file_date}/results.json")
+
+results_with_columns_df = results_df.withColumnRenamed("resultId", "result_id") \
+                                    .withColumnRenamed("raceId", "race_id") \
+                                    .withColumnRenamed("driverId", "driver_id") \
+                                    .withColumnRenamed("constructorId", "constructor_id") \
+                                    .withColumnRenamed("positionText", "position_text") \
+                                    .withColumnRenamed("positionOrder", "position_order") \
+                                    .withColumnRenamed("fastestLap", "fastest_lap") \
+                                    .withColumnRenamed("fastestLapTime", "fastest_lap_time") \
+                                    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed") \
+                                    .withColumn("data_source", lit(v_data_source)) \
+                                    .withColumn("file_date",lit(v_file_date))
+
+results_final_df.write.mode("append").partitionBy('race_id').format("parquet").saveAsTable("f1_processed.results")
+
+
+change date and we will get data but it will append duplicate data from previous run as well
+
+
+https://spark.apache.org/docs/latest/sql-ref-syntax.html#dml-statements
+
+
+drop partitions - https://spark.apache.org/docs/latest/sql-ref-syntax-ddl-alter-table.html
+
+#method1
+
+for race_id_list in results_final_df.select("race_id").distinct().collect(): #use for small data because collect() will store in driver node
+    if (spark._jsparkSession.catalog().tableExists("f1_processed.results")):
+      spark.sql(f"alter table f1_processed.results drop if exists partition (race_id = {race_id_list.race_id})")
+
+
+129. Incremental Load - Method 2
+
+ingestion_with_includes/5.ingest_results_file
+#method2
+
+spark.conf.set("spark.sql.sources.partitionOverwriteMode","dynamic")
+
+results_final_df = results_final_df.select("result_id","driver_id","constructor_id","number","grid","position","position_text","position_order","points","laps","time","milliseconds","fastest_lap","rank","fastest_lap_time","fastest_lap_speed","data_source","file_date","ingestion_date","race_id")
+
+if (spark._jsparkSession.catalog().tableExists("f1_processed.results")):
+    results_final_df.write.mode("overwrite").insertInto("f1_processed.results")
+else:
+    results_final_df.write.mode("overwrite").partitionBy("race_id").format("parquet").saveAsTable("f1_processed.results")
+
+
+%sql
+
+select race_id, count(1) from f1_processed.results group by race_id order by race_id desc;
+
+
+130. Incremental Load Improvements - Assignment
+
+results_final_df.schema.names
+
+
+ingestion_with_includes/5.ingest_results_file
+
+
+common_functions - file 
+add below two functions  in above file
+
+def re_arrange_columns(input_df,partition_column): #used from common functions files
+    column_list = []
+    for column_name in input_df.schema.names:
+        if column_name != partition_column:
+            column_list.append(column_name)
+        column_list.append(partition_column)
+    output_df = input_df.select(column_list)
+    return output_df
+
+def overwrite_partition(input_df, db_name, table_name, partition_column): #used from common functions files
+  output_df = re_arrange_columns(input_df, partition_column)
+  spark.conf.set("spark.sql.sources.partitionOverwriteMode","dynamic")
+  if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
+    output_df.write.mode("overwrite").insertInto(f"{db_name}.{table_name}")
+  else:
+    output_df.write.mode("overwrite").partitionBy(partition_column).format("parquet").saveAsTable(f"{db_name}.{table_name}")
+
+
+and call above function inside file
+
+ingestion_with_includes/5.ingest_results_file
+
+overwrite_function(results_final_df, 'f1_processed', 'results', 'race_id')

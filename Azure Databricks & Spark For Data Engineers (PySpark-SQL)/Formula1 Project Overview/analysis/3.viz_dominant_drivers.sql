@@ -1,4 +1,10 @@
 -- Databricks notebook source
+-- MAGIC %python
+-- MAGIC html = """<h1 style="color:Black;text-align:center;font-family:Ariel">Report on Dominant Formula 1 drivers</h1>"""
+-- MAGIC displayHTML(html)
+
+-- COMMAND ----------
+
 create or replace temp view v_dominant_drivers
 as
 select driver_name,
