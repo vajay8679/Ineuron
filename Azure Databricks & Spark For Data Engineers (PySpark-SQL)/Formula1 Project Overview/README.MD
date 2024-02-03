@@ -2399,4 +2399,189 @@ select * from f1_demo.drivers_merge;
 
 History & Versioning
 Time Travel
-Vaccum
+Vaccum - remove data for particular user (but it removes data after 7 days)
+
+
+%sql
+desc history f1_demo.drivers_merge
+
+
+%sql
+select * from f1_demo.drivers_merge version as of 2;
+
+%sql
+select * from f1_demo.drivers_merge timestamp as of "2024-02-03T15:32:23Z";
+
+
+#spark version
+df = spark.read.format("delta").option("timestampAsOf","2024-02-03T15:32:23Z").load("/mnt/formula1dlajay/demo/drivers_merge")
+
+display(df)
+
+df = spark.read.format("delta").option("versionAsOf","2").load("/mnt/formula1dlajay/demo/drivers_merge")
+display(df)
+
+
+#Vaccum - remove data for particular user (but it removes data after 7 days)
+
+%sql
+vacuum f1_demo.drivers_merge;
+
+#you will see data in below query
+%sql
+select * from f1_demo.drivers_merge timestamp as of "2024-02-03T15:32:23Z"; -- still show data because it delete after 7 days
+
+
+
+#to delete immediately we have to use retain 0 hours
+
+%sql
+SET spark.databricks.delta.retentionDurationCheck.enabled = false;
+VACUUM f1_demo.drivers_merge RETAIN 0 HOURS
+
+%sql
+-- you wont see data in below query - you will get error
+select * from f1_demo.drivers_merge timestamp as of "2024-02-03T15:32:23Z";
+
+
+%sql
+-- you can see latest data in below query but you can not see the history data
+select * from f1_demo.drivers_merge
+
+
+
+%sql
+desc history f1_demo.drivers_merge
+
+%sql
+--delete from the records and restore with the help of history
+delete from f1_demo.drivers_merge where driverId = 1;
+
+%sql
+-- you will see 19 records
+select * from f1_demo.drivers_merge;
+
+%sql
+-- you will see 20 records in last version
+select * from f1_demo.drivers_merge version as of 3;
+
+# we will use merge command to restore the deleted data 
+
+%sql
+--merge command use to restore deleted record
+merge into f1_demo.drivers_merge tgt
+using f1_demo.drivers_merge version as of 3 src
+on (tgt.driverId = src.driverId)
+when not matched then 
+insert *
+
+
+# we will see merge operation after delete
+%sql desc history f1_demo.drivers_merge
+
+# you will see restored data and 20 data in below command
+%sql 
+select * from  f1_demo.drivers_merge
+
+
+143. Delta Lake Transaction Log
+
+meta store only keeps info of table and attributes
+Transaction Logs are not kept in th hive meta store because it is really inefficient to go and read hive meta store and and get all information for everything
+
+delta lake did some clever thing for that (inside delta lake or data lake it creates log folder(_delta_log) and inside that folder .json and crc file where it keeps timestamps userid username,operation,azure account etc )
+
+
+%sql
+
+create table if not exists f1_demo.drivers_txn (
+  driverId INT,
+  dob Date,
+  forename string,
+  surname string,
+  createdDate date,
+  updatedDate date
+)
+using delta
+
+
+%sql desc history f1_demo.drivers_txn;
+
+# different parquet file will create and 00000000000000000001.json file for versioning and when we will read data for version then it will read parquet file of this operation
+
+%sql
+insert into f1_demo.drivers_txn
+select * from f1_demo.drivers_merge
+where driverId = 1;
+
+%sql desc history f1_demo.drivers_txn;
+
+
+# different parquet file will create and 00000000000000000002.json file for versioning and when we will read data for version then it will read parquet file of this operation
+
+%sql
+insert into f1_demo.drivers_txn
+select * from f1_demo.drivers_merge
+where driverId = 2;
+
+
+%sql
+delete from f1_demo.drivers_txn
+where driverId = 1;
+
+
+# it wil create 18 .json file and 2-3 compacted.json file will create in transaction log file
+
+
+for driver_id in range(3,20):
+    spark.sql(f"""insert into f1_demo.drivers_txn
+              select * from f1_demo.drivers_merge
+              where driverId = {driver_id}""")
+
+
+# it wil create 1 .json file inside log folder and 2-3 partition file
+
+%sql
+insert into f1_demo.drivers_txn
+select * from f1_demo.drivers_merge;
+
+# transaction log stays for 30 days after that azure deletes it because it cost and slower the process
+
+
+
+144. Convert from Parquet to Delta
+
+# convert parquet file or table to delta table
+
+%sql
+
+create table if not exists f1_demo.drivers_convert_to_delta (
+  driverId INT,
+  dob Date,
+  forename string,
+  surname string,
+  createdDate date,
+  updatedDate date
+)
+using parquet
+
+%sql
+insert into f1_demo.drivers_convert_to_delta
+select * from f1_demo.drivers_merge
+
+%sql
+--convert parquet table to delta table
+convert to delta f1_demo.drivers_convert_to_delta
+
+
+df  = spark.table("f1_demo.drivers_convert_to_delta")
+
+# create a parquet file into delta table (it will create transaction log files .josn and .crc file after converting we can do our own operations as we want)
+df.write.format("parquet").save('/mnt/formula1dlajay/demo/drivers_convert_to_delta_new')
+
+%sql
+convert to delta parquet.`/mnt/formula1dlajay/demo/drivers_convert_to_delta_new`
+
+
+145. Data Ingestion - Circuits File
+
