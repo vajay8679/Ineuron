@@ -2098,3 +2098,305 @@ race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") 
 
 
 overwrite_function(final_df, 'f1_presentation', 'constructor_standings', 'race_year')
+
+
+##########################################
+
+Section - 22 - Delta Lake
+
+136. Section Overview
+
+
+137. Pitfalls of Data Lakes
+
+
+pitfalls means drabacks of data lake- acid transactions, versioning, time travel, BI workloads,streaming and batch workloads
+
+
+138. Data Lakehouse Architecture
+
+lakehouse architecutre
+
+
+
+139. Read & Write to Delta Lake
+
+Delta_Lake/set-up/mount_adls_storage - file
+
+#mount demo folder to adls first
+
+# Databricks notebook source
+storage_account_name = "formula1dlajay"
+client_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-id")
+tenant_id = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-tenant-id") 
+client_secret = dbutils.secrets.get(scope = "formula1-scope" , key = "formula1-account-client-secret")
+
+configs = {"fs.azure.account.auth.type": "OAuth",
+           "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+           "fs.azure.account.oauth2.client.id": f"{client_id}",
+           "fs.azure.account.oauth2.client.secret": f"{client_secret}",
+           "fs.azure.account.oauth2.client.endpoint": f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"}
+
+def mount_adls(container_name):
+  dbutils.fs.mount(
+    source = f"abfss://{container_name}@{storage_account_name}.dfs.core.windows.net/",
+    mount_point = f"/mnt/{storage_account_name}/{container_name}",
+    extra_configs = configs)
+
+mount_adls("demo")
+
+dbutils.fs.ls("/mnt/formula1dlajay/demo")
+
+# dbutils.fs.unmount("/mnt/formula1dlajay/demo")
+
+
+Delta_Lake/set-up/10.delta_lake_demo
+
+Write data to delta lake (managed table)
+Write data to delta lake (external table)
+Read data from delta lake (Table)
+Read data from delta lake (File)
+
+
+https://docs.delta.io/latest/index.html
+
+https://docs.databricks.com/en/index.html
+
+https://learn.microsoft.com/en-us/azure/databricks/delta/
+
+#write to a table
+https://docs.delta.io/latest/delta-batch.html#write-to-a-table
+
+%sql
+
+create database if not exists f1_demo
+location '/mnt/formula1dlajay/demo'
+
+
+result_df = spark.read.option('inferSchema',True).json('/mnt/formula1dlajay/raw/2021-03-28/results.json')
+
+#Write data to delta lake (managed table)
+result_df.write.format("delta").mode("overwrite").saveAsTable("f1_demo.results_managed")
+
+%sql
+select * from f1_demo.results_managed;
+
+#Write data to delta lake (external table)
+result_df.write.format("delta").mode("overwrite").save("/mnt/formula1dlajay/demo/results_external")
+
+%sql
+create table f1_demo.results_external
+USING DELTA
+location '/mnt/formula1dlajay/demo/results_external'
+
+
+%sql
+--Read data from delta lake (Table)
+select * from f1_demo.results_external
+
+#Read data from delta lake (File)
+results_external_df = spark.read.format("delta").load('/mnt/formula1dlajay/demo/results_external')
+
+display(results_external_df)
+
+#partitioned by
+result_df.write.format("delta").mode("overwrite").partitionBy("constructorId").saveAsTable("f1_demo.results_partitoned")
+
+
+%sql
+show partitions f1_demo.results_partitoned;
+
+
+140. Updates and Deletes on Delta Lake
+
+https://docs.delta.io/latest/delta-update.html#update-a-table
+
+Update Delta Table
+Delete From Delta Table
+
+%sql
+select * from f1_demo.results_managed;
+
+%sql
+--update using sql
+update f1_demo.results_managed
+  set points = 11 - position
+where position <= 10
+
+%sql
+select * from f1_demo.results_managed;
+
+
+#update using pythonic way
+
+from delta.tables import DeltaTable
+deltaTable = DeltaTable.forPath(spark, '/mnt/formula1dlajay/demo/results_managed')
+# Declare the predicate by using a SQL-formatted string.
+# deltaTable.update(condition = "position <= 10", set = { "points": "21 - position" })
+deltaTable.update("position <= 10",{ "points": "21 - position" })
+
+%sql
+select * from f1_demo.results_managed;
+
+%sql
+delete from f1_demo.results_managed
+where position > 10;
+
+%sql
+select * from f1_demo.results_managed;
+
+#delete using pythonic way
+from delta.tables import DeltaTable
+
+deltaTable = DeltaTable.forPath(spark, '/mnt/formula1dlajay/demo/results_managed')
+deltaTable.delete("points = 0");
+
+%sql
+select * from f1_demo.results_managed;
+
+
+
+141. Merge/ Upsert to Delta Lake
+
+Upsert using merge
+
+drivers_day1_df = spark.read.option("inferSchema",True) \
+    .json('/mnt/formula1dlajay/raw/2021-03-28/drivers.json') \
+    .filter("driverId <= 10") \
+    .select("driverId","dob","name.forename","name.surname")
+
+drivers_day1_df.createOrReplaceTempView("drivers_day1") 
+
+display(drivers_day1_df)
+
+
+from pyspark.sql.functions import upper
+
+drivers_day2_df = spark.read.option("inferSchema",True) \
+    .json("/mnt/formula1dlajay/raw/2021-03-28/drivers.json") \
+    .filter("driverId BETWEEN 6 and 15") \
+    .select("driverId","dob",upper("name.forename").alias("forename"),upper("name.surname").alias("surname"))
+
+drivers_day2_df.createOrReplaceTempView("drivers_day2")
+
+display(drivers_day2_df)
+
+from pyspark.sql.functions import upper
+
+drivers_day3_df = spark.read.option("inferSchema",True) \
+    .json("/mnt/formula1dlajay/raw/2021-03-28/drivers.json") \
+    .filter("driverId BETWEEN 1 and 5 or driverId BETWEEN 16 and 20") \
+    .select("driverId","dob",upper("name.forename").alias("forename"),upper("name.surname").alias("surname"))
+
+%sql
+
+create table if not exists f1_demo.drivers_merge (
+  driverId INT,
+  dob Date,
+  forename string,
+  surname string,
+  createdDate date,
+  updatedDate date
+)
+using delta
+
+
+%sql
+
+MERGE INTO f1_demo.drivers_merge tgt
+USING drivers_day1 upd
+ON tgt.driverId = upd.driverId
+WHEN MATCHED THEN
+  UPDATE SET
+    tgt.dob = upd.dob,
+    tgt.forename = upd.forename,
+    tgt.surname = upd.surname,
+    tgt.updatedDate = current_timestamp
+WHEN NOT MATCHED
+  THEN INSERT (
+    driverId,
+    dob,
+    forename,
+    surname,
+    createdDate
+  )
+  VALUES (
+    driverId,
+    dob,
+    forename,
+    surname,
+    current_timestamp
+  )
+
+%sql
+select * from f1_demo.drivers_merge;
+
+%sql
+
+MERGE INTO f1_demo.drivers_merge tgt
+USING drivers_day2 upd
+ON tgt.driverId = upd.driverId
+WHEN MATCHED THEN
+  UPDATE SET
+    tgt.dob = upd.dob,
+    tgt.forename = upd.forename,
+    tgt.surname = upd.surname,
+    tgt.updatedDate = current_timestamp
+WHEN NOT MATCHED
+  THEN INSERT (
+    driverId,
+    dob,
+    forename,
+    surname,
+    createdDate
+  )
+  VALUES (
+    driverId,
+    dob,
+    forename,
+    surname,
+    current_timestamp
+  )
+
+%sql
+select * from f1_demo.drivers_merge;
+
+
+from pyspark.sql.functions import current_timestamp
+from delta.tables import DeltaTable
+
+deltaTable = DeltaTable.forPath(spark, '/mnt/formula1dlajay/demo/drivers_merge')
+
+deltaTable.alias('tgt') \
+  .merge(
+    drivers_day3_df.alias('upd'),
+    'tgt.driverId = upd.driverId'
+  ) \
+  .whenMatchedUpdate(set =
+    {
+      "dob": "upd.dob",
+      "forename": "upd.forename",
+      "surname": "upd.surname",
+      "updatedDate": "current_timestamp()"      
+    }
+  ) \
+  .whenNotMatchedInsert(values =
+    {
+      "driverId": "upd.driverId",
+      "dob": "upd.dob",
+      "forename": "upd.forename",
+      "surname": "upd.surname",
+      "createdDate": "current_timestamp()"      
+    }
+  ) \
+  .execute()
+
+%sql
+select * from f1_demo.drivers_merge;
+
+
+142. History, Time Travel, Vacuum
+
+History & Versioning
+Time Travel
+Vaccum
