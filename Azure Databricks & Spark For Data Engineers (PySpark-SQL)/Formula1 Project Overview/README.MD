@@ -1924,6 +1924,8 @@ select race_id, count(1) from f1_processed.results group by race_id order by rac
 results_final_df.schema.names
 
 
+131. Incremental Load Improvements - Solution
+
 ingestion_with_includes/5.ingest_results_file
 
 
@@ -1953,3 +1955,146 @@ and call above function inside file
 ingestion_with_includes/5.ingest_results_file
 
 overwrite_function(results_final_df, 'f1_processed', 'results', 'race_id')
+
+
+132. Incremental Load - Notebook Workflows
+
+
+ingestion_with_includes/0.ingest_all_files -file - file
+
+and changes for 'p_file_date' in 6,7,8 files
+
+dbutils.widgets.text("p_file_date", "2021-03-28")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+for all date and all files
+
+v_result = dbutils.notebook.run('8.ingest_qualifying_file',0,{"p_data_source":"Ergast API","p_file_date":"2021-03-21"})
+
+
+
+133. Incremental Load - Race Results
+
+
+trans/1.race_results -file
+
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")  
+
+
+%run "../includes/common_functions"
+
+results_df = spark.read.parquet(f"{processed_folder_path}/results") \
+        .filter(f"file_date = '{v_filer_date}'") \
+        .withColumnRenamed("time", "race_time") \
+        .withColumnRenamed("race_id","result_race_id") \
+        .withColumnRenamed("file_date","result_file_date")
+
+race_result_df = results_df.join(circuits_races_df, circuits_races_df.race_id == results_df.result_race_id) \
+    .join(constructors_df, constructors_df.constructor_id == results_df.constructor_id) \
+    .join(drivers_df, drivers_df.driver_id == results_df.driver_id)
+
+final_df = race_result_df.select("race_id","race_year","race_name","race_date","circuit_location","driver_name","driver_number","driver_nationality",
+                                "team","grid","fastest_lap","race_time","points","position","result_file_date") \
+                                .withColumn("created_date",current_timestamp()) \
+                                .witColumnRenamed("result_file_date","file_date")
+
+overwrite_function(final_df, 'f1_presentation', 'race_results', 'race_id')
+
+
+%sql
+
+select * from f1_presentation.race_results where race_year = 2021;
+
+
+AnalysisException: [INSERT_COLUMN_ARITY_MISMATCH.TOO_MANY_DATA_COLUMNS] Cannot write to `hive_metastore`.`f1_presentation`.`race_results`, the reason is too many data columns: Table columns: `race_year`, `race_name`, `race_date`, `circuit_location`, `driver_name`, `driver_number`, `driver_nationality`, `team`, `grid`, `fastest_lap`, `race_time`, `points`, `position`, `created_date`. Data columns: `race_year`, `race_name`, `race_date`, `circuit_location`, `driver_name`, `driver_number`, `driver_nationality`, `team`, `grid`, `fastest_lap`, `race_time`, `points`, `position`, `created_date`, `race_id`.
+
+#drop table for above 
+
+%sql
+drop table f1_presentation.race_results;
+
+
+134. Incremental Load - Driver Standings
+
+trans/2.driver_standings -file
+
+
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_filer_date = dbutils.widgets.get("p_file_date")
+
+%run "../includes/common_functions"
+
+#Find the Race year for which the data is reprocessed
+race_result_list = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(f"file_date = '{v_filer_date}'") \
+    .select("race_year") \
+    .distinct() \
+    .collect()   
+
+race_result_list
+
+race_year_list = []
+for race_year in race_result_list:
+    race_year_list.append(race_year.race_year)
+# print(race_year_list)
+
+
+from pyspark.sql.functions import col
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(col("race_year").isin(race_year_list))
+
+overwrite_function(final_df, 'f1_presentation', 'driver_standings', 'race_year')
+
+
+%sql
+
+select * from f1_presentation.driver_standings;
+
+
+135. Incremental Load - Constructor Standings (Assignment)
+
+
+added below function in common_functions
+
+def df_column_to_list(input_df, column_name):
+    df_row_list = input_df.select(column_name) \
+                        .distinct() \
+                        .collect()
+    column_value_list = [row[column_name] for row in df_row_list]
+    return column_value_list
+
+trans/2.driver_standings -file
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(f"file_date = '{v_filer_date}'") 
+  
+race_year_list = df_column_to_list(race_result_df,"race_year")
+
+
+from pyspark.sql.functions import col
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(col("race_year").isin(race_year_list))
+
+
+trans/3.constructor_standings
+
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_filer_date = dbutils.widgets.get("p_file_date")
+
+%run "../includes/common_functions"
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(f"file_date = '{v_filer_date}'") 
+
+race_year_list = df_column_to_list(race_result_df,"race_year")
+
+from pyspark.sql.functions import col
+
+race_result_df = spark.read.parquet(f"{presentation_folder_path}/race_results") \
+    .filter(col("race_year").isin(race_year_list))
+
+
+overwrite_function(final_df, 'f1_presentation', 'constructor_standings', 'race_year')
