@@ -2633,20 +2633,21 @@ includes/common_functions - file
 
 # add below function
 
-spark.conf.set("spark.databricks.optimizer.dynamicPartitionPruning","true")
-from delta.tables import DeltaTable
-
 def merge_delta_data(input_df, db_name,table_name,partition_column,folder_path,merge_condition):
-    if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
-      deltaTable = DeltaTable.forPath(spark,f"{folder_path}/{table_name}")
-      deltaTable.alias('tgt').merge(
-        input_df.alias("src"),
-        merge_condition) \
-        .whenMatchedUpdateAll() \
-        .whenNotMatchedInsertAll() \
-        .execute() 
-    else:
-        input_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
+  
+  spark.conf.set("spark.databricks.optimizer.dynamicPartitionPruning","true")
+  from delta.tables import DeltaTable
+  
+  if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
+    deltaTable = DeltaTable.forPath(spark,f"{folder_path}/{table_name}")
+    deltaTable.alias('tgt').merge(
+    input_df.alias("src"),
+    merge_condition) \
+    .whenMatchedUpdateAll() \
+    .whenNotMatchedInsertAll() \
+    .execute() 
+  else:
+      input_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
 
 
 # in below file add below code and call function
@@ -2734,7 +2735,7 @@ drivers_df = spark.read.format("delta").load(f"{processed_folder_path}/drivers")
 
 
 merge_condition = "tgt.driver_name = src.driver_name and tgt.race_id = src.race_id"
-merge_delta_data(final_df, "f1_presentation", "race_results", "race_id",processed_folder_path, merge_condition)
+merge_delta_data(final_df, "f1_presentation", "race_results", "race_id",presentation_folder_path, merge_condition)
 
 
 %sql
@@ -2756,7 +2757,7 @@ race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/ra
     .filter(col("race_year").isin(race_year_list))
 
 merge_condition = "tgt.driver_name = src.driver_name and tgt.race_year = src.race_year"
-merge_delta_data(final_df, "f1_presentation", "driver_standings", "race_year",processed_folder_path, merge_condition)
+merge_delta_data(final_df, "f1_presentation", "driver_standings", "race_year",presentation_folder_path, merge_condition)
 
 
 %sql
@@ -2781,7 +2782,7 @@ race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/ra
     .filter(col("race_year").isin(race_year_list))
 
 merge_condition = "tgt.team = src.team and tgt.race_year = src.race_year"
-merge_delta_data(final_df, "f1_presentation", "constructor_standings", "race_year",processed_folder_path, merge_condition)
+merge_delta_data(final_df, "f1_presentation", "constructor_standings", "race_year",presentation_folder_path, merge_condition)
 
 %sql
 select * from f1_presentation.constructor_standings where race_year = 2021;
@@ -2792,3 +2793,88 @@ group by race_year
 order by race_year desc;
 
 151. Data Transformation - SQL Notebook
+
+Delta_Lake/trnas/4.calculated_race_result
+
+dbutils.widgets.text("p_file_date","2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+
+spark.sql(f"""
+          create table if not exists f1_presentation.calculated_race_results(
+          race_year int,
+          team_name string,
+          driver_id int,
+          driver_name string,
+          race_id int,
+          position int,
+          points int,
+          calculated_points int,
+          created_date TIMESTAMP,
+          updated_date TIMESTAMP
+          )
+          using delta
+    """)
+
+spark.sql(f"""
+                create or replace temp view race_result_updated
+                as
+                select races.race_year,
+                constructors.name as team_name,
+                drivers.driver_id,
+                drivers.name as driver_name,
+                races.race_id,
+                results.position,
+                results.points,
+                11 - results.position as calculated_points
+                from f1_processed.results
+                join f1_processed.drivers on (drivers.driver_id = results.driver_id)
+                join f1_processed.constructors on (constructors.constructor_id = results.constructor_id)
+                join f1_processed.races on (races.race_id = results.race_id)
+                where results.position <= 10 and results.file_date = '{v_file_date}'                 
+          
+    """)
+
+# %sql select * from race_result_updated where race_year = 2021;
+
+
+#by running below command we will get incremental data in table - f1_presentation.calculated_race_results
+
+spark.sql(f"""
+        MERGE INTO f1_presentation.calculated_race_results tgt
+        USING race_result_updated upd
+        ON (tgt.driver_id = upd.driver_id and tgt.race_id = upd.race_id)
+        WHEN MATCHED THEN
+        UPDATE SET
+            tgt.position = upd.position,
+            tgt.points = upd.points,
+            tgt.calculated_points = upd.calculated_points,
+            tgt.updated_date = current_timestamp
+        WHEN NOT MATCHED
+        THEN INSERT (
+            race_year,
+            team_name,
+            driver_id,
+            driver_name,
+            race_id,
+            position,
+            points,
+            calculated_points,
+            created_date
+        )
+        VALUES (
+            race_year,
+            team_name,
+            driver_id,
+            driver_name,
+            race_id,
+            position,
+            points,
+            calculated_points,
+            current_timestamp
+        )
+   """)
+
+%sql select count(1) from race_result_updated;
+
+%sql select count(1) from f1_presentation.calculated_race_results;
