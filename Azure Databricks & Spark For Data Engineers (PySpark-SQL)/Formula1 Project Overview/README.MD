@@ -2585,3 +2585,107 @@ convert to delta parquet.`/mnt/formula1dlajay/demo/drivers_convert_to_delta_new`
 
 145. Data Ingestion - Circuits File
 
+
+utils/1.prepare_for_incremental_load - file
+run all command for this file because we want to delete all tables;
+
+
+Delta_Lake/ingestion_with_includes/1.ingest_circuits_file 
+Delta_Lake/ingestion_with_includes/2.ingest_races_file
+Delta_Lake/ingestion_with_includes/3.ingest_constructors_file
+Delta_Lake/ingestion_with_includes/4.ingest_drivers_file
+
+only change we have to do
+
+%run "../../includes/configuration"
+%run "../../includes/common_functions"
+circuits_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.circuits")
+
+
+146. Data Ingestion - Results File
+
+Delta_Lake/ingestion_with_includes/5.ingest_results_file - file
+
+%run "../../includes/configuration"
+%run "../../includes/common_functions"
+
+#by using partition column in merge statement then query will be quiker -> tgt.race_id = src.race_id
+
+spark.conf.set("spark.databricks.optimizer.dynamicPartitionPruning","true")
+from delta.tables import DeltaTable
+
+if (spark._jsparkSession.catalog().tableExists("f1_processed.results")):
+   deltaTable = DeltaTable.forPath(spark,"/mnt/formula1dlajay/processed/results")
+   deltaTable.alias('tgt').merge(
+       results_final_df.alias("src"),
+       "tgt.result_id = src.result_id and tgt.race_id = src.race_id") \
+       .whenMatchedUpdateAll() \
+       .whenNotMatchedInsertAll() \
+       .execute() 
+else:
+      results_final_df.write.mode("overwrite").partitionBy("race_id").format("delta").saveAsTable("f1_processed.results")
+
+
+147. Data Ingestion - Results File Improvements
+
+
+includes/common_functions - file
+
+# add below function
+
+spark.conf.set("spark.databricks.optimizer.dynamicPartitionPruning","true")
+from delta.tables import DeltaTable
+
+def merge_delta_data(input_df, db_name,table_name,partition_column,folder_path,merge_condition):
+    if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
+      deltaTable = DeltaTable.forPath(spark,f"{folder_path}/{table_name}")
+      deltaTable.alias('tgt').merge(
+        input_df.alias("src"),
+        merge_condition) \
+        .whenMatchedUpdateAll() \
+        .whenNotMatchedInsertAll() \
+        .execute() 
+    else:
+        input_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
+
+
+# in below file add below code and call function
+Delta_Lake/ingestion_with_includes/5.ingest_results_file - file
+
+merge_condition = "tgt.result_id = src.result_id and tgt.race_id = src.race_id"
+merge_delta_data(results_final_df, "f1_processed", "results", "race_id",processed_folder_path, merge_condition)
+
+
+148. Data Ingestion - All Other Files (Assignment)
+
+# https://ergast.com/docs/f1db_user_guide.txt - only take primary id and partition column in merge condition
+Delta_Lake/ingestion_with_includes/6.ingest_pit_stops_file
+
+merge_condition = "tgt.race_id = src.race_id and tgt.driver_id = src.driver_id and tgt.stop = src.stop and tgt.race_id = src.race_id"
+merge_delta_data(pit_stops_with_columns_df, "f1_processed", "pit_stops", "race_id", processed_folder_path, merge_condition)
+
+
+%sql
+select race_id, count(1) from f1_processed.pit_stops
+group by race_id
+order by race_id desc;
+
+
+
+# https://ergast.com/docs/f1db_user_guide.txt -> only take primary id and partition column in merge condition
+merge_condition = "tgt.race_id = src.race_id and tgt.driver_id = src.driver_id and tgt.lap = src.lap and tgt.race_id = src.race_id"
+merge_delta_data(lap_times_with_columns_df, "f1_processed", "lap_times", "race_id", processed_folder_path, merge_condition)
+
+%sql
+select * from f1_processed.lap_times;
+
+Delta_Lake/ingestion_with_includes/8.ingest_qualifying_file
+# https://ergast.com/docs/f1db_user_guide.txt -> only take primary id and partition column in merge condition
+merge_condition = "tgt.qualify_id = src.qualify_id and tgt.race_id = src.race_id"
+merge_delta_data(qualifying_with_columns_df, "f1_processed", "qualifying", "race_id", processed_folder_path, merge_condition)
+
+%sql
+select * from f1_processed.qualifying;
+
+
+149. Data Ingestion - Fix Duplicates in Results Data
