@@ -2689,3 +2689,106 @@ select * from f1_processed.qualifying;
 
 
 149. Data Ingestion - Fix Duplicates in Results Data
+
+
+Delta_Lake/ingestion_with_includes/5.ingest_results_file
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.dropDuplicates.html
+
+
+# De-dupe the Dataframe -> remove duplicates values
+
+results_deduped_df = results_final_df.dropDuplicates(["race_id","driver_id"])
+
+merge_condition = "tgt.result_id = src.result_id and tgt.race_id = src.race_id"
+merge_delta_data(results_deduped_df, "f1_processed", "results", "race_id",processed_folder_path, merge_condition)
+
+%sql
+-- give no result becuase we create data frame for no duplicates
+select race_id,driver_id, count(1) from f1_processed.results
+group by race_id,driver_id
+having count(1) > 1
+order by race_id, driver_id desc;
+
+%sql
+select count(1) from f1_processed.results; #give count
+
+%sql
+select * from f1_processed.results where race_id = 540 and driver_id = 229; # remove duplcate result
+
+%sql
+select count(1) from f1_processed.results;  
+
+
+150. Data Transformation - All PySpark Notebooks
+
+
+Delta_Lake/trnas/1.race_results
+
+# read all the delta dataframe from above file
+
+drivers_df = spark.read.format("delta").load(f"{processed_folder_path}/drivers") \
+    .withColumnRenamed("number","driver_number") \
+    .withColumnRenamed("name","driver_name") \
+    .withColumnRenamed("nationality", "driver_nationality")
+
+
+
+merge_condition = "tgt.driver_name = src.driver_name and tgt.race_id = src.race_id"
+merge_delta_data(final_df, "f1_presentation", "race_results", "race_id",processed_folder_path, merge_condition)
+
+
+%sql
+select * from f1_presentation.race_results ;
+
+
+%sql
+select race_id, count(1) from f1_presentation.race_results
+group by race_id
+order by race_id desc;
+
+
+Delta_Lake/trnas/2.driver_standings 
+
+race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
+    .filter(f"file_date = '{v_filer_date}'") 
+
+race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
+    .filter(col("race_year").isin(race_year_list))
+
+merge_condition = "tgt.driver_name = src.driver_name and tgt.race_year = src.race_year"
+merge_delta_data(final_df, "f1_presentation", "driver_standings", "race_year",processed_folder_path, merge_condition)
+
+
+%sql
+select * from f1_presentation.driver_standings where race_year = 2021;
+
+
+%sql
+select race_year,count(1) from f1_presentation.driver_standings
+group by race_year
+order by race_year desc;
+
+
+
+Delta_Lake/trnas/3.constructor_standings
+
+
+race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
+    .filter(f"file_date = '{v_filer_date}'") 
+
+
+race_result_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
+    .filter(col("race_year").isin(race_year_list))
+
+merge_condition = "tgt.team = src.team and tgt.race_year = src.race_year"
+merge_delta_data(final_df, "f1_presentation", "constructor_standings", "race_year",processed_folder_path, merge_condition)
+
+%sql
+select * from f1_presentation.constructor_standings where race_year = 2021;
+
+%sql
+select race_year,count(1) from f1_presentation.driver_standings
+group by race_year
+order by race_year desc;
+
+151. Data Transformation - SQL Notebook
