@@ -2991,8 +2991,103 @@ go to debug option on top and then it will ask for date 'p_window_end_date' -> 2
 
 158. Update Pipeline - Ingest All Other Files
 
-duplicate all other files from folder -Delta_lake/ingestion_with_includes
-
+duplicate all other files from folder -Delta_lake/ingestion_with_includes/all 8 files
 
 
 159. Improve Pipeline - Handle Missing Files
+
+in ADF - Activity-> general -> metadata -
+Name - 'Get Folder Data'
+
+
+Settings - select ADLS Gen2 ->
+ format - json ->
+ properties -> name : ds_formula1_raw
+
+ new link service 
+ name -ls_formula1_storage
+ Authentication type - Account key
+Storage account name* -  formula1dlajay
+
+@formatDateTime(dataset().p_window_end_date,'yyy-MM-dd')
+
+@pipeline().parameters.p_window_end_date
+
+
+Get Folder Data -> Setting ->Dataset properties
+Name	p_window_end_date	
+Value	@pipeline().parameters.p_window_end_date	
+
+Field list * -> Exists
+
+in ADF - Activity-> iteration & conditiona -> if condition ->
+
+name - If Folder Exists
+Expression (dynamic) - @activity('Get Folder Data').output.exists   
+
+
+now copy all notebook and put inside if condition and debug with - false condtion -> 2021-03-20 
+                                                                  then true condtion -> 2021-03-21
+
+
+and then publish
+
+160. Create Pipeline - Transformation Notebooks
+
+Delta_Lake/trans/all four files
+
+clone first pipeline
+name - pl_transform_formula1_data
+
+we only need base parameter p_file_date
+p_file_date - @formatDateTime(pipeline().parameters.p_window_end_date,'yyy-MM-dd')
+
+
+
+we will connect both pipeline with pipeline with -> pl_process_formula1_data
+
+3.pl_process_formula1_data -> 1.pl_ingest_formula1_data -> 2.pl_transform_formula1_data
+
+
+search
+
+Adf -> Execute pipeline
+
+pipeline :- Execute Ingestion -> Execute Transformation
+p_window_end_date -> @pipeline().parameters.p_window_end_date
+
+
+161. Create ADF Trigger
+
+https://learn.microsoft.com/en-us/azure/data-factory/
+
+https://learn.microsoft.com/en-us/azure/data-factory/control-flow-system-variables
+
+use for parameter - p_window_end_date -  @trigger().outputs.windowEndTime	
+
+create trigger
+name -tr_process_formula1_data
+
+
+type - 1.schedule - every day 10am monday to frienday
+       2. Tumbling window - from 6-12am , 12-6pm (regular interval, or we can schedule based on required date for our purposes)
+       3. storage event -(anything happend inside storage - add,delete,update then trigger will run)
+
+
+       choose - Tumbling window
+       choose start date and end date 
+       every 168 hour - minute
+       max concurancy - 1
+       retry policy - 30
+       status - No
+
+add trigger to -> pl_process_formula1_data pipeline
+use for parameter - p_window_end_date -  @trigger().outputs.windowEndTime	
+
+
+
+then go to monitior tab in left and trigger run
+
+go to trigger run -> its setting -> add end date column and then ok 
+
+and then run the trigger
