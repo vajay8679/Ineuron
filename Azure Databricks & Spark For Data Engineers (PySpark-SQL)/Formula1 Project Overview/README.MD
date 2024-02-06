@@ -2878,3 +2878,121 @@ spark.sql(f"""
 %sql select count(1) from race_result_updated;
 
 %sql select count(1) from f1_presentation.calculated_race_results;
+
+
+Section - 23 - Azure Data Factory
+
+152. Section Overview
+
+it use to schedule and execute databricks notebook
+
+
+
+153. Azure Data Factory Overview
+
+a fully managed, serverless data integration solution for ingesting, preparing and transforming all your data at scale.
+
+data coming from clouds(AWS,azure,GCP)  ,saas, on prime applications in different data formats
+
+Azure Datafactory Provides end to end dat ingestion , transformation and orchestration
+
+What Datafactory is 
+1. Fully Managed service
+2. serverless
+3. Data Integration service
+4. Data transformation service
+5. Data orchestration service
+
+What Datafactory is not
+1. Data migration tool
+2. Data Streaming service
+3. Suitable for Complex Data transformation
+4. Data Storage service
+
+
+154. Create Azure Data Factory Service
+
+https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.DataFactory%2FdataFactories
+
+resource group - databrickscourse-rg
+name - databricks-course-adf-ajay
+region - central india
+
+
+Resource group : databrickscourse-rg
+
+# Go to launch studio
+
+Location:Central India
+Subscription:Azure subscription 1
+Subscription ID:49a84c57-21dd-4dde-a744-8c4a8075b500
+Type:Data factory (V2)
+
+data factory interface
+
+
+155. Azure Data Factory Components
+
+Components - storage(adls,sql database) -> linked Service -> datasets -> Activity -> Pipeline -> trigger
+Components - compute(azure databricks,azure hdinsights) -> linked Service  -> Activity -> Pipeline -> trigger
+
+156. Create Pipeline - Circuits File
+
+go inside data factory -> author -> pipeline -> new pipeline
+
+pipeline name - pl_ingest_formula1_data
+
+drag jupyter notebook
+ name  - 
+
+# linked service
+ subscription name -Azure subscription 1 (49a84c57-21dd-4dde-a744-8c4a8075b500)
+ name - ls_databrickscourse_ws
+ Account selection method* - From Azure subscription
+ Select cluster - Existing interactive cluster
+ Authentication type - managed service type 
+
+and copy Managed identity name
+Managed identity name: databricks-course-adf-ajay
+
+Managed identity name:databricks-course-adf-ajay
+Managed identity object ID:540ae937-0dbe-4002-82a2-85ecf1f4edbc
+Grant Data Factory service managed identity access to your Resources.
+
+Choose from existing clusters - Databricks-course-cluster
+
+
+# job cluster  - destory automatically after job is finished
+
+https://portal.azure.com/#view/Microsoft_Azure_AD/AddRoleAssignmentsLandingBlade/scope/%2Fsubscriptions%2F49a84c57-21dd-4dde-a744-8c4a8075b500%2FresourceGroups%2Fdatabrickscourse-rg%2Fproviders%2FMicrosoft.Databricks%2Fworkspaces%2Fdatabrickscourse-ws/abacSettings~/%7B%7D/priorityRoles~/%5B%5D
+
+Go inside -> databrickscourse-ws | Access control (IAM) -> Privileged administrator roles -> Contributor -> then select -> databricks-course-adf-ajay 
+
+and then create so databricks will be connected to datafactory
+
+in setting select notebook 'Delta_lake/ingestion_with_includes/1.ingest_circuits_file' -> notebook
+
+go to setting of pipeline after clicking outside of notebook 
+got to -> variable - v_data_source - Ergapt
+got to -> parameter - p_window_end_date
+
+
+inside parameter of setting of pipeline -> p_window_end_date - 
+go to settin of notebook -> base parameter ->   p_data_source - @variables('v_data_source') (selected dynamically)
+go to settin of notebook -> base parameter ->   p_file_date - @formatDateTime(pipeline().parameters.p_window_end_date,'yyyy-MM-dd') (selected formatdate function and then select parameter -> p_window_end_date and then format datasets)
+
+
+157. Debugging a Pipeline
+
+go to debug option on top and then it will ask for date 'p_window_end_date' -> 2021-04-18
+
+
+
+
+158. Update Pipeline - Ingest All Other Files
+
+duplicate all other files from folder -Delta_lake/ingestion_with_includes
+
+
+
+159. Improve Pipeline - Handle Missing Files
