@@ -3091,3 +3091,264 @@ then go to monitior tab in left and trigger run
 go to trigger run -> its setting -> add end date column and then ok 
 
 and then run the trigger
+
+
+
+
+######################################################
+
+Section - 24 -  Connect other services
+
+
+162. Power BI
+
+
+to connect databricks with power bi -we have to go to get data and then azure and then databricks
+
+inside power bi 
+
+ get data -> azure -> databricks -> cluster -> advanced setting -> jdbc/odbc -> server name -> http path 
+
+ then connect with  import -> azure active direcotry / personal access token
+
+
+ personal access token - dapi132162c63883c265c2b85163d7678670
+
+
+
+ ########################################################
+
+ Section - 25 - Unity Catalog - Introduction
+
+
+163. Section Overview
+
+164. Unity Catalog Sections Resource Download
+
+
+download files
+
+
+165. Unity Catalog Overview
+
+
+Unity Catalog is a databricks offered unified solution for implementing data governance in the data lakehouse
+
+data governance - process of availability , usabaility , integrity,and secuirty of the data present in an enterprise
+
+1. controll access of the data for the user
+2. ensure data is trustworthy and not misused
+3. help imporve privacy regulations such as gdpr, ccpa
+
+
+with unity catalog - one metastore per region - it improve performance
+
+Unity catalog offers
+1. metastore
+2. Access controll
+3. User management
+4. Data Explore
+5. Data Lineage (Upstream and downstream flow of data and pipeline)
+6. Audit Logs
+
+
+Unitity catalog is a databricks offered unified solution
+
+Unitity catalog 
+->
+
+Data Lineage
+Data discoveability
+Data Access Control 
+Data Audit
+
+
+
+166. Unity Catalog Set-up Overview
+
+unity catalog set-up
+
+1. create Azure databircks workspace
+2. create azure datalake gen2
+3. Create access conncetor
+4. Add role storage blob Data contributor
+5. create unity catalog metastore
+6. Enable databircks workspace for unity catalog
+
+
+
+167. Create Unity Catalog Metastore - Prerequisites
+
+step1 - create new azure databricks workspace
+
+https://portal.azure.com/#view/Microsoft_Azure_Marketplace/GalleryItemDetailsBladeNopdl/id/Microsoft.Databricks/selectionMode~/false/resourceGroupId//resourceGroupLocation//dontDiscardJourney~/false/selectedMenuId/home/launchingContext~/%7B%22galleryItemId%22%3A%22Microsoft.Databricks%22%2C%22source%22%3A%5B%22GalleryFeaturedMenuItemPart%22%2C%22VirtualizedTileDetails%22%5D%2C%22menuItemId%22%3A%22home%22%2C%22subMenuItemId%22%3A%22Search%20results%22%2C%22telemetryId%22%3A%226e2b9f32-2d22-4653-89c6-bc930acaa5d5%22%7D/searchTelemetryId/0b25b21e-7132-48a3-b89a-c3bc1a99ae1f
+
+
+resource group - databricscourse-uc-rg 
+workspace name - databrickscourse-uc-ws
+
+premium tier
+
+then create
+
+
+step2 - create storage account
+
+https://portal.azure.com/#create/Microsoft.StorageAccount-ARM
+
+
+resource group - databricscourse-uc-rg
+name - databrickscoursedlajay
+performance - standard
+Redundancy - locally storage Redundancy
+herarchichal namespace - enabled - to get adls gen2 otherwise you will get blob storage
+
+and then create
+
+
+step 3 - create Access Connector for Azure Databricks
+
+https://portal.azure.com/#create/Microsoft.AccessConnector
+
+resource group - databricscourse-uc-rg
+name - databrickscourse-uc-access
+
+
+Step - 4 - IAM role
+
+go inside storage -databrickscoursedlajay
+
+https://portal.azure.com/#@vajay8679gmail.onmicrosoft.com/resource/subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-uc-rg/providers/Microsoft.Storage/storageAccounts/databrickscoursedlajay/overview
+
+inside IAM role - Add role assignment
+role - Storage Blob Data Contributor
+Assign access to - Managed identity
+member - new member - 
+select - databrickscourse-uc-access
+
+and then create
+
+how we will connect our access connector with adls gen2 with role asssigned role  Storage Blob Data Contributor
+
+
+
+168. Create Unity Catalog Metastore
+
+go to manage account o top left in databricks 
+
+https://accounts.azuredatabricks.net/
+
+go inside data -> create metastore ->
+
+https://accounts.azuredatabricks.net/data
+
+
+name - databrickscourse_uc_metastore
+region - central india
+
+inside azure storage (databrickscoursedlajay) we have to create container
+
+container name - metastore
+
+ADLS Gen2 - metastore@databrickscoursedlajay.dfs.core.windows.net/
+
+
+inside properties section of -Access Connector 
+Access Connector Id - /subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-uc-rg/providers/Microsoft.Databricks/accessConnectors/databrickscourse-uc-access
+
+
+create and select workspace - databrickscourse-uc-ws
+
+thats how we will connect metastore to our workspace
+
+
+169. Cluster Configurations for Unity Catalog
+
+select workspace from top left - 'databrickscourse-uc-ws'
+
+we have to create cluster and select configuration that supports unity catalog
+
+
+we have to look 'Access mode' - Single user or Shared only 
+Databricks runtime version - only choose that enable unity catalog
+
+for which unity catalog should enabled
+
+
+170. Unity Catalog Object Model Overview
+
+
+  1. metastore - top level container, only one metastore per region, paired with default adls storage
+  2. catalog - newly added to untiy catalog, logical container within metastore
+  3. Schema(Database)(one or more) - Next level container within catalog, schema and database are same, use schema instead of database
+  4. view/table/function (one or more) - 
+  5. table -> external (only meta store in databricks , data in cloud)/managed (metadata and data both inside databricks)
+
+  benefits of unity catalog for managed table
+
+  managed table can only be delta format
+  stored in the default storage 
+  deleted data retained for 30 days
+  Benefits from automatic maintenance and performance improvements
+
+
+  query -> select * from catalog.schema.table;
+
+  storage credentials, external location , catalog, share , recipient, provider
+
+
+metastore(formula1)
+created 3 catalog(catalog - dev/test/prod) 
+3 schema for each catalog (schema - bronze/silver/gold) 
+for each schema (tables/view/functions)
+   
+formula1_sandbox -> Schema -> tables
+
+
+171. Unity Catalog Object Model Demo (Data Explorer UI)
+
+we have four catalog in catalog section of databricks
+
+
+catalog name - demo_catalog
+schema name - demo_schema
+
+and then create table and upload table file - then check inside storage container inside metastore GUI file name created then table file and delta file
+
+
+
+172. Unity Catalog Object Model Demo (SQL/ Python)
+
+
+create workspace folder -databricks-course -> unity-catalog 
+
+file- 1.query_table_using_unity_catalog
+
+# query
+
+select * from demo_catalog.demo_schema.circuits;
+
+use catalog demo_catalog;
+use schema demo_schema;
+select * from circuits;
+
+select current_schema()
+
+show schemas;
+
+show tables;
+
+%python
+display(spark.sql('show tables'));
+
+%python
+df = spark.table("demo_catalog.demo_schema.circuits")
+
+%python display(df)
+
+
+
+173. Accessing External Data Lake Overview
+
+
+
