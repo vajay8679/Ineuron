@@ -3350,5 +3350,62 @@ df = spark.table("demo_catalog.demo_schema.circuits")
 
 173. Accessing External Data Lake Overview
 
+inside metastore 
+
+1. storage credentials - credential object store in metastore , used on users behalf to access cloud storage, created using managed identity/service principle, can be assigned access control polices
+2. External Location - object stored in centrally at the metastore, combines the adls path with the storage credential, subjected to access control policies
+
+# accessing external location
+
+1. create access connector
+2. create azure datalake storage
+3. Assign Storage Blob Data contributor role 
+4. create storage credential
+5. create external location
 
 
+174. Create Storage Credential
+
+step 1. create access connector
+name  - databrickscourse-uc-ext-access
+
+step 2. create azure datalake storage
+storage name - databrickscourseextdlaj
+performance - standard
+Redundancy - locally
+herarchical - enabled
+create container - demo 
+insert - circuits.csv file
+
+step 3. Assign Storage Blob Data contributor role 
+create IAM ROLE - Storage Blob Data Contributor
+Assign access to - MANAGED identity
+select member  - databrickscourse-uc-ext-access
+
+step 4. create storage credential
+
+go to databricks - catalog - external data - create Storage Credentials
+
+name - databrickscourse-ext-storage-credentials
+access connector id - /subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-uc-rg/providers/Microsoft.Databricks/accessConnectors/databrickscourse-uc-ext-access
+
+
+175. Create External Location
+
+go to databricks - catalog -external location
+
+step 5. create external location
+External location name - databrickscourseextdl_demo
+ Storage credential - databrickscourse-ext-storage-credentials
+path - abfss://demo@databrickscourseextdlaj.dfs.core.windows.net/
+
+test connection
+
+
+create file inside unity_catalog folder - 2.access_external_location
+
+to check external storage 
+
+dbutils.fs.ls('abfss://demo@databrickscourseextdlaj.dfs.core.windows.net/')
+
+o/p - [FileInfo(path='abfss://demo@databrickscourseextdlaj.dfs.core.windows.net/circuits.csv', name='circuits.csv', size=10044, modificationTime=1707496767000)]
