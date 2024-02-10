@@ -3409,3 +3409,67 @@ to check external storage
 dbutils.fs.ls('abfss://demo@databrickscourseextdlaj.dfs.core.windows.net/')
 
 o/p - [FileInfo(path='abfss://demo@databrickscourseextdlaj.dfs.core.windows.net/circuits.csv', name='circuits.csv', size=10044, modificationTime=1707496767000)]
+
+
+#####################################################
+
+Section - 26 Unity Catalog - Mini project
+
+
+176. Project Overview
+                 
+                this will come under workflow
+-------------------------------------------------------------
+Notebook -> Bronze -> Notebook -> Silver -> Notebook -> Gold -> Power BI Report
+
+
+drivers & results file
+
+Steps to follow
+
+1. create storage container
+2. create external location
+3. create catalog and schema
+4. create bronze table(External)
+5. create silver table(Managed)
+6. create Glod table(Managed)
+7. create databricks workflow
+
+
+177. Create External Location
+
+https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/#--create-an-external-location
+
+https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/external-locations
+
+step1 - create storage container insidestorage account(databrickscourseextdlaj) - bronze,silver,gold 
+
+inside bronze - drivers.json, results.json
+create unity-catalog-mini-project
+step2 - create external location
+
+
+file inside ->unity_catalog_mini_project/1.create_external_locations
+
+Create the external locations required for this Project
+Bronze
+Silver
+Gold
+
+CREATE EXTERNAL LOCATION databrickscourseextdl_bronze
+URL 'abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/'
+WITH (STORAGE CREDENTIAL `databrickscourse-ext-storage-credentials`);
+
+
+DESC EXTERNAL LOCATION databrickscourseextdl_bronze
+
+%fs
+ls "abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/"
+
+CREATE EXTERNAL LOCATION databrickscourseextdl_silver
+URL 'abfss://silver@databrickscourseextdlaj.dfs.core.windows.net/'
+WITH (STORAGE CREDENTIAL `databrickscourse-ext-storage-credentials`);
+
+CREATE EXTERNAL LOCATION databrickscourseextdl_gold
+URL 'abfss://gold@databrickscourseextdlaj.dfs.core.windows.net/'
+WITH (STORAGE CREDENTIAL `databrickscourse-ext-storage-credentials`);
