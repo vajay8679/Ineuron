@@ -3652,6 +3652,7 @@ order by number_of_wins desc;
 
 181. Create Databricks Workflow
 
+name -wf_process_f1_data
 
 go inside databricks and inside workflow create a job and connect all 3 layers file
 
@@ -3689,3 +3690,94 @@ Section - 27 - Unity Catalog - Key Benefits
 
 
 183. Data Discovery
+
+
+unity-catalog-capabilities/1.data_discovery
+
+system.information_schema - gives results of all catalog inside metastore
+formula1_dev.information_schema - gives result of only catalog formula1_dev
+
+select * from system.information_schema.tables where table_name = 'results';
+
+select * from formula1_dev.information_schema.tables where table_name = 'results';
+
+
+184. Data Audit
+
+
+https://portal.azure.com/#@vajay8679gmail.onmicrosoft.com/resource/subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-uc-rg/providers/Microsoft.Databricks/workspaces/databrickscourse-uc-ws/overview
+
+go inside - databrickscourse-uc-ws -> Diagnostic settings -> enable databricks unity catalog
+
+we will get all info of how the user is using the data,how often and when it is accessed
+
+
+185. Data Lineage
+
+it is a process of following/tracking the journey of data within a pipeline
+
+what is the origin
+how has it changed/transformed
+what is the destination
+
+data-lineage - benefits
+
+Root cause analysis
+Improved impact analysis
+Trust & Reliability
+Better compliance
+
+Data Lineage Limitations
+
+Only availabe for tables registered in unity catalog metastore
+availabe only for the last 30 days
+Limited columns level lineage
+
+
+
+186. Data Access Control Overview
+
+
+security model
+
+Identity -> Secure -> Securable Object
+
+users (1 or more)
+service principal (1 or more)
+Groups (users and service principal inside groups)
+
+Role based access
+
+Account admin (main)
+Metastore Admin
+Object Owner
+Object User
+
+
+privileges
+
+create,select,usage
+
+access -control-list
+
+
+187. Data Access Control Demo
+
+https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/manage-privileges/ownership#transfer-ownership
+
+https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/manage-privileges/privileges#manage-privileges
+
+
+inside databricks top right -> go to manage account -> User management -> you will see 'account admin' and some dummy user
+
+inside databricks top right -> go to manage account - data -> we can change permission of 'metastore admin'
+
+inside databricks workspace - catalog - schema -table -> you can see object owner
+
+
+inheritance permission
+
+give permission to catalog and it will transfer to schema and table
+
+you can give individual permission to table as well but you have to give permission to schema and catalog as well
+
