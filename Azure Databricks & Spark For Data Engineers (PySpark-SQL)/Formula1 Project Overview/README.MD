@@ -3444,8 +3444,9 @@ https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/externa
 
 step1 - create storage container insidestorage account(databrickscourseextdlaj) - bronze,silver,gold 
 
+file - 1.create_external_locations
 inside bronze - drivers.json, results.json
-create unity-catalog-mini-project
+create folder unity-catalog-mini-project
 step2 - create external location
 
 
@@ -3473,3 +3474,218 @@ WITH (STORAGE CREDENTIAL `databrickscourse-ext-storage-credentials`);
 CREATE EXTERNAL LOCATION databrickscourseextdl_gold
 URL 'abfss://gold@databrickscourseextdlaj.dfs.core.windows.net/'
 WITH (STORAGE CREDENTIAL `databrickscourse-ext-storage-credentials`);
+
+
+after running all go to external location and test connection in catalog for all 3 catalog
+
+
+178. Create Catalogs and Schema
+
+external table view
+
+file - 2.create_catalog_schemas
+
+metastore - managed-location(mandatory) - 3. (Default Storage ADLS GEN2 CONTIANER)
+catalog (formula1_dev) -  managed-location(optional) - 2. (ADLS GEN2 CONTIANER)
+schema(database) (bronze/silver/gold) -managed-location(optional) - 1. (ADLS GEN2 CONTIANER)
+table
+external 
+
+for this we have specify path
+
+for managed table managed_table -  
+metastore - managed-location(mandatory) - 3. (Default Storage ADLS GEN2 CONTIANER)
+catalog (formula1_dev)-  managed-location(optional) - 2. (ADLS GEN2 CONTIANER)
+schema(database) (bronze/silver/gold)  -managed-location(optional) - 1. (ADLS GEN2 CONTIANER)
+table
+managed 
+
+
+we dont have to specify path and retainsion 30days after it table and data will be deleted
+
+
+schema-of-project
+
+bronze(external- drivers/results) - silver(managed - drivers/results) - gold(managed - drivers_wins)
+
+
+Create Catalog and Schema required for this project
+Catalog - formula1_dev (without managed location)
+Schema - bronze,silver,gold (with managed location)
+
+create catalog if not exists formula1_dev;
+
+use catalog formula1_dev;
+
+create schema if not exists bronze
+managed location "abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/"
+
+create schema if not exists silver
+managed location "abfss://silver@databrickscourseextdlaj.dfs.core.windows.net/"
+
+create schema if not exists gold
+managed location "abfss://gold@databrickscourseextdlaj.dfs.core.windows.net/"
+
+show schemas;
+
+
+179. Create External Tables
+
+file - 3.create_bronze_table
+
+Create Bronze tables
+drivers.json
+results.json Bronze folder path - abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/
+
+drop table if exists formula1_dev.bronze.drivers;
+
+create table if not exists  formula1_dev.bronze.drivers
+(
+  driverId INT, 
+  driverRef STRING, 
+  number INT, 
+  code STRING, 
+  name STRUCT<forename:STRING, surname:STRING>,
+  dob DATE,
+  nationality STRING,
+  url STRING
+)
+using json
+options (path "abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/drivers.json");
+
+
+drop table if exists formula1_dev.bronze.results;
+
+create table if not exists  formula1_dev.bronze.results
+(
+resultId INT,
+raceId INT,
+driverId INT,
+constructorId INT,
+number INT,grid INT,
+position INT,
+positionText STRING,
+positionOrder INT,
+points INT,
+laps INT,
+time STRING,
+milliseconds INT,
+fastestLap INT,
+rank INT,
+fastestLapTime STRING,
+fastestLapSpeed FLOAT,
+statusId STRING
+)
+using json
+options (path "abfss://bronze@databrickscourseextdlaj.dfs.core.windows.net/results.json");
+
+
+
+180. Create Managed Tables
+
+Create Managed table in the schema (by default file will be delta format) - file - 4.create_silver_tables
+drviers
+results
+
+drop table if exists formula1_dev.silver.drivers;
+
+create table if not exists formula1_dev.silver.drivers
+as 
+select driverId as driver_id,
+       driverRef as driver_ref,
+       number,
+       code,
+       concat(name.forename," ",name.surname) as name,
+       dob,
+       nationality,
+       current_timestamp() as ingetion_date
+from formula1_dev.bronze.drivers;
+
+
+drop table if exists formula1_dev.silver.results;
+
+create table if not exists formula1_dev.silver.results
+as 
+select 
+resultId as result_id,
+raceId as race_id,
+driverId as driver_id,
+constructorId as constructor_id,
+number,
+grid,
+position,
+positionText as position_text,
+positionOrder as position_order,
+points,
+laps,
+time,
+milliseconds,
+fastestLap fastest_lap,
+rank,
+fastestLapTime as fastest_lap_time,
+fastestLapSpeed as fastest_lap_speed,
+statusId as status_id,
+current_timestamp() as ingetion_date
+from formula1_dev.bronze.results;
+
+
+
+Create Managed table in the Gold table
+Joins Drivers and results to identify the number of wins per drivers -  file - 5.create_gold_table
+
+
+drop table if exists formula1_dev.gold.driver_wins;
+
+create table formula1_dev.gold.driver_wins
+as 
+select d.name, count(1) as number_of_wins
+from formula1_dev.silver.drivers  d
+join formula1_dev.silver.results  r
+on (d.driver_id = r.driver_id)
+where r.position = 1
+group by d.name;   
+
+
+select * from formula1_dev.gold.driver_wins
+order by number_of_wins desc;
+
+
+181. Create Databricks Workflow
+
+
+go inside databricks and inside workflow create a job and connect all 3 layers file
+
+3.create_bronze_table -> 4.create_silver_tables -> 5.create_gold_table
+
+task name - Create_bronze_table
+path - /unity-catalog-mini-project/3.create_bronze_table
+cluster -choose your cluster
+
+task name - Create_silver_table
+path - /unity-catalog-mini-project/4.create_silver_tables
+cluster -choose your cluster
+depends on - Create_bronze_table
+
+task name - Create_gold_table
+path - /unity-catalog-mini-project/5.create_gold_table
+cluster -choose your cluster
+depends on - Create_silver_table
+
+then run and then we will see only difference is  Lineage
+
+
+
+################################################
+
+Section - 27 - Unity Catalog - Key Benefits
+
+
+182. Section Overview
+
+1. Data Discovery
+2. Data audit
+3. Data Lineage
+4. Data Access Control
+
+
+183. Data Discovery
