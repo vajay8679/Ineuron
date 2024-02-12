@@ -1,7 +1,32 @@
+################################################################################################
+Section - 1 - Introduction
+
+1. Course Introduction
+
+2. Course Structure
+
+
+3. Course Resources Download
+
+
+4. Course Slides Download
+
+################################################################################################
+
+Section - 2 - Azure Subscription (Optional)
+
 5. Creating Azure Free Account
+
+
 6. Azure Portal Overview
 
-################################################
+https://login.microsoftonline.com/
+
+https://portal.azure.com/#home
+
+
+################################################################################################
+
 Section 3 - Azure Databricks Overview
 
 7. Introduction to Azure Databricks
@@ -40,7 +65,8 @@ https://accounts.azuredatabricks.net/
 
 
 
-################################################
+################################################################################################
+
 Section 4 - Databricks Cluster
 
 Databricks Workspace
@@ -136,7 +162,8 @@ Personal Policy 2
 
 
 
-################################################
+################################################################################################
+
 Section - 5 : Databricks Notebooks
 
 
@@ -183,7 +210,8 @@ import file 'Formula1-Project-Solutions.dbc' in workspace
 
 
 
-################################################
+################################################################################################
+
 Section - 6 : Accessing Azure Data lake from databricsk
 
 26. Accessing Azure Data Lake Overview
@@ -294,7 +322,7 @@ spark.conf.set("fs.azure.account.oauth2.client.secret.<storage-account>.dfs.core
 spark.conf.set("fs.azure.account.oauth2.client.endpoint.<storage-account>.dfs.core.windows.net", "https://login.microsoftonline.com/<directory-id>/oauth2/token")
 
 
-################################
+################################################################################################
 client_id = "28ecc4a8-1683-472b-b989-e1b58a010be7"
 tenant_id = "f4bcbf87-8f54-476e-9ded-e78763f85179"
 client_secret = ".tM8Q~EBHpwkEkSVPNcoeFltavnx7LCcFEXYdb27"
@@ -305,7 +333,7 @@ spark.conf.set("fs.azure.account.oauth.provider.type.formula1dlajay.dfs.core.win
 spark.conf.set("fs.azure.account.oauth2.client.id.formula1dlajay.dfs.core.windows.net", client_id)
 spark.conf.set("fs.azure.account.oauth2.client.secret.formula1dlajay.dfs.core.windows.net", client_secret)
 spark.conf.set("fs.azure.account.oauth2.client.endpoint.formula1dlajay.dfs.core.windows.net", f"https://login.microsoftonline.com/{tenant_id}/oauth2/token")
-###################################
+################################################################################################
 
 for IAM role - > go to storage account and then add role 'Storage Blob Data Contributor' and then add member 'Formula 1' from azure active directory
 
@@ -340,7 +368,8 @@ using service principal is best
 
 
 
-######################################
+################################################################################################
+
 Section 7 - Securing Access to Azure Data Lake
 
 35. Securing Secrets Overview
@@ -437,7 +466,8 @@ fs.azure.account.key.formula1dlajay.dfs.core.windows.net {{secrets/formula1-scop
 
 
 
-#######################################
+################################################################################################
+
 section -8 -Mounting Data lake Container to Databricks
 
 
@@ -526,7 +556,8 @@ mount_adls('formula1dlajay','presentation')
 display(dbutils.fs.ls("/mnt/formula1dlajay/demo"))
 
 
-##################################################################
+################################################################################################
+
 section -9  - Formula1 Project Overview
 
 
@@ -565,7 +596,8 @@ Modern analytics architecture with Azure Databricks
 databricksarchitecture
 
 
-#######################################
+################################################################################################
+
 section 10 - Spark Introduction
 
 52. Spark Cluster Architecture
