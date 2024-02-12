@@ -201,6 +201,13 @@ ps
 
 23. Databricks Utilities
 
+1. File System Utilities - %fs , dbutils.fs.ls('/')
+2. Secrets Utilities
+3. Widget Utilities
+4. Notebook Workflow Utilities
+
+databricks-course/Databricks-utility.ipynb
+
 
 24. Project Solution Download - Databricks Notebooks
 
@@ -251,6 +258,7 @@ spark.conf.set("fs.azure.account.key.<storage-account>.dfs.core.windows.net","<a
 https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-abfs-driver
 
 
+go to storage container -> Access keys -> copy key and paste below
 connect with databricks
 
 #authenticate our access key
