@@ -1,4 +1,5 @@
 ################################################################################################
+
 Section - 1 - Introduction
 
 1. Course Introduction
@@ -53,10 +54,13 @@ create and pin - 'Databricks Course Dashboard'
 
 
 click on 'resource group' and then 'launch Workspace'
-after clicking on 'launch workspace' -> https://adb-2860423160921495.15.azuredatabricks.net/onboarding?o=2860423160921495
+after clicking on 'launch workspace' ->
+
+https://adb-2860423160921495.15.azuredatabricks.net/onboarding?o=2860423160921495
 
 
 9. Databricks User Interface Overview
+
 https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#joblist/pipelines
 https://accounts.azuredatabricks.net/
 
@@ -100,6 +104,7 @@ single node,
 
 
 16. Azure Databricks Pricing
+
 https://azure.microsoft.com/en-gb/pricing/details/virtual-machines/linux/#pricing
 https://azure.microsoft.com/en-gb/pricing/details/databricks/
 
@@ -243,6 +248,7 @@ create container
 28. Azure Storage Explorer Overview
 
 install azure Storage Explorer desktop
+
 https://azure.microsoft.com/en-us/products/storage/storage-explorer/
 
 snap connect storage-explorer:password-manager-service :password-manager-service
@@ -341,6 +347,7 @@ spark.conf.set("fs.azure.account.oauth.provider.type.formula1dlajay.dfs.core.win
 spark.conf.set("fs.azure.account.oauth2.client.id.formula1dlajay.dfs.core.windows.net", client_id)
 spark.conf.set("fs.azure.account.oauth2.client.secret.formula1dlajay.dfs.core.windows.net", client_secret)
 spark.conf.set("fs.azure.account.oauth2.client.endpoint.formula1dlajay.dfs.core.windows.net", f"https://login.microsoftonline.com/{tenant_id}/oauth2/token")
+
 ################################################################################################
 
 for IAM role - > go to storage account and then add role 'Storage Blob Data Contributor' and then add member 'Formula 1' from azure active directory
@@ -374,7 +381,7 @@ and after running notebook remove 'Enable credential passthrough for user-level 
 
 using service principal is best
 
-
+databricks mounts allows only in service principal so recommended approach
 
 ################################################################################################
 
@@ -420,7 +427,7 @@ https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#secrets/
 
 and give name - 'formula1-scope'
 
-and from key-vault go to properties section and copy and paste in scope
+and from key-vault go to properties section and copy and paste in scope ->
 
 Vault URI - https://formula1-key-vault-ajay.vault.azure.net/
 Resource ID - /subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups/databrickscourse-rg/providers/Microsoft.KeyVault/vaults/formula1-key-vault-ajay
@@ -428,6 +435,8 @@ Resource ID - /subscriptions/49a84c57-21dd-4dde-a744-8c4a8075b500/resourceGroups
 
 
 38. Databricks Secrets Utility
+
+5.explore_dbutils_secrets_utility.ipynb
 
 dbutils.secrets
 
@@ -481,6 +490,8 @@ section -8 -Mounting Data lake Container to Databricks
 
 43. Databricks File System (DBFS)
 
+setup-using-secret-scope/6.explore_dbfs_root.ipynb
+
 go to admin setting -> Advanced ->Other ->dbfs browser enabled
 
 dbutils.fs.ls('/')
@@ -499,8 +510,10 @@ using 'service principal' from 'azure active directory'
 
 45. Mounting Azure Data Lake Storage Gen2
 
+setup-using-secret-scope/7.mount_adls_using_service_principal.ipynb
 
 Mount Azure Data Lake using Service Principal
+
 https://learn.microsoft.com/en-us/azure/databricks/dbfs/mounts
 
 
@@ -531,6 +544,8 @@ dbutils.fs.unmount('/mnt/formula1dlajay/demo')
 
 
 46. Mounting Azure Data Lake Storage Gen2 (Assignment)
+
+setup-using-secret-scope/8.mount_adls_container_for_project.ipynb
 
 def mount_adls(storage_account_name,container_name):
     #get secrets from key-vault
