@@ -1,5 +1,8 @@
-#######################################
+################################################################################################
+
 section -9  - Formula1 Project Overview
+
+47. Section Overview
 
 
 48. Formula1 Data Overview
@@ -38,7 +41,8 @@ Modern analytics architecture with Azure Databricks
 databricksarchitecture
 
 
-#######################################
+################################################################################################
+
 section 10 - Spark Introduction
 
 
@@ -59,7 +63,8 @@ spark dataframe
 
 data source (csv,json) -> Read (Data source API - DATA frame reader method) -> dataframe -> Trans( Dataframe API) -> Dataframe -> Write (Data source API - DATA frame writer method) -> Data sink(orc,parquet)    
 
-################################################
+################################################################################################
+
 Section - 11 - Data Ingestion - csv
 
 54. Data Ingestion Overview
@@ -249,7 +254,8 @@ display(spark.read.parquet('/mnt/formula1dlajay/processed/races'))
 
 
 
-##########################################
+################################################################################################
+
 section -12 Data Ingestion - JSON
 
 
@@ -426,7 +432,8 @@ pit_stops_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/p
 display(spark.read.parquet('/mnt/formula1dlajay/processed/pit_stops'))
 
 
-#########################################################
+################################################################################################
+
 Section -13 -Data Ingestion - Multiple Files
 
 74. Lap Times - Requirements
@@ -504,7 +511,7 @@ qualifying_with_columns_df.write.mode("overwrite").parquet("/mnt/formula1dlajay/
 
 
 
-#####################################
+################################################################################################
 
 section 14 - Databricks Workflow
 
@@ -624,7 +631,8 @@ Parameters -  remove paramter
 
 
 
-############################################
+################################################################################################
+
 section -15 Filters and Join Transformations
 
 
@@ -766,7 +774,7 @@ final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/race_resul
 
 
 
-########################################################
+################################################################################################
 
 section - 16 Aggregations
 
@@ -899,7 +907,7 @@ final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/constructo
 
 
 
-####################################################
+################################################################################################
 
 section - 17 - Using SQL in Spark Application
 
@@ -968,7 +976,7 @@ select * from global_temp.gv_race_result;
 
 
 
-#######################################################
+################################################################################################
 
 Section - 18 - Spark SQL - Databases/Tables/Views
 
@@ -1392,7 +1400,7 @@ select * from f1_presentation.race_results;
 
 
 
-#######################################################
+################################################################################################
 
 section - 19 - Spark Sql - Filters/ Joins/ Aggregations
 
@@ -1503,7 +1511,7 @@ select * from v_driver_standings_2018 d_2018
 
 
 
-##################################################
+################################################################################################
 
 section - 20 - Spark SQL - Analysis
 
@@ -1748,7 +1756,7 @@ https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#notebook
 
 
 
-########################################
+################################################################################################
 
 Section - 21 - Incremental Load
 
