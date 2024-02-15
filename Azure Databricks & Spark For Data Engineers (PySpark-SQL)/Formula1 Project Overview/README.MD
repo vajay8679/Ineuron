@@ -271,6 +271,9 @@ data ingestion json
 
 https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrameReader.schema.html
 
+file - Formula1 Project Overview/ingestion/3.ingest_constructor_file.ipynb
+
+
 constructor_schema = "constructorId INT,constructorRef string,name string, nationality string, url string"
 construct_df = spark.read.schema(constructor_schema).json('/mnt/formula1dlajay/raw/constructors.json/')
 construct_df.printSchema()
@@ -278,6 +281,8 @@ display(construct_df)
 
 
 67. Constructors File - Transform & Write Data
+
+file - Formula1 Project Overview/ingestion/3.ingest_constructor_file.ipynb
 
 from pyspark.sql.functions import col
 constructor_dropped_df = construct_df.drop(col('url'))
@@ -305,6 +310,7 @@ concatenate firstname,lastname and ingest date and rename columns
 
 69. Drivers File - Spark Program
 
+file - Formula1 Project Overview/ingestion/4.ingest_driver_file.ipynb
 
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType
 
@@ -345,6 +351,8 @@ https://ergast.com/docs/f1db_user_guide.txt
 
 
 71. Results File - Spark Program (Assignment)
+
+file - Formula1 Project Overview/ingestion/5.ingest_result_file.ipynb
 
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
 
@@ -399,6 +407,8 @@ pitstops file
 
 73. Pitstops File - Spark Program
 
+file - Formula1 Project Overview/ingestion/6.ingest_pit_stops_file.ipynb
+
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
 
 pit_stops_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
@@ -443,6 +453,7 @@ multiple files ingesion from lap_times folder
 
 75. Lap Times - Spark Program
 
+file - Formula1 Project Overview/ingestion/7.ingest_lap_times_file.ipynb
 
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
@@ -479,6 +490,8 @@ display(spark.read.parquet('/mnt/formula1dlajay/processed/lap_times'))
 dataingestion_qualifying
 
 77. Qualifying - Spark Program (Assignment)
+
+file - Formula1 Project Overview/ingestion/8.ingest_qualifying_file.ipynb
 
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
@@ -521,6 +534,9 @@ section 14 - Databricks Workflow
 overall flow
 
 79. Including a Child Notebook
+
+File - Formula1 Project Overview/ingestion_with_includes/1.ingest_circuits_file.ipynb
+File - Formula1 Project Overview/includes/common_functions.ipynb
 
 configuration:
 
