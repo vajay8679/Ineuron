@@ -665,6 +665,8 @@ https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspar
 
 85. Join Transformation - Inner Join
 
+file - Formula1 Project Overview/demo/1.filter_demo.ipynb
+
 %run "../includes/configuration"
 
 demo_df = spark.read.parquet(f"{processed_folder_path}/races")
@@ -698,6 +700,8 @@ races_circuits_df.select("circuit_name").show()
 
 
 86. Join Transformation - Outer Join
+
+file - Formula1 Project Overview/demo/2.join_demo.ipynb
 
 #left outer join
 races_circuits_df = circuits_df.join(races_df, circuits_df.circuit_id == races_df.circuit_id,"left") \
@@ -742,6 +746,8 @@ check this -> 8.mount_adls_container_for_project
 join_race_result image
 
 joints_tables images
+
+File - Formula1 Project Overview/trans/1.race_results.ipynb
 
 we have connected five table here
 
@@ -801,7 +807,7 @@ section - 16 Aggregations
 
 92. Simple Aggregate functions
 
-aggregation_demo file
+ file - Formula1 Project Overview/demo/3.aggregation_demo.ipynb
 
 
 %run "../includes/configuration"
@@ -864,7 +870,7 @@ https://www.bbc.com/sport/formula1/drivers-world-championship/standings
 
 results table
 
-2.driver_standings - file
+file - Formula1 Project Overview/trans/2.driver_standings.ipynb
 
 
 %run "../includes/configuration"
@@ -898,7 +904,7 @@ final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/driver_sta
 
 https://www.bbc.com/sport/formula1/constructors-world-championship/standings
 
-3.constructor_standings - file
+file - Formula1 Project Overview/trans/3.constructor_standings.ipynb
 
 %run "../includes/configuration"
 
@@ -929,6 +935,8 @@ section - 17 - Using SQL in Spark Application
 
 
 97. Local Temp View
+
+file - Formula1 Project Overview/demo/4.sql_temp_view_demo.ipynb
 
 Access dataframes using SQL
 
@@ -1015,6 +1023,7 @@ https://spark.apache.org/docs/latest/api/python/reference/index.html
 
 https://spark.apache.org/docs/latest/sql-ref-syntax.html
 
+file - Formula1 Project Overview/demo/6.sql_objects_demo.sql
 
 create database if not exists demo;
 show databases;
@@ -1186,7 +1195,7 @@ manage external table
 105. Create Table - CSV Source
 
 
-file name - 1.create_raw_tables
+file name - Formula1 Project Overview/raw/1.create_raw_tables.sql
 
 create database if not exists f1_raw;
 
