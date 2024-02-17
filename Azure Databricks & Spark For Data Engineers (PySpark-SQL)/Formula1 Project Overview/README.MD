@@ -1435,7 +1435,7 @@ section - 19 - Spark Sql - Filters/ Joins/ Aggregations
 111. SQL DML Basics
 
 
-demo/7.sql_basic_demo
+File - Formula1 Project Overview/demo/7.sql_basic_demo
 
 
 show databases;
@@ -1486,7 +1486,7 @@ select nationality, name, dob, rank() over (partition by nationality order by do
 
 114. SQL Joins
 
-demo/9.sql_joins_demo
+file - Formula1 Project Overview/demo/9.sql_joins_demo
 
 
 inner join
@@ -1545,7 +1545,7 @@ section - 20 - Spark SQL - Analysis
 
 116. Create Race Results table
 
-trans/4.calculated_race_result
+file - Formula1 Project Overview/trans/4.calculated_race_result
 
 use f1_processed;
 
@@ -1582,7 +1582,7 @@ select * from f1_presentation.calculated_race_results;
 
 117. Dominant Drivers - Analysis
 
-analysis/1.find_dominant_drivers - file
+file - Formula1 Project Overview/analysis/1.find_dominant_drivers - file
 
 select driver_name,
        count(1) as total_race,
@@ -1619,7 +1619,7 @@ order by avg_points desc;
 
 118. Dominant Teams - Analysis
 
-analysis/2.find_dominant_teams
+File - Formula1 Project Overview/analysis/2.find_dominant_teams
 
 select team_name,
        count(1) as total_race,
@@ -1654,7 +1654,7 @@ order by avg_points desc;
 
 119. Dominant Drivers - Visualisation
 
-analysis/3.viz_dominant_drivers
+File - Formula1 Project Overview/analysis/3.viz_dominant_drivers
 
 
 create or replace temp view v_dominant_drivers
@@ -1710,7 +1710,7 @@ order by race_year, avg_points desc;
 
 120. Dominant Teams - Visualisation
 
-analysis/4.viz_dominant_teams
+File - Formula1 Project Overview/analysis/4.viz_dominant_teams
 
 create or replace temp view v_dominant_teams
 as
@@ -1759,7 +1759,7 @@ order by race_year, avg_points desc;
 
 121. Create dashboards - Drivers
 
-analysis/3.viz_dominant_drivers
+File - Formula1 Project Overview/analysis/3.viz_dominant_drivers
 
 %python
 html = """<h1 style="color:Black;text-align:center;font-family:Ariel">Report on Dominant Formula 1 drivers</h1>"""
@@ -1771,7 +1771,7 @@ https://adb-2860423160921495.15.azuredatabricks.net/?o=2860423160921495#notebook
 
 122. Create dashboards - Teams
 
-analysis/4.viz_dominant_teams
+File - Formula1 Project Overview/analysis/4.viz_dominant_teams
 
 %python
 html = """<h1 style="color:Black;text-align:center;font-family:Ariel">Report on Dominant Formula 1 Teams</h1>"""
@@ -1803,9 +1803,9 @@ for day2,day3 -> data will append in the data of day1
 
 125. Formula1 Project Scenario
 
-Scenario1 -.use full data in day1 and then incremental data from day two thatis not good
+Scenario1 -.use full data in day1 and then incremental data from day two that is not good
 
-scenario2 -> use incremental data from day one that will ne better
+scenario2 -> use incremental data from day one that will be better
 
 we can replace this 4 files every week in our datalake because of less data -> circuits,races,constrcutors,drivers (full files) (data from all races)
 
