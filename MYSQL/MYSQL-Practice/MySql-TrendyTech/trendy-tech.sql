@@ -549,10 +549,29 @@ select location,count(*),avg(salary) from employee group by location;
 --error fname and lname should be in group by
 select fname,lname,location,count(*),avg(salary) from employee group by location;
 
+o/p -
+fname	lname	location	count(*)	avg(salary)
+sumit	verma	bhopal	5	24800
+ravi	sharma	chhindwara	1	24000
+ajay	sharma	indore	3	19000
+
+
 select fname,lname,location,
 count(location) over(PARTITION BY location) as total,
 avg(salary) over(PARTITION BY location) as avg
 from employee;
+
+o/p -
+fname	lname	location	total	avg
+sumit	verma	bhopal	5	24800
+Raja	verma	bhopal	5	24800
+nira	verma	bhopal	5	24800
+nira1	verma1	bhopal	5	24800
+nira1	verma1	bhopal	5	24800
+ravi	sharma	chhindwara	1	24000
+ajay	sharma	indore	3	19000
+amit	verma	indore	3	19000
+hariom	dhawan	indore	3	19000
 
 
 --session 14 (Row Number Function in MySQL )
