@@ -1,0 +1,54 @@
+# 1. CICD for Data Engineers in a Super Easy way!
+
+Lets say you are working on a RetailAnalysis Project & have a Jira ticket assigned to you RA-17843
+
+If you are a developer you would create a feature branch,
+feature-RA-17843 & work on it.
+
+As soon as you make a git push, and github receives the new code a pipeline should run which involves:
+
+Build - creating a virtual environment & install all the dependencies (In case of python)
+
+Test - Run unit test cases / Quality checks
+
+Package - Create a package, can be a zip of code
+
+Deploy - Send the code bundle to edge node using SCP
+
+If we do all of these manually it will be very time consuming and error prone.
+
+So all of the above steps should run as a automated pipeline step by step.
+
+We can automate it using a automation server such as Jenkins.
+
+So anytime a new branch is created, or a git push happens all of the build -> test -> package -> deploy should run without any manual involvement.
+
+Now Let us understand the branching structure based on different environments which most of the data engineering projects follow.
+
+Feature branches -> Dev -> Test -> UAT -> main (Prod)
+
+Note - In a few companies its just Dev & Prod, so it depends.
+
+Feature branch - where developers codes their new changes.
+Dev - Development branch
+Test - For QA team to test
+UAT - for user acceptance testing
+main - this is the production branch
+
+Feature branches are short lived that means once feature branch is merge to a higher branch we can delete it.
+
+All the other branches will be there always.
+
+so when we make a code push to feature branch in github then all the 4 steps in CICD pipeline will run.
+
+If we see all the 4 steps ran fine, then we can raise a pull request to merge our code to Dev branch. once the reviewers see and merges it, the automated pipeline should run again on Dev branch.
+
+Same way when code is merged to Test, UAT & main the pipeline should run.
+
+Most of the companies follow the similar structure for CICD in data engineering projects.
+
+As a data engineer you should not go too deep into it, but you should have a fair idea. Ideally the entire process would be set, you would have to just follow that.
+
+Do mention in comments on what CICD process you follow in your company!
+
+I hope you would have liked the post, I tried my best to explain in simple words.
