@@ -599,3 +599,35 @@ https://lnkd.in/gTRYBDQu
 
 Credits - Spark Official Docs
 
+
+
+
+#####################################################################################
+
+Pyspark interview series
+
+https://www.youtube.com/watch?v=XU0z0fFkQ7s&list=PLtgiThe4j67qEutypME2H3Ern8sjT1EA6&index=1&ab_channel=SumitMittal
+
+number of initial partitions (128mb or lesser) - it is decided by max partition bytes and number of cpu cores based on this two number of partion decided
+
+ if 12 cpu cores and 1.1GB Data then 12 partitions
+                        if 4 cpu cores and 1.1GB Data then 9 partitions
+
+                        spark.conf.get("spark.sql.files.maxPartitionBytes")
+                        o/p - 134217728b
+
+                        134217728 / (1024 * 1024)
+                        o/p - 128.0
+
+                        spark.sparkContext.defaultParallelism
+                        o/p - 12 -  it is equal to number of cpu cores included that time - one big file split into small files
+
+                        df.rdd.getNumPartitions()
+                        o/p - 1 -  for non splitable file
+
+
+                        spark.conf.get("spark.sql.files.openCostInBytes")
+                        o/p- 4194304 -  let say 500 files of 2mb - 4+2 = 6x21 = 126MB Approx - 500/21 = 24 partition
+
+                        4194304/(1024 * 1024)
+                        o/p - 4.0
